@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Create Profile</h1><br><br>
+<form action="/add-user" method="POST">
+	Name: <br>
+	<input type="text" name="name"><br><br>
+	Username: <br>
+	<input type="text" name="username"><br><br>
+	Email: <br>
+	<input type="email" name="email"><br><br>
+	Password: <br>
+	<input type="password" name="password"><br><br>
+
+	<input type="submit">
+
+	
+</form>
+
+{% endblock %}
