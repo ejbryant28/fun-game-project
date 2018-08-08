@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Upload a video!</h1>
+
+{% if session.get("user_id") %}
+<div>Coming Soon!</div>
+<form action="/video-upload-submit" method="POST">
+	{#<input type="file" name="file">#}
+</form>
+
+{% else %}
+Oops! Looks likes you need to <a href="/login">Log In</a>!
+
+{% endif %}
+
+{% endblock %}

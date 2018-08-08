@@ -8,6 +8,7 @@
 	
 	{% if session.get("user_id") %}
 		<a href="/logout">Log Out</a> 
+		 | <a href="/video-upload">Add Video</a>
 	{% else %}
 		<a href="/login">Log In</a>
 		| <a href="/add-user-form">Create Profile</a>
