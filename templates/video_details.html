@@ -1,24 +1,18 @@
 {% extends 'base.html' %}
-
 {% block content %}
 
-<h1>Homepage!</h1>
+<h1>{{ video.filename }}</h1>
+
+<p>Uploaded at {{ video.date_uploaded }} </p>
 
 
-
-{% for video in videos %}
- {{ video.date_uploaded }}
- <br>
-
-<a href="/video-upload/{{ video.filename }}">See Details</a>!<br>
 <video width="320" height="240" controls>
 	<source src="/static/uploads/{{ video.filename }}" type="video/{{ video.filename.rsplit('.', 1)[1] }}">
 
 	Your browser doesn't support videos. Consider upgrading to a newer version.
 </video>
- <br><br><br>
 
-{% endfor %}
+
 
 
 {% endblock %}

@@ -5,10 +5,13 @@ from werkzeug.utils import secure_filename
 
 from jinja2 import StrictUndefined
 
-from flask import (Flask, render_template, redirect, request, flash, session, url_for, send_from_directory)
+from flask import (g, Flask, render_template, redirect, request, flash, session, url_for, send_from_directory)
 from flask_debugtoolbar import DebugToolbarExtension
+from functools import wraps
 
-from model import User, connect_to_db, db
+from model import Video, User, connect_to_db, db
+
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -20,12 +23,25 @@ app.secret_key = "ABC"
 app.jinja_env.undefined = StrictUndefined
 
 ######################################################################################################################################
-#view functions:
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # if g.user is None:
+        user_id = session['user_id']
+        if user_id == None:
+            # return redirect('/login')
+            return redirect(url_for('/login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.route('/')
+# @login_required
 def homepage():
     """render homepage"""
-    return render_template('homepage.html')
+    videos = Video.query.order_by(Video.date_uploaded.desc()).all()
+
+    return render_template('homepage.html', videos=videos)
+
 
 
 @app.route('/login')
@@ -45,8 +61,6 @@ def check_login_info():
 
     #query database to see if username entered exists
     user_info = User.query.filter(User.username==username).first()
-    print(user_info)
-
 
     if user_info is None:
         #Suggest create profile or check username
@@ -109,7 +123,6 @@ def add_user():
 
     #check if the username is already taken
     user_check = User.query.filter(User.username==username).first()
-    print(user_check)
 
     if user_check == None:
 
@@ -128,17 +141,29 @@ def add_user():
         flash('Sorry, that username is taken. Try another')
         return redirect('/add-user-form')
 
+@app.route('/profile')
+def user_profile():
+    """Show users videos on profile page"""
+    user_id = session['user_id']
+
+    user = User.query.filter(User.user_id == user_id).first()
+    username = user.name.capitalize()
+
+    videos = Video.query.filter(Video.user_id==user_id).order_by(Video.video_id.desc()).all()
+
+    return render_template('profile.html', videos=videos, username=username)
+
 ######################################################################################################################################
 #video-upload functions
 
-UPLOAD_FOLDER = '/uploads'
+UPLOAD_FOLDER = './static/uploads'
 
 ALLOWED_EXTENSIONS = set(['webm', 'mkv', 'flv', 'vob', 'ogv', 'ogg', 'drc', 'gif', 'gifv', 'mng', 'avi',
                          'mov', 'qt', 'wmv', 'yuv', 'rm', 'amv', 'mp4', 'm4p', 'm4v', 'f4v', 'f4p', 'f4a', 'f4b'])
 
 # app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+# app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -146,30 +171,57 @@ def allowed_file(filename):
 
 @app.route('/video-upload')
 def upload_file_form():
+    """Show form to upload a video"""
 
     return render_template('video_upload_form.html')
 
+
 @app.route('/video-upload-submit', methods=['GET', 'POST'])
 def upload_file():
+    """Upload video and save file to uploads folder"""
+
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
             flash('No file part')
-            return redirect(request.url)
+            return redirect('/video-upload')
+
         file = request.files['file']
+
         # if user does not select file, browser also
         # submit an empty part without filename
         if file.filename == '':
             flash('No selected file')
-            return redirect(request.url)
+            return redirect('/video-upload')
+
         if file and allowed_file(file.filename):
+            #find file extension
             filename = secure_filename(file.filename)
+            file_ext = filename.rsplit('.', 1)[1].lower()
+
+            #create new file name using user_id, file_ext, and date_uploaded
+
+            user_id = session['user_id']
+            video_num = Video.query.filter(Video.user_id == user_id).count()
+            video_num = video_num + 1
+
+            filename = str(user_id) + '_' + str(video_num) + '.' + file_ext
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('uploaded_file',
-                                    filename=filename))
-    return render_template('homepage.html')
 
+            #add video to database
+            date_uploaded = datetime.now()
+            video = Video(user_id=user_id, date_uploaded =date_uploaded , filename=filename)
 
+            db.session.add(video)
+            db.session.commit()
+
+            return redirect('/video-upload/{}'.format(filename))
+
+    else:
+        flash("oops. Something went wrong. Check the file extension on your file")
+        return redirect('/video-upload')
+
+    #this was the original else return:
     # '''
     # <!doctype html>
     # <title>Upload new File</title>
@@ -180,10 +232,14 @@ def upload_file():
     # </form>
     # '''
 
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'],
-                               filename)
+@app.route('/video-upload/<filename>')
+def show_video_details(filename):
+    """Show details for a given video"""
+
+    video = Video.query.filter(Video.filename == filename).first()
+
+    return render_template('video_details.html', video = video)
+
 
 
 

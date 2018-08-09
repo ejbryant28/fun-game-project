@@ -4,9 +4,10 @@
 <h1>Upload a video!</h1>
 
 {% if session.get("user_id") %}
-<div>Coming Soon!</div>
-<form action="/video-upload-submit" method="POST">
-	{#<input type="file" name="file">#}
+
+<form action="/video-upload-submit" method="POST" enctype=multipart/form-data>
+	<input type="file" name="file">
+	<input type="submit">
 </form>
 
 {% else %}

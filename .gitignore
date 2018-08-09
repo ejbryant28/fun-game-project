@@ -2,3 +2,6 @@ env
 *.pyc
 *pychache*
 secrets.sh
+*mp4
+*m4v
+

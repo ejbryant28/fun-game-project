@@ -116,18 +116,40 @@ class YesDbNoSession(unittest.TestCase):
 		self.assertNotIn(b"Log Out", result.data)
 		self.assertNotIn(b"Ooops. Looks like you", result.data)
 
+
+class EmptyDbNoSession(unittest.TestCase):
+	"""Tests that need db but no session"""
+
+	def setUp(self):
+		"""set up test with db, and users"""
+
+		#set up testing configurations
+		app.config['TESTING'] = True
+		app.config['SECRET_KEY'] = 'key'
+		self.client = app.test_client()
+
+		#connect to db
+		connect_to_db(app, 'postgres:///testdb')
+		db.create_all()
+
+	def tearDown(self):
+		"""close session at end"""
+
+		db.session.close()
+		db.drop_all()
+
 	def test_create_profile(self):
 		"""Create profile with new username"""
 
 		test = User.query.first()
 
-		form_data = {'user_id': '2', 'name': 'newname', 'username': 'newusername', 'email': 'newemail@email.com', 'password': 'password'}
+		form_data = {'name': 'newname', 'username': 'newusername', 'email': 'newemail@email.com', 'password': 'password'}
 		result = self.client.post('/add-user', data=form_data, follow_redirects=True)
 
 		self.assertIn(b'Welcome', result.data)
-	# 	self.assertIn(b'Log Out', result.data)
-	# 	self.assertNotIn(b'Log In', result.data)
-	# 	self.assertNotIn(b'Ooops', result.data)
+		self.assertIn(b'Log Out', result.data)
+		self.assertNotIn(b'Log In', result.data)
+		self.assertNotIn(b'Ooops', result.data)
 
 
 

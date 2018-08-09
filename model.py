@@ -43,7 +43,9 @@ class Video(db.Model):
 
     video_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    date = db.Column(db.DateTime, nullable=False)
+    # date = db.Column(db.DateTime, nullable=False)
+    date_uploaded = db.Column(db.DateTime, nullable=False)
+    #file names will be stored as userid_video_id.file_ext
     filename = db.Column(db.String(100), nullable=False)
 
     user = db.relationship("User", backref=db.backref("video"))
@@ -52,7 +54,7 @@ class Video(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed"""
 
-        return "<Video video_id= {} user_id = {} date = {}>".format(self.video_id, self.user_id, self.date)
+        return "<Video video_id= {} user_id = {} date_uploaded = {}>".format(self.video_id, self.user_id, self.date_uploaded)
 
 class Tag(db.Model):
     """The video tags available"""

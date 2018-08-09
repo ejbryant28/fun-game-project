@@ -9,6 +9,8 @@
 	{% if session.get("user_id") %}
 		<a href="/logout">Log Out</a> 
 		 | <a href="/video-upload">Add Video</a>
+		 | <a href="/profile"> Profile</a>
+
 	{% else %}
 		<a href="/login">Log In</a>
 		| <a href="/add-user-form">Create Profile</a>
@@ -20,7 +22,7 @@
 		<h2> <font color="red"> {{ message }} </font></h2>
 	{% endfor %}
 
-	{% block content %} Things {% endblock %}
+		{% block content %} Things {% endblock %}
 
 
 </body>
