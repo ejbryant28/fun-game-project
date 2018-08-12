@@ -3,16 +3,27 @@
 
 <h1>Upload a video!</h1>
 
-{% if session.get("user_id") %}
 
 <form action="/video-upload-submit" method="POST" enctype=multipart/form-data>
-	<input type="file" name="file">
+	<input type="file" name="file"><br><br><br>
+	Which challenge were you completing?<br>
+	<select name="challenge">
+	{% for challenge in challenges %}
+	<option value="{{ challenge.challenge_name }}" required>{{ challenge.challenge_name }}</option><br>
+	{% endfor %}
+	</select>
+
+	<br><br><br>
+	Choose some tags!
+	<br>
+	{% for tag in tags %}
+	<input type="checkbox" name="tag" value="{{ tag.tag_name }}">{{ tag.tag_name }}
+	{% endfor %}
+	<br><br>
 	<input type="submit">
 </form>
 
-{% else %}
-Oops! Looks likes you need to <a href="/login">Log In</a>!
-
-{% endif %}
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type="text/javascript"></script>
 
 {% endblock %}

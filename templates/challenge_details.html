@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+
+Challenge: {{ challenge.challenge_name }} |
+Directions: {{ challenge.description }}
+
+{% for video in video_challenges %}
+
+{{ video.challenge_name }}
+
+{% endfor %}
+
+{% endblock %}

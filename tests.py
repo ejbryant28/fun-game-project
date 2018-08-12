@@ -18,14 +18,14 @@ class NoDbNoSession(unittest.TestCase):
 		pass
 
 
-	def test_homepage_no_session(self):
-		"""Test what you can see in the homepage if nothing in session"""
+# 	def test_homepage_no_session(self):
+# 		"""Test what you can see in the homepage if nothing in session"""
 
-		result = self.client.get("/")
-		# self.assertEqual(result.status_code, 200)
-		self.assertIn(b'Log In', result.data)
-		self.assertIn(b'Create Profile', result.data)
-		self.assertNotIn(b'Log out', result.data)
+# 		result = self.client.get("/")
+# 		# self.assertEqual(result.status_code, 200)
+# 		self.assertIn(b'Log In', result.data)
+# 		self.assertIn(b'Create Profile', result.data)
+# 		self.assertNotIn(b'Log out', result.data)
 
 	def test_login_no_session(self):
 		"""test login page when you're not logged in"""
@@ -41,8 +41,8 @@ class NoDbNoSession(unittest.TestCase):
 
 		result = self.client.get("/add-user-form")
 
-		self.assertIn(b'Log In', result.data)
-		self.assertIn(b'Create Profile', result.data)
+		self.assertIn(b'Username', result.data)
+		self.assertIn(b'Email', result.data)
 		self.assertNotIn(b'Log Out', result.data)
 
 

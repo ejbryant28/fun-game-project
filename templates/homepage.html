@@ -3,21 +3,42 @@
 {% block content %}
 
 <h1>Homepage!</h1>
+{% for challenge in challenges %}
 
+<span class="challenge_name">Challenge: {{ challenge.challenge_name }}</span> |
+<span class="challenge_description">Description: {{ challenge.description }}</span><br><br>
 
+{% endfor %}
 
+<br><br><br>
+<div class='feed'>
 {% for video in videos %}
- {{ video.date_uploaded }}
- <br>
+	<div class='video'>
+	Added:
+  {{ video.date_uploaded.strftime("%A") }}<br>
 
-<a href="/video-upload/{{ video.filename }}">See Details</a>!<br>
+  {% for point in video.point_given %}
+  {{ point.point_category }}
+  {% endfor %}
+  This video is:<br>
+	 {% for tag_object in video.video_tag %}
+	 <span class='tag'>{{ tag_object.tag_name }}!</span>
+	 {% endfor %} 
+ <br>
 <video width="320" height="240" controls>
-	<source src="/static/uploads/{{ video.filename }}" type="video/{{ video.filename.rsplit('.', 1)[1] }}">
+	<source src="/static/uploads/{{ video.filename }}" type="{{ video.filename.split('.', 1)[1] }}">
 
 	Your browser doesn't support videos. Consider upgrading to a newer version.
 </video>
+<br>
+<a id='test' href="/video-upload/{{ video.filename }}">See Details</a>!<br>
  <br><br><br>
 
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type="text/javascript"></script>
+
+</div>
+</div>
 {% endfor %}
 
 

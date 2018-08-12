@@ -3,7 +3,17 @@
 
 <h1>{{ video.filename }}</h1>
 
-<p>Uploaded at {{ video.date_uploaded }} </p>
+<p>Uploaded at {{video.date_uploaded }} </p>
+
+{% for thing in video.video_challenge %}
+{{ thing.challenge_name }}
+{% endfor %}
+<br><br>
+Tags:<br>
+{% for tag in video.video_tag %}
+<span>{{tag.tag_name }}!</span>
+{% endfor %}
+<br><br>
 
 
 <video width="320" height="240" controls>

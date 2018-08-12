@@ -14,6 +14,7 @@ class User(db.Model):
     name = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(100), nullable=False)
+    #add username uniqueness constraint
 
     # friend = db.relationship("Connections", backref=db.backref("users"))
 
@@ -43,7 +44,6 @@ class Video(db.Model):
 
     video_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    # date = db.Column(db.DateTime, nullable=False)
     date_uploaded = db.Column(db.DateTime, nullable=False)
     #file names will be stored as userid_video_id.file_ext
     filename = db.Column(db.String(100), nullable=False)
@@ -61,15 +61,15 @@ class Tag(db.Model):
 
     __tablename__="tags"
 
-    tag_code = db.Column(db.String(5), primary_key=True)
-    tag_name = db.Column(db.String(20), nullable=False)
+    # tag_code = db.Column(db.String(5), primary_key=True)
+    tag_name = db.Column(db.String(20), primary_key=True)
 
 
 
     def __repr__(self):
         """Provide helpful representation when printed"""
 
-        return "<Tags tag_code= {} tag_name = {}>".format(self.tag_code, self.tag_name)
+        return "<Tags tag_name = {}>".format(self.tag_name)
 
 class VideoTag(db.Model):
     """An instance of a video being given a tag"""
@@ -78,7 +78,7 @@ class VideoTag(db.Model):
 
     video_tag_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'))
-    tag_code = db.Column(db.String(5), db.ForeignKey('tags.tag_code'))
+    tag_name = db.Column(db.String(20), db.ForeignKey('tags.tag_name'))
 
     video = db.relationship("Video", backref=db.backref("video_tag"))
     tag = db.relationship("Tag", backref=db.backref("video_tag"))
@@ -86,7 +86,49 @@ class VideoTag(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed"""
 
-        return "<Video-Tags video_id = {} tag_code= {}>".format(self.video_id, self.tag_code)
+        return "<Video-Tags video_id = {} tag_name= {}>".format(self.video_id, self.tag_name)
+
+class PointCategory(db.Model):
+    """All the possible categories of points"""
+
+    __tablename__="pointcategories"
+
+    point_category = db.Column(db.String(20), primary_key=True)
+
+class PointGiven(db.Model):
+    """An instance giving a video a point"""
+
+    __tablename__="point_given"
+
+    point_giving_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'))
+    point_category = db.Column(db.String(20), db.ForeignKey('pointcategories.point_category'))
+    time_given = db.Column(db.DateTime, nullable=False)
+
+    video = db.relationship("Video", backref=db.backref("point_given"))
+    category = db.relationship("PointCategory", backref=db.backref("point_given"))
+
+class Challenge(db.Model):
+    """Different instructions for users to complete"""
+
+    __tablename__="challenges"
+
+    challenge_name = db.Column(db.String(20), primary_key=True)
+    description = db.Column(db.String(200), nullable=False)
+
+class VideoChallenge(db.Model):
+    """Associate video with a challeng"""
+
+    __tablename__="video_challenge"
+
+    # video_challenge_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'), primary_key=True)
+    challenge_name = db.Column(db.String(20), db.ForeignKey('challenges.challenge_name'))
+    print("CHALLENGE NAME IS ", challenge_name)
+
+    video = db.relationship("Video", backref=db.backref("video_challenge"))
+    challenge = db.relationship("Challenge", backref=db.backref("video_challenge"))
+
 
 
 def connect_to_db(app, database):

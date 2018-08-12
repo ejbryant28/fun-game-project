@@ -9,9 +9,15 @@ from flask import (g, Flask, render_template, redirect, request, flash, session,
 from flask_debugtoolbar import DebugToolbarExtension
 from functools import wraps
 
-from model import Video, User, connect_to_db, db
+from model import *
 
 from datetime import datetime
+
+import pytz
+
+from queries import *
+
+from helper_functions import *
 
 
 app = Flask(__name__)
@@ -23,25 +29,38 @@ app.secret_key = "ABC"
 app.jinja_env.undefined = StrictUndefined
 
 ######################################################################################################################################
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        # if g.user is None:
-        user_id = session['user_id']
-        if user_id == None:
-            # return redirect('/login')
-            return redirect(url_for('/login', next=request.url))
-        return f(*args, **kwargs)
-    return decorated_function
+
+@app.before_request
+def before_request():
+    """redirect user if they aren't logged in"""
+    current_url = request.path
+    user_id = session.get('user_id')
+    ok_urls = ['/login', '/login-check', '/add-user-form', '/add-user']
+    if (user_id is None) and (current_url not in ok_urls):
+        return redirect('/login')
+        # return redirect(url_for('/login'))
+
+# def login_required(f):
+#     @wraps(f)
+#     def decorated_function(*args, **kwargs):
+#         user_id = session['user_id']
+#         if user_id is None:
+#             return redirect('/login')
+            
+#         return f(*args, **kwargs)
+
+#     return decorated_function
+
 
 @app.route('/')
 # @login_required
 def homepage():
     """render homepage"""
-    videos = Video.query.order_by(Video.date_uploaded.desc()).all()
 
-    return render_template('homepage.html', videos=videos)
+    videos = videos_by_date().all()
+    challenges = Challenge.query.all()
 
+    return render_template('homepage.html', videos=videos, challenges=challenges)
 
 
 @app.route('/login')
@@ -60,6 +79,7 @@ def check_login_info():
     password = request.form.get('password')
 
     #query database to see if username entered exists
+    # user_info = user_by_username().first()
     user_info = User.query.filter(User.username==username).first()
 
     if user_info is None:
@@ -83,6 +103,7 @@ def check_login_info():
         return redirect('/login')
 
 @app.route('/logout')
+# @login_required
 def logout_user():
     """render logout template"""
 
@@ -93,9 +114,11 @@ def logout_user():
 def logout_check():
     """delete username from session if they want to logout"""
     del session['user_id']
+    # session['user_id'] = None
+    # print(session['user_id'])
 
     flash("You're logged out. See you next time.")
-    return redirect('/')
+    return redirect('/login')
 
 
 @app.route('/add-user-form')
@@ -122,7 +145,9 @@ def add_user():
     password = request.form.get('password')
 
     #check if the username is already taken
-    user_check = User.query.filter(User.username==username).first()
+    user_check = user_by_username(username).first()
+    # user_check = User.query.filter(User.username==username).first()
+    print(user_check)
 
     if user_check == None:
 
@@ -142,16 +167,23 @@ def add_user():
         return redirect('/add-user-form')
 
 @app.route('/profile')
+# @login_required
 def user_profile():
     """Show users videos on profile page"""
-    user_id = session['user_id']
+    user_id = session.get('user_id')
 
-    user = User.query.filter(User.user_id == user_id).first()
+    user = user_by_user_id(user_id).first()
+
+    # user = User.query.filter(User.user_id==user_id).first()
     username = user.name.capitalize()
 
-    videos = Video.query.filter(Video.user_id==user_id).order_by(Video.video_id.desc()).all()
+    # videos = videos_by_user_id(user_id).first()
+    videos = videos_by_user_id(user_id).all()
 
-    return render_template('profile.html', videos=videos, username=username)
+        #get points:
+    points = PointGiven.query.all()
+
+    return render_template('profile.html', videos=videos, username=username, points=points)
 
 ######################################################################################################################################
 #video-upload functions
@@ -170,10 +202,18 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/video-upload')
+# @login_required
 def upload_file_form():
     """Show form to upload a video"""
 
-    return render_template('video_upload_form.html')
+    tags = Tag.query.all()
+    # tags = tags().all()
+    print("TAGS ARE", tags)
+
+    # challenges = challenges().all()
+    challenges = Challenge.query.all()
+
+    return render_template('video_upload_form.html', challenges=challenges, tags=tags)
 
 
 @app.route('/video-upload-submit', methods=['GET', 'POST'])
@@ -200,19 +240,28 @@ def upload_file():
             file_ext = filename.rsplit('.', 1)[1].lower()
 
             #create new file name using user_id, file_ext, and date_uploaded
-
-            user_id = session['user_id']
-            video_num = Video.query.filter(Video.user_id == user_id).count()
-            video_num = video_num + 1
-
-            filename = str(user_id) + '_' + str(video_num) + '.' + file_ext
+            filename = name_file(file_ext)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
             #add video to database
-            date_uploaded = datetime.now()
-            video = Video(user_id=user_id, date_uploaded =date_uploaded , filename=filename)
+            user_id = session.get('user_id')
+            date_uploaded = datetime.now(tz=pytz.timezone('US/Pacific'))
+            video = Video(user_id=user_id, date_uploaded=date_uploaded , filename=filename)
 
             db.session.add(video)
+            db.session.commit()
+
+            #get tags selected and add them to video_tags table
+            tags = request.form.getlist('tag')
+            for tag in tags:
+                videotag = VideoTag(video_id=video.video_id, tag_name=tag)
+                db.session.add(videotag)
+
+            #get challenge and add that to video_challenge table
+            challenge_name = request.form.get('challenge')
+            video_challenge = VideoChallenge(video_id=video.video_id, challenge_name=challenge_name)
+            db.session.add(video_challenge)
+
             db.session.commit()
 
             return redirect('/video-upload/{}'.format(filename))
@@ -220,6 +269,7 @@ def upload_file():
     else:
         flash("oops. Something went wrong. Check the file extension on your file")
         return redirect('/video-upload')
+
 
     #this was the original else return:
     # '''
@@ -233,16 +283,32 @@ def upload_file():
     # '''
 
 @app.route('/video-upload/<filename>')
+# @login_required
 def show_video_details(filename):
     """Show details for a given video"""
 
-    video = Video.query.filter(Video.filename == filename).first()
+    video = videos_by_filename(filename).first()
 
     return render_template('video_details.html', video = video)
 
+@app.route('/challenge')
+def show_challenges():
+    """Show all the available challenges"""
+
+    challenges = Challenge.query.all()
+
+    return render_template('challenges.html', challenges=challenges)
 
 
+@app.route('/challenge/<challenge_name>')
+def show_challenge_videos(challenge_name):
+    """Show a specific challenge and all the videos of that challenge"""
 
+    challenge = Challenge.query.filter(Challenge.challenge_name==challenge_name).first()
+
+    video_challenges = VideoChallenge.query.filter(VideoChallenge.challenge_name==challenge_name).all()
+
+    return render_template('challenge_details.html', challenge=challenge, video_challenges=video_challenges)
 
 
 ######################################################################################################################################

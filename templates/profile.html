@@ -4,16 +4,21 @@
 <h1>Welcome {{ username }}! </h1><br>
 
 {% for video in videos %}
-<br>
-{# find file extension #}
 
-<a href="/video-upload/{{ video.filename }}"><h3>{{ video.filename }}</h3></a>
+<div class='videos'>
+<br>
+{% for tag in video.video_tag %}
+<span class='tag'>{{ tag.tag_name }}!</span>
+{% endfor %}
+<br>
+<a href="/video-upload/{{ video.filename }}"></a>
 <video width="320" height="240" controls>
 	<source src="/static/uploads/{{ video.filename }}" type="video/{{ video.filename.rsplit('.', 1)[1] }}">
 
 	Your browser doesn't support videos. Consider upgrading to a newer version.
 
 </video>
+</div>
 	<br><br><br>
 
 {% endfor %}
