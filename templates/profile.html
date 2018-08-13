@@ -3,9 +3,9 @@
 
 <h1>Welcome {{ username }}! </h1><br>
 <p>You have:</p>
-{% for point in points_dict %}
+{% for category in points_dict %}
 
-{{ points_dict[point] }} {{ point }} points!<br>
+{{ points_dict[category] }} {{ category }}!
 
 {% endfor %}
 
@@ -24,9 +24,18 @@
 
 	Your browser doesn't support videos. Consider upgrading to a newer version.
 
+	{{ video.user_point_totals}}
+
 </video>
 </div>
+
+{% for entry in video.user_point_totals %}
+
+{{ entry.total_points }} {{ entry.point_category }}
+
+{% endfor %}
 	<br><br><br>
+
 
 {% endfor %}
 

@@ -38,22 +38,9 @@ def before_request():
     ok_urls = ['/login', '/login-check', '/add-user-form', '/add-user']
     if (user_id is None) and (current_url not in ok_urls):
         return redirect('/login')
-        # return redirect(url_for('/login'))
-
-# def login_required(f):
-#     @wraps(f)
-#     def decorated_function(*args, **kwargs):
-#         user_id = session['user_id']
-#         if user_id is None:
-#             return redirect('/login')
-            
-#         return f(*args, **kwargs)
-
-#     return decorated_function
 
 
 @app.route('/')
-# @login_required
 def homepage():
     """render homepage"""
 
@@ -105,7 +92,6 @@ def check_login_info():
         return redirect('/login')
 
 @app.route('/logout')
-# @login_required
 def logout_user():
     """render logout template"""
 
@@ -114,7 +100,7 @@ def logout_user():
 
 @app.route('/logout-check')
 def logout_check():
-    """delete username from session if they want to logout"""
+    """delete user_id from session if they want to logout"""
     del session['user_id']
     # session['user_id'] = None
     # print(session['user_id'])
@@ -149,7 +135,6 @@ def add_user():
     #check if the username is already taken
     user_check = user_by_username(username).first()
     # user_check = User.query.filter(User.username==username).first()
-    print(user_check)
 
     if user_check == None:
 
@@ -169,7 +154,6 @@ def add_user():
         return redirect('/add-user-form')
 
 @app.route('/profile')
-# @login_required
 def user_profile():
     """Show users videos on profile page"""
     user_id = session.get('user_id')
@@ -182,7 +166,13 @@ def user_profile():
     # videos = videos_by_user_id(user_id).first()
     videos = videos_by_user_id(user_id).all()
 
+    # total_points = UserPointTotals.query.filter(user_id==user_id).sum(UserPointTotals.total_points).group_by(UserPointTotals.point_category, UserPointTotals.point_total_id).all()
+
     points_dict = make_points_dictionary(user_id)
+    # points = db.session.query(UserPointTotals).join(PointCategory).filter(UserPointTotals.user_id==user_id).group_by(PointCategory.point_category, UserPointTotals.).all()
+
+     # db.session.query(PointGiven).join(Video).filter(Video.user_id == user_id).group_by(PointGiven.point_category, PointGiven.point_giving_id).all()
+
 
     return render_template('profile.html', videos=videos, username=username, points_dict=points_dict)
 
@@ -202,13 +192,12 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/video-upload')
-# @login_required
 def upload_file_form():
     """Show form to upload a video"""
 
     tags = Tag.query.all()
     # tags = tags().all()
-    print("TAGS ARE", tags)
+    # print("TAGS ARE", tags)
 
     # challenges = challenges().all()
     challenges = Challenge.query.all()
@@ -271,25 +260,15 @@ def upload_file():
         return redirect('/video-upload')
 
 
-    #this was the original else return:
-    # '''
-    # <!doctype html>
-    # <title>Upload new File</title>
-    # <h1>Upload new File</h1>
-    # <form method=post enctype=multipart/form-data>
-    #   <input type=file name=file>
-    #   <input type=submit value=Upload>
-    # </form>
-    # '''
-
 @app.route('/video-upload/<filename>')
-# @login_required
 def show_video_details(filename):
     """Show details for a given video"""
 
     video = videos_by_filename(filename).first()
 
-    return render_template('video_details.html', video=video)
+    points = UserPointTotals.query.filter(UserPointTotals.video_id==video.video_id).all()
+
+    return render_template('video_details.html', video=video, points=points)
 
 @app.route('/challenge')
 def show_challenges():

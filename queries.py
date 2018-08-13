@@ -52,3 +52,7 @@ def challenges_by_name(challenge_name):
 def points_by_user_id(user_id):
 
 	return db.session.query(PointGiven).join(Video).filter(Video.user_id == user_id).group_by(PointGiven.point_category, PointGiven.point_giving_id).all()
+
+
+
+

@@ -19,6 +19,17 @@ Tags:<br>
 	Your browser doesn't support videos. Consider upgrading to a newer version.
 </video>
 
+<div>
+
+This video got:<br>
+
+{% for point in points %}
+
+{{ point.total_points }} points in {{ point.point_category }}! <br>
+
+{% endfor %}
+</div>
+
 
 
 

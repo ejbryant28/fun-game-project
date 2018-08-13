@@ -14,13 +14,12 @@
 <div class='feed'>
 {% for video in videos %}
 	<div class='video'>
-		{{ video.filename}}
 	Added:
   {{ video.date_uploaded.strftime("%A") }}<br>
 
-  {% for point in video.point_given %}
+  {#{% for point in video.point_given %}
   {{ point.point_category }}
-  {% endfor %}
+  {% endfor %}#}
   This video is:<br>
 	 {% for tag_object in video.video_tag %}
 	 <span class='tag'>{{ tag_object.tag_name }}!</span>
@@ -33,6 +32,11 @@
 </video>
 <br>
 <a id='test' href="/video-upload/{{ video.filename }}">See Details</a>!<br>
+
+{% for entry in video.user_point_totals %}
+{{ entry.total_points }} {{ entry.point_category }}
+{% endfor %}
+
  <br><br><br>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
