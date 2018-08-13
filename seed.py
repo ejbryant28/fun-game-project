@@ -106,24 +106,20 @@ def load_pointcategories():
 
 
 def load_point_given():
-	"""Give each video 3 points from a random point category"""
+	"""Give each video 20 points from a random point category"""
 
 	videos = Video.query.all()
-	categories = ['silliness', 'originality', 'enthusiasm', 'social', 'grace', 'completion']
 
 	for video in videos:
+		for i in range(30):
+			categories = ['silliness', 'originality', 'enthusiasm', 'social', 'grace', 'completion']
+			point = choice(categories)
 
-		point_1 = choice(categories)
-		point_2 = choice(categories)
-		point_3 = choice(categories)
+			now = datetime.now()
 
-		now = datetime.now()
-
-		new_point_1 = PointGiven(video_id=video.video_id, point_category=point_1, time_given=now)
-		new_point_2 = PointGiven(video_id=video.video_id, point_category=point_2, time_given=now)
-		new_point_3 = PointGiven(video_id=video.video_id, point_category=point_3, time_given=now)
-
-		db.session.add_all([new_point_1, new_point_2, new_point_3])
+			new_point = PointGiven(video_id=video.video_id, point_category=point, time_given=now)
+		
+			db.session.add(new_point)
 
 	db.session.commit()
 
@@ -154,14 +150,14 @@ def load_video_challenge():
 
 if __name__ == '__main__':
 	connect_to_db(app, 'postgres:///project')
-	load_users()
-	load_videos()
-	load_tags()
-	load_videotags()
-	load_pointcategories()
+	# load_users()
+	# load_videos()
+	# load_tags()
+	# load_videotags()
+	# load_pointcategories()
 	load_point_given()
-	load_challenges()
-	load_video_challenge()
+	# load_challenges()
+	# load_video_challenge()
 
 
 

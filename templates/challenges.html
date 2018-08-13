@@ -3,9 +3,11 @@
 
 {% for challenge in challenges %}
 
-Challenge Name: {{ challenge.challenge_name }}<br>
+Challenge Name: <a href="/challenge/{{ challenge.challenge_name }}">{{ challenge.challenge_name }}</a><br>
 
-Directions: {{ challenge.description }}<br><br>
+Directions: {{ challenge.description }}<br>
+
+<a href="/video-upload">Complete this Challenge!</a><br><br>
 
 {% endfor %}
 

@@ -35,8 +35,20 @@ def tags():
 
 	return Tag.query
 
+#Challenges
 ######################################################################################################################################
 
 def challenges():
 
 	return Challenge.query
+
+def challenges_by_name(challenge_name):
+
+	return Challenge.query.filter(Challenge.challenge_name==challenge_name)
+
+#Points Given
+######################################################################################################################################
+
+def points_by_user_id(user_id):
+
+	return db.session.query(PointGiven).join(Video).filter(Video.user_id == user_id).group_by(PointGiven.point_category, PointGiven.point_giving_id).all()

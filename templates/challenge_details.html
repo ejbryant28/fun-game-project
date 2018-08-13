@@ -1,12 +1,25 @@
 {% extends 'base.html' %}
 {% block content %}
 
-Challenge: {{ challenge.challenge_name }} |
-Directions: {{ challenge.description }}
+<h1>Challenge: {{ challenge.challenge_name }} </h1><br>
+Directions: {{ challenge.description }}<br>
+<a href="/video-upload">Complete this Challenge!</a><br><br><br>
 
-{% for video in video_challenges %}
+{% for video in videos %}
 
-{{ video.challenge_name }}
+	{% for tag in video.video_tag%}
+
+	{{ tag.tag_name }}!
+
+	{% endfor %}
+	<br>
+
+<video width="320" height="240" controls>
+	<source src="/static/uploads/{{ video.filename }}" type="video/{{ video.filename.rsplit('.', 1)[1] }}">
+
+	Your browser doesn't support videos. Consider upgrading to a newer version.
+</video>
+<br><br><br>
 
 {% endfor %}
 

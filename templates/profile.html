@@ -2,6 +2,13 @@
 {% block content %}
 
 <h1>Welcome {{ username }}! </h1><br>
+<p>You have:</p>
+{% for point in points_dict %}
+
+{{ points_dict[point] }} {{ point }} points!<br>
+
+{% endfor %}
+
 
 {% for video in videos %}
 

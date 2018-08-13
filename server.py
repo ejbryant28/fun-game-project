@@ -57,6 +57,8 @@ def before_request():
 def homepage():
     """render homepage"""
 
+    user_id = session['user_id']
+
     videos = videos_by_date().all()
     challenges = Challenge.query.all()
 
@@ -180,10 +182,9 @@ def user_profile():
     # videos = videos_by_user_id(user_id).first()
     videos = videos_by_user_id(user_id).all()
 
-        #get points:
-    points = PointGiven.query.all()
+    points_dict = make_points_dictionary(user_id)
 
-    return render_template('profile.html', videos=videos, username=username, points=points)
+    return render_template('profile.html', videos=videos, username=username, points_dict=points_dict)
 
 ######################################################################################################################################
 #video-upload functions
@@ -193,7 +194,6 @@ UPLOAD_FOLDER = './static/uploads'
 ALLOWED_EXTENSIONS = set(['webm', 'mkv', 'flv', 'vob', 'ogv', 'ogg', 'drc', 'gif', 'gifv', 'mng', 'avi',
                          'mov', 'qt', 'wmv', 'yuv', 'rm', 'amv', 'mp4', 'm4p', 'm4v', 'f4v', 'f4p', 'f4a', 'f4b'])
 
-# app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
@@ -289,13 +289,14 @@ def show_video_details(filename):
 
     video = videos_by_filename(filename).first()
 
-    return render_template('video_details.html', video = video)
+    return render_template('video_details.html', video=video)
 
 @app.route('/challenge')
 def show_challenges():
     """Show all the available challenges"""
 
     challenges = Challenge.query.all()
+    # challenges = challenges().all()
 
     return render_template('challenges.html', challenges=challenges)
 
@@ -304,11 +305,12 @@ def show_challenges():
 def show_challenge_videos(challenge_name):
     """Show a specific challenge and all the videos of that challenge"""
 
-    challenge = Challenge.query.filter(Challenge.challenge_name==challenge_name).first()
+    # challenge = Challenge.query.filter(Challenge.challenge_name==challenge_name).first()
+    challenge = challenges_by_name(challenge_name).first()
 
-    video_challenges = VideoChallenge.query.filter(VideoChallenge.challenge_name==challenge_name).all()
+    videos = db.session.query(Video).join(VideoChallenge).filter(VideoChallenge.challenge_name == challenge_name).order_by(Video.date_uploaded.desc()).all()
 
-    return render_template('challenge_details.html', challenge=challenge, video_challenges=video_challenges)
+    return render_template('challenge_details.html', challenge=challenge, videos=videos)
 
 
 ######################################################################################################################################
