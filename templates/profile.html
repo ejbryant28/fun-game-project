@@ -24,14 +24,17 @@
 
 	Your browser doesn't support videos. Consider upgrading to a newer version.
 
-	{{ video.user_point_totals}}
+	{{ video.video_point_totals}}
 
 </video>
 </div>
 
-{% for entry in video.user_point_totals %}
+{% for entry in video.video_point_totals %}
+	{% if entry.point_category != 'social' and entry.point_category != 'completion' %}
 
-{{ entry.total_points }} {{ entry.point_category }}
+		{{ entry.total_points }} {{ entry.point_category }}
+
+	{% endif %}
 
 {% endfor %}
 	<br><br><br>

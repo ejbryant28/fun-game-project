@@ -17,16 +17,3 @@ def name_file(file_ext='mp4'):
     words = words_list()
     name = choice(words) + '.' + file_ext
     return name
-
-def make_points_dictionary(user_id):
-
-    points = points_by_user_id(user_id)
-
-    points_dict = {}
-    for point in points:
-        if point.point_category in points_dict:
-            points_dict[point.point_category] +=1
-        else:
-            points_dict[point.point_category] = 1
-
-    return points_dict

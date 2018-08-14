@@ -4,6 +4,8 @@ from model import *
 
 #User queries
 ######################################################################################################################################
+def users():
+	return User.query
 
 def user_by_user_id(user_id):
 
@@ -15,6 +17,8 @@ def user_by_username(username):
 
 #Video queries
 ######################################################################################################################################
+def videos():
+	return Video.query
 
 def videos_by_date():
 
@@ -27,6 +31,10 @@ def videos_by_user_id(user_id):
 def videos_by_filename(filename):
 
 	return Video.query.filter(Video.filename == filename)
+
+def videos_by_video_challenge(challenge_name):
+	
+	return db.session.query(Video).join(VideoChallenge).filter(VideoChallenge.challenge_name == challenge_name).order_by(Video.date_uploaded.desc())
 
 #Tags
 ######################################################################################################################################
@@ -51,7 +59,30 @@ def challenges_by_name(challenge_name):
 
 def points_by_user_id(user_id):
 
-	return db.session.query(PointGiven).join(Video).filter(Video.user_id == user_id).group_by(PointGiven.point_category, PointGiven.point_giving_id).all()
+	return db.session.query(PointGiven).join(Video).filter(Video.user_id == user_id).group_by(PointGiven.point_category, PointGiven.point_giving_id)
+
+
+#PointCategory
+######################################################################################################################################
+def point_categories():
+	return PointCategory.query
+
+
+
+#VideoPointTotals
+######################################################################################################################################
+def video_points_by_video_id(video_id):
+
+	return VideoPointTotals.query.filter(VideoPointTotals.video_id==video_id)
+
+
+
+
+
+
+
+
+
 
 
 

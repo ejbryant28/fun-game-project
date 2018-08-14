@@ -8,9 +8,11 @@ from faker import Faker
 
 from datetime import datetime
 
-from helper_functions import name_file, make_points_dictionary
+from helper_functions import name_file
 
 from random import choice
+
+from queries import * 
 
 fake = Faker()
 fake.uri_path(deep=None)
@@ -40,6 +42,7 @@ def load_videos():
 
     #get all the users
     users = User.query.all()
+    # users= users().all()
 
     #give each user 5 videos and create those files in uploads folder
     for user in users:
@@ -75,7 +78,9 @@ def load_tags():
 def load_videotags():
 
     videos = Video.query.all()
+    # videos = videos().all()
     tags = Tag.query.all()
+    # tags = tags().all()
 
     for video in videos:
 
@@ -107,36 +112,39 @@ def load_point_given():
     """Give each video 50 points from a random point category"""
 
     videos = Video.query.all()
+    # videos = videos().all()
     users = User.query.all()
+    # users = users().all()
     now = datetime.now()
 
-    # for video in videos:
-    #     for i in range(50):
-    #         #categories come from point categories, excluding social and completion which are calculated seperately.
-    #         categories = ['silliness', 'originality', 'enthusiasm', 'grace']
-    #         point = choice(categories)
+    for video in videos:
+        for i in range(50):
+            #categories come from point categories, excluding social and completion which are calculated seperately.
+            categories = ['silliness', 'originality', 'enthusiasm', 'grace']
+            point = choice(categories)
 
-    #         user = choice(users)
+            user = choice(users)
 
-    #         new_point = PointGiven(video_id=video.video_id, point_category=point, time_given=now, user_id=user.user_id)
+            new_point = PointGiven(video_id=video.video_id, point_category=point, time_given=now, user_id=user.user_id)
         
-    #         db.session.add(new_point)
-    # db.session.commit()
+            db.session.add(new_point)
+    db.session.commit()
 
-    # #completion points are based on number of videos uploaded
-    # for user in users:
+    #completion points are based on number of videos uploaded
+    for user in users:
 
-    #     videos = Video.query.filter(Video.user_id==user.user_id).all()
+        # videos = Video.query.filter(Video.user_id==user.user_id).all()
+        videos = videos_by_user_id(user.user_id).all()
 
-    #     for video in videos:
-    #         new_point = PointGiven(video_id=video.video_id, point_category='completion', time_given=video.date_uploaded, user_id=user.user_id)
+        for video in videos:
+            new_point = PointGiven(video_id=video.video_id, point_category='completion', time_given=video.date_uploaded, user_id=user.user_id)
 
-    #         db.session.add(new_point)
+            db.session.add(new_point)
 
     #social points are calculated based on how many points a user has given other people
-
     for user in users:
-        points_given = PointGiven.query.filter(PointGiven.user_id ==user.user_id).all()
+        # points_given = PointGiven.query.filter(PointGiven.user_id ==user.user_id).all()
+        points_given = points_by_user_id(user.user_id).all()
 
         for point in points_given:
 
@@ -168,11 +176,13 @@ def load_challenges():
 def load_video_challenge():
 
     videos = Video.query.all()
-    challenges = Challenge.query.all()
+    # videos = videos().all()
+    # challenges = Challenge.query.all()
 
     for video in videos:
 
         challenges = Challenge.query.all()
+        # challenges = challenges().all()
         challenge = choice(challenges)
         challenges.remove(challenge)
 
@@ -199,57 +209,27 @@ def load_video_challenge():
 #     db.session.commit()
 
 
-# def load_user_point_totals():
+def load_video_point_totals():
 
-#     videos = Video.query.all()
+    videos = Video.query.all()
+    # videos = videos().all()
 
-#     for video in videos:
+    for video in videos:
 
-#         #get all the points associated with one video
-#         points = PointGiven.query.filter(PointGiven.video_id==video.video_id).all()
+        #get categories so you can go through and add the points for each category available
+        # categories = PointCategory.query.all()
+        categories = point_categories().all()
 
-#         #make a dictionary of points with keys as categories and values as number of points
-#         points_dict = {}
-#         for point in points:
-#             if point.point_category in points_dict:
-#                 points_dict[point.point_category] +=1
-#             else:
-#                 points_dict[point.point_category] = 1
-        
-        
-#         for category in points_dict:
+        for category in categories:
 
-#             new_entry = UserPointTotals(video_id=video.video_id, point_category=category, total_points=points_dict[category])
+            #find the points for a given category on that video
+            point_count = PointGiven.query.filter(PointGiven.video_id==video.video_id, PointGiven.point_category==category.point_category).count()
 
-#             db.session.add(new_entry)
+            new_entry = VideoPointTotals(video_id=video.video_id, user_id=video.user_id, point_category=category.point_category, total_points=point_count)
+            db.session.add(new_entry)
 
-#     db.session.commit() 
+    db.session.commit()
 
-# def load_user_point_totals():
-
-#     videos = Video.query.all()
-
-#     for video in videos:
-
-#         #get all the points associated with one video
-#         points = PointGiven.query.filter(PointGiven.video_id==video.video_id).all()
-
-#         #make a dictionary of points with keys as categories and values as number of points
-#         points_dict = {}
-#         for point in points:
-#             if point.point_category in points_dict:
-#                 points_dict[point.point_category] +=1
-#             else:
-#                 points_dict[point.point_category] = 1
-        
-        
-#         for category in points_dict:
-
-#             new_entry = UserPointTotals(video_id=video.video_id, point_category=category, total_points=points_dict[category])
-
-#             db.session.add(new_entry)
-
-#     db.session.commit() 
 
 
 if __name__ == '__main__':
@@ -259,11 +239,11 @@ if __name__ == '__main__':
     # load_tags()
     # load_videotags()
     # load_pointcategories()
-    load_point_given()
     # load_challenges()
     # load_video_challenge()
+    # load_point_given()
     # load_point_levels()
-    # load_user_point_totals()
+    load_video_point_totals()
 
 
 

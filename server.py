@@ -46,10 +46,13 @@ def homepage():
 
     user_id = session['user_id']
 
-    videos = videos_by_date().all()
-    challenges = Challenge.query.all()
+    videos = videos_by_date().limit(10).all()
+    challenges = Challenge.query.limit(10).all()
+    # challenges = challenges().all()
 
-    return render_template('homepage.html', videos=videos, challenges=challenges)
+    categories = PointCategory.query.filter(PointCategory.point_category != 'completion').all()
+
+    return render_template('homepage.html', videos=videos, challenges=challenges, categories=categories)
 
 
 @app.route('/login')
@@ -163,7 +166,6 @@ def user_profile():
     # user = User.query.filter(User.user_id==user_id).first()
     username = user.name.capitalize()
 
-    # videos = videos_by_user_id(user_id).first()
     videos = videos_by_user_id(user_id).all()
 
     points = points_by_user_id(user_id)
@@ -174,6 +176,23 @@ def user_profile():
         else:
             points_dict[point.point_category] = 1
 
+    # i want the count of all the points for each category
+
+    # point_tup_list = []
+
+    # categories = PointCategory.query.all()
+
+    # for category in categories:
+
+    #         #find the points for a given category for a user
+    #         # point_count = VideoPointTotals.query.filter(VideoPointTotals.point_category).all()
+    #         point_count = PointGiven.query.filter(PointGiven.point_category==category.point_category).count()
+    #         point_tup_list.append((category.point_category, point_count))
+
+    # # point_count = PointGiven.query.filter(PointGiven.video_id==videos[0].video_id).group_by(PointGiven.point_category, PointGiven.point_giving_id).count()
+    # point_count = db.session.query(VideoPointTotals, PointCategory).filter(VideoPointTotals.video_id in videos).all()
+
+    # print("POINT TUP LIST", point_tup_list)
 
     return render_template('profile.html', videos=videos, username=username, points_dict=points_dict)
 
@@ -251,6 +270,12 @@ def upload_file():
             challenge_name = request.form.get('challenge')
             video_challenge = VideoChallenge(video_id=video.video_id, challenge_name=challenge_name)
             db.session.add(video_challenge)
+            db.session.commit()
+
+            #add a completion point to PointGiven table for the user
+
+            new_point = PointGiven(video_id=video.video_id, point_category='completion', time_given=video.date_uploaded, user_id=user_id)
+            db.session.add(new_point)
 
             db.session.commit()
 
@@ -267,7 +292,7 @@ def show_video_details(filename):
 
     video = videos_by_filename(filename).first()
 
-    points = UserPointTotals.query.filter(UserPointTotals.video_id==video.video_id).all()
+    points = video_points_by_video_id(video.video_id)
 
     return render_template('video_details.html', video=video, points=points)
 
@@ -285,10 +310,9 @@ def show_challenges():
 def show_challenge_videos(challenge_name):
     """Show a specific challenge and all the videos of that challenge"""
 
-    # challenge = Challenge.query.filter(Challenge.challenge_name==challenge_name).first()
     challenge = challenges_by_name(challenge_name).first()
 
-    videos = db.session.query(Video).join(VideoChallenge).filter(VideoChallenge.challenge_name == challenge_name).order_by(Video.date_uploaded.desc()).all()
+    videos = videos_by_video_challenge(challenge_name).all()
 
     return render_template('challenge_details.html', challenge=challenge, videos=videos)
 

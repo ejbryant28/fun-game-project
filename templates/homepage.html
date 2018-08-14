@@ -3,6 +3,7 @@
 {% block content %}
 
 <h1>Homepage!</h1>
+
 {% for challenge in challenges %}
 
 <span class="challenge_name">Challenge: <a href="/challenge/{{ challenge.challenge_name }}">{{ challenge.challenge_name }}</a></span> |
@@ -31,16 +32,16 @@
 	Your browser doesn't support videos. Consider upgrading to a newer version.
 </video>
 <br>
-<a id='test' href="/video-upload/{{ video.filename }}">See Details</a>!<br>
+<a href="/video-upload/{{ video.filename }}">See Details</a>!<br>
 
-{% for entry in video.user_point_totals %}
-{{ entry.total_points }} {{ entry.point_category }}
+{% for entry in video.video_point_totals %}
+	{% if entry.point_category != 'social' and entry.point_category != 'completion' %}
+		{{ entry.total_points }} <button class ='{{ entry.point_category }}'>{{ entry.point_category }}</button>
+	{% endif %}
 {% endfor %}
 
  <br><br><br>
-
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script type="text/javascript"></script>
+{{ video.filename }}
 
 </div>
 </div>

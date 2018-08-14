@@ -24,8 +24,11 @@ Tags:<br>
 This video got:<br>
 
 {% for point in points %}
+	{% if point.point_category != 'social' and point.point_category != 'completion' %}
 
-{{ point.total_points }} points in {{ point.point_category }}! <br>
+		{{ point.total_points }} {{ point.point_category }}
+
+	{% endif %}
 
 {% endfor %}
 </div>

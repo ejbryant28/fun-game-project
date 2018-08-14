@@ -30,7 +30,7 @@ class Video(db.Model):
     __tablename__="videos"
 
     video_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     date_uploaded = db.Column(db.DateTime, nullable=False)
     filename = db.Column(db.String(100), nullable=False)
 
@@ -63,8 +63,8 @@ class VideoTag(db.Model):
     __tablename__="videotags"
 
     video_tag_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'))
-    tag_name = db.Column(db.String(20), db.ForeignKey('tags.tag_name'))
+    video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'), nullable=False)
+    tag_name = db.Column(db.String(20), db.ForeignKey('tags.tag_name'), nullable=False)
 
     video = db.relationship("Video", backref=db.backref("video_tag"))
     tag = db.relationship("Tag", backref=db.backref("video_tag"))
@@ -101,32 +101,31 @@ class PointGiven(db.Model):
     __tablename__="point_given"
 
     point_giving_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'))
-    point_category = db.Column(db.String(20), db.ForeignKey('pointcategories.point_category'))
+    video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'), nullable=False)
+    point_category = db.Column(db.String(20), db.ForeignKey('pointcategories.point_category'), nullable=False)
     time_given = db.Column(db.DateTime, nullable=False)
     #user_id of who GAVE the point
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
 
     user = db.relationship("User", backref=db.backref("point_given")) #this is for who GAVE the point
     video = db.relationship("Video", backref=db.backref("point_given"))
     point_categories = db.relationship("PointCategory")
 
-class UserPointTotals(db.Model):
+class VideoPointTotals(db.Model):
     """tying the user to their total points"""
 
-    __tablename__="user_point_totals"
+    __tablename__="video_point_totals"
 
     point_total_id=db.Column(db.Integer, autoincrement=True, primary_key=True)
     video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'), nullable=False)
-    user_id=db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    user_id=db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     # point_level_id=db.Column(db.Integer, db.ForeignKey('point_level.point_level_id'))
-    point_category = db.Column(db.String(20), db.ForeignKey('pointcategories.point_category'))
+    point_category = db.Column(db.String(20), db.ForeignKey('pointcategories.point_category'), nullable=False)
     total_points=db.Column(db.Integer, nullable=False)
 
-    user = db.relationship("User", backref=db.backref("user_point_totals"))
     # point_level = db.relationship("PointLevel", backref=db.backref("user_point_totals"))
     point_categories = db.relationship("PointCategory")
-    video = db.relationship("Video", backref=db.backref("user_point_totals"))
+    video = db.relationship("Video", backref=db.backref("video_point_totals"))
 
 
 class Challenge(db.Model):
@@ -144,7 +143,7 @@ class VideoChallenge(db.Model):
 
     # video_challenge_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'), primary_key=True)
-    challenge_name = db.Column(db.String(20), db.ForeignKey('challenges.challenge_name'))
+    challenge_name = db.Column(db.String(20), db.ForeignKey('challenges.challenge_name'), nullable=False)
 
     video = db.relationship("Video", backref=db.backref("video_challenge"))
     challenge = db.relationship("Challenge", backref=db.backref("video_challenge"))
