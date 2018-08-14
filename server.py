@@ -166,12 +166,13 @@ def user_profile():
     # videos = videos_by_user_id(user_id).first()
     videos = videos_by_user_id(user_id).all()
 
-    # total_points = UserPointTotals.query.filter(user_id==user_id).sum(UserPointTotals.total_points).group_by(UserPointTotals.point_category, UserPointTotals.point_total_id).all()
-
-    points_dict = make_points_dictionary(user_id)
-    # points = db.session.query(UserPointTotals).join(PointCategory).filter(UserPointTotals.user_id==user_id).group_by(PointCategory.point_category, UserPointTotals.).all()
-
-     # db.session.query(PointGiven).join(Video).filter(Video.user_id == user_id).group_by(PointGiven.point_category, PointGiven.point_giving_id).all()
+    points = points_by_user_id(user_id)
+    points_dict = {}
+    for point in points:
+        if point.point_category in points_dict:
+            points_dict[point.point_category] +=1
+        else:
+            points_dict[point.point_category] = 1
 
 
     return render_template('profile.html', videos=videos, username=username, points_dict=points_dict)

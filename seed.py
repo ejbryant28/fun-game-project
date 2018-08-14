@@ -171,12 +171,22 @@ def load_user_point_totals():
     videos = Video.query.all()
 
     for video in videos:
-        #make a dictionary of one users points- keys are point categories, values are point totals
-        point_total_dict = make_points_dictionary(video.user_id)
-        
-        for category in point_total_dict:
 
-            new_entry = UserPointTotals(video_id=video.video_id, user_id = video.user_id, point_category=category, total_points=point_total_dict[category])
+        #get all the points associated with one video
+        points = PointGiven.query.filter(PointGiven.video_id==video.video_id).all()
+
+        #make a dictionary of points with keys as categories and values as number of points
+        points_dict = {}
+        for point in points:
+            if point.point_category in points_dict:
+                points_dict[point.point_category] +=1
+            else:
+                points_dict[point.point_category] = 1
+        
+        
+        for category in points_dict:
+
+            new_entry = UserPointTotals(video_id=video.video_id, point_category=category, total_points=points_dict[category])
 
             db.session.add(new_entry)
 
@@ -187,14 +197,14 @@ def load_user_point_totals():
 
 if __name__ == '__main__':
     connect_to_db(app, 'postgres:///project')
-    load_users()
-    load_videos()
-    load_tags()
-    load_videotags()
-    load_pointcategories()
-    load_point_given()
-    load_challenges()
-    load_video_challenge()
+    # load_users()
+    # load_videos()
+    # load_tags()
+    # load_videotags()
+    # load_pointcategories()
+    # load_point_given()
+    # load_challenges()
+    # load_video_challenge()
     # load_point_levels()
     load_user_point_totals()
 
