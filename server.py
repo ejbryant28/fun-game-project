@@ -196,6 +196,34 @@ def user_profile():
 
     return render_template('profile.html', videos=videos, username=username, points_dict=points_dict)
 
+@app.route('/challenge')
+def show_challenges():
+    """Show all the available challenges"""
+
+    challenges = Challenge.query.all()
+    # challenges = challenges().all()
+
+    return render_template('challenges.html', challenges=challenges)
+
+
+@app.route('/challenge/<challenge_name>')
+def show_challenge_videos(challenge_name):
+    """Show a specific challenge and all the videos of that challenge"""
+
+    challenge = challenges_by_name(challenge_name).first()
+
+    videos = videos_by_video_challenge(challenge_name).all()
+
+    user_id = session['user_id']
+
+    #If challenge has already been completed by user, don't show 'complete challenge' link
+
+    #i want to query VideoChallenges table, join to videos table, search for user_id
+    completed = db.session.query(Video).join(VideoChallenge).filter(Video.user_id==user_id, VideoChallenge.challenge_name==challenge_name).first()
+    print("COMPLETED IS", completed)
+
+    return render_template('challenge_details.html', challenge=challenge, videos=videos, completed=completed)
+
 ######################################################################################################################################
 #video-upload functions
 
@@ -215,12 +243,23 @@ def allowed_file(filename):
 def upload_file_form():
     """Show form to upload a video"""
 
+    user_id = session['user_id']
     tags = Tag.query.all()
     # tags = tags().all()
     # print("TAGS ARE", tags)
 
-    # challenges = challenges().all()
     challenges = Challenge.query.all()
+
+    #Find the challenges a user has completed and exclude them from the list
+    # completed_videos = db.session.query(VideoChallenge).join(Video).filter(Video.user_id == user_id).all()
+    # completed_video_ids = []
+    # for video in completed_videos:
+    #     completed_video_ids.append(video.video_id)
+    #     print ("COMPLETED VIDEO CHALLENGE IS", video.video_challenge)
+
+    # challenges = db.session.query(Challenge).join(VideoChallenge).filter(VideoChallenge.video_id not in completed_video_ids).order_by(Challenge.challenge_name).all()
+    # for thing in challenges:
+    #     print("CHALLENGE NAME IS", thing.challenge_name)
 
     return render_template('video_upload_form.html', challenges=challenges, tags=tags)
 
@@ -277,6 +316,13 @@ def upload_file():
             new_point = PointGiven(video_id=video.video_id, point_category='completion', time_given=video.date_uploaded, user_id=user_id)
             db.session.add(new_point)
 
+            #enter video into VideoPointTotals table with initial values at 0 (excluding social and completion points)
+            categories = PointCategory.query.filter(PointCategory.point_category != 'social', PointCategory.point_category != 'completion')
+
+            for category in categories:
+                new_point = VideoPointTotals(video_id = video.video_id, user_id = user_id, point_category=category.point_category, total_points = 0)
+                db.session.add(new_point)
+
             db.session.commit()
 
             return redirect('/video-upload/{}'.format(filename))
@@ -296,25 +342,6 @@ def show_video_details(filename):
 
     return render_template('video_details.html', video=video, points=points)
 
-@app.route('/challenge')
-def show_challenges():
-    """Show all the available challenges"""
-
-    challenges = Challenge.query.all()
-    # challenges = challenges().all()
-
-    return render_template('challenges.html', challenges=challenges)
-
-
-@app.route('/challenge/<challenge_name>')
-def show_challenge_videos(challenge_name):
-    """Show a specific challenge and all the videos of that challenge"""
-
-    challenge = challenges_by_name(challenge_name).first()
-
-    videos = videos_by_video_challenge(challenge_name).all()
-
-    return render_template('challenge_details.html', challenge=challenge, videos=videos)
 
 
 ######################################################################################################################################

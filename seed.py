@@ -46,17 +46,17 @@ def load_videos():
 
     #give each user 5 videos and create those files in uploads folder
     for user in users:
-        now = datetime.now()
+
+        for i in range(5)
+            now = datetime.now()
         
-        filename_1 = name_file() 
-        filename_2 = name_file()
+            filename = name_file() 
 
-        video_1 = Video(user_id = user.user_id, date_uploaded=now, filename=filename_1)
-        video_2 = Video(user_id = user.user_id, date_uploaded=now, filename=filename_2)
-        db.session.add_all([video_1, video_2])
+            video = Video(user_id = user.user_id, date_uploaded=now, filename=filename_1)
 
-        open(video_1.filename, "a")
-        open(video_2.filename, "a")
+            db.session.add(video)
+
+            open(video.filename, "a")
 
     db.session.commit()
 
@@ -234,14 +234,14 @@ def load_video_point_totals():
 
 if __name__ == '__main__':
     connect_to_db(app, 'postgres:///project')
-    # load_users()
-    # load_videos()
-    # load_tags()
-    # load_videotags()
-    # load_pointcategories()
-    # load_challenges()
-    # load_video_challenge()
-    # load_point_given()
+    load_users()
+    load_videos()
+    load_tags()
+    load_videotags()
+    load_pointcategories()
+    load_challenges()
+    load_video_challenge()
+    load_point_given()
     # load_point_levels()
     load_video_point_totals()
 

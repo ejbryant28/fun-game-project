@@ -2,8 +2,13 @@
 {% block content %}
 
 <h1>Challenge: {{ challenge.challenge_name }} </h1><br>
-Directions: {{ challenge.description }}<br>
-<a href="/video-upload">Complete this Challenge!</a><br><br><br>
+Directions: {{ challenge.description }}<br><br>
+{% if completed %}
+	You alread completed this challenge! See your video <a href="/video-upload/{{ completed.filename }}"> here</a>
+	<br><br><br>
+{% else %}
+	<a href="/video-upload">Complete this Challenge!</a><br><br><br>
+{% endif %}
 
 {% for video in videos %}
 
