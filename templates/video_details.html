@@ -2,6 +2,7 @@
 {% block content %}
 
 <h1>{{ video.filename }}</h1>
+{{ video.video_id }}
 
 <p>Uploaded at {{video.date_uploaded }} </p>
 
@@ -12,6 +13,9 @@ Tags:<br>
 {% endfor %}
 <br><br>
 
+<form>
+	<input type="hidden" name="video_id" id="video_id" value="{{ video.video_id }}">
+</form>
 
 <video width="320" height="240" controls>
 	<source src="/static/uploads/{{ video.filename }}" type="video/{{ video.filename.rsplit('.', 1)[1] }}">
@@ -20,18 +24,44 @@ Tags:<br>
 </video>
 
 <div>
-
 This video got:<br>
 
 {% for point in points %}
 	{% if point.point_category != 'social' and point.point_category != 'completion' %}
-
-		{{ point.total_points }} {{ point.point_category }}
+		<span id='{{ point.point_category }}_score' >{{ point.total_points }}</span>
+		<button class='{{ point.point_category }}' id="{{ point.point_category }}" onclick=getPoints({{ point.point_category }})>
+		{{ point.point_category }}</button>
 
 	{% endif %}
 
 {% endfor %}
 </div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+<script type="text/javascript">
+	function getPoints(test){
+		let video_id = {
+			"video_id" : $('#video_id').val(),
+			"category" : test.id
+		};
+		console.log(video_id);
+		$.post("/add_point", video_id, addPoint);
+	}
+	function addPoint(results) {
+		console.log(results);
+		let category = results['category'];
+		console.log(category);
+		let value = results['value'];
+		console.log(value)
+		let button_id = `#${category}`
+		console.log(button_id)
+		$(`${button_id}_score`).html(results['value']);
+		$(button_id).prop("disabled", true);
+	}
+
+
+</script>
 
 
 

@@ -47,12 +47,12 @@ def load_videos():
     #give each user 5 videos and create those files in uploads folder
     for user in users:
 
-        for i in range(5)
+        for i in range(5):
             now = datetime.now()
         
             filename = name_file() 
 
-            video = Video(user_id = user.user_id, date_uploaded=now, filename=filename_1)
+            video = Video(user_id = user.user_id, date_uploaded=now, filename=filename)
 
             db.session.add(video)
 
@@ -97,7 +97,7 @@ def load_videotags():
 def load_pointcategories():
     """Create point categories from a list"""
 
-    categories = ['silliness', 'originality', 'enthusiasm', 'social', 'grace', 'completion']
+    categories = ['silliness', 'originality', 'enthusiasm', 'social', 'style', 'completion']
 
     for item in categories:
 
@@ -118,9 +118,9 @@ def load_point_given():
     now = datetime.now()
 
     for video in videos:
-        for i in range(50):
+        for i in range(10):
             #categories come from point categories, excluding social and completion which are calculated seperately.
-            categories = ['silliness', 'originality', 'enthusiasm', 'grace']
+            categories = ['silliness', 'originality', 'enthusiasm', 'style']
             point = choice(categories)
 
             user = choice(users)
