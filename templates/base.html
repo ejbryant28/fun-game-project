@@ -21,7 +21,9 @@
 	{% for message in get_flashed_messages() %}
 		<h2> <font color="red"> {{ message }} </font></h2>
 	{% endfor %}
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
+	<script src="/static/js/points.js"></script>
 		{% block content %} Things {% endblock %}
 
 

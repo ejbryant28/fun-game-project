@@ -348,11 +348,11 @@ def add_point():
 
     #instanciate new instance of silly point
     # video_id = request.form.get('video_id')
-    category_video_id = request.form.get('cat_id')
+    category_video_id = request.form.get('cat_vid_id')
     cv_list = category_video_id.split('_')
     category = cv_list[0]
-    if cv_list[1]:
-        video_id = cv_list[1]
+    video_id = cv_list[1]
+
     now = datetime.now()
 
     user_id = session['user_id']
@@ -377,7 +377,7 @@ def add_point():
 
     db.session.commit()
 
-    point_value = {'value' :video_points.total_points, 'cat_id': category_video_id}
+    point_value = {'value' :video_points.total_points, 'cat_vid_id': category_video_id}
     return jsonify(point_value)
 
 

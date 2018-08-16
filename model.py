@@ -111,22 +111,6 @@ class PointGiven(db.Model):
     video = db.relationship("Video", backref=db.backref("point_given"))
     point_categories = db.relationship("PointCategory")
 
-class VideoPointTotals(db.Model):
-    """tying the user to their total points"""
-
-    __tablename__="video_point_totals"
-
-    point_total_id=db.Column(db.Integer, autoincrement=True, primary_key=True)
-    video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'), nullable=False)
-    user_id=db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
-    # point_level_id=db.Column(db.Integer, db.ForeignKey('point_level.point_level_id'))
-    point_category = db.Column(db.String(20), db.ForeignKey('pointcategories.point_category'), nullable=False)
-    total_points=db.Column(db.Integer, nullable=False)
-
-    # point_level = db.relationship("PointLevel", backref=db.backref("user_point_totals"))
-    point_categories = db.relationship("PointCategory")
-    video = db.relationship("Video", backref=db.backref("video_point_totals"))
-
 
 class Challenge(db.Model):
     """Different instructions for users to complete"""
@@ -147,6 +131,23 @@ class VideoChallenge(db.Model):
 
     video = db.relationship("Video", backref=db.backref("video_challenge"))
     challenge = db.relationship("Challenge", backref=db.backref("video_challenge"))
+    
+
+class VideoPointTotals(db.Model):
+    """tying the user to their total points"""
+
+    __tablename__="video_point_totals"
+
+    point_total_id=db.Column(db.Integer, autoincrement=True, primary_key=True)
+    video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'), nullable=False)
+    user_id=db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    # point_level_id=db.Column(db.Integer, db.ForeignKey('point_level.point_level_id'))
+    point_category = db.Column(db.String(20), db.ForeignKey('pointcategories.point_category'), nullable=False)
+    total_points=db.Column(db.Integer, nullable=False)
+
+    # point_level = db.relationship("PointLevel", backref=db.backref("user_point_totals"))
+    point_categories = db.relationship("PointCategory")
+    video = db.relationship("Video", backref=db.backref("video_point_totals"))
 
 
 

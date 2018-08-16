@@ -160,8 +160,11 @@ def load_challenges():
     challenge1 = Challenge(challenge_name='ostrich', description='Do your best imitation of an ostrich. Running is encouraged.')
     challenge2 = Challenge(challenge_name='emoji', description='Try to mimic an emoji face')
     challenge3 = Challenge(challenge_name='hippo', description='Do your best imitation of a hippo. Sound effects are encouraged')
+    challenge4 = Challenge(challenge_name='whale', description='Make whale sounds. Try singing a song.')
+    challenge5 = Challenge(challenge_name='bird', description='Act like your favorite kind of bird. Singing, flying, walking, and squawking are all encouraged.')
+    challenge6 = Challenge(challenge_name='inchworm', description='Move around like an inchworm.')
 
-    db.session.add_all([challenge1, challenge2, challenge3])
+    db.session.add_all([challenge1, challenge2, challenge3, challenge4, challenge5, challenge6])
 
     #load 15 random challenges:
     for i in range(15):

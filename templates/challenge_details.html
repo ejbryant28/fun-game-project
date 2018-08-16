@@ -24,6 +24,18 @@ Directions: {{ challenge.description }}<br><br>
 
 	Your browser doesn't support videos. Consider upgrading to a newer version.
 </video>
+<br>
+<a href="/video-upload/{{ video.filename }}">See Details</a>!
+<br>
+{% for entry in video.video_point_totals %}
+	{% if entry.point_category != 'social' and entry.point_category != 'completion' %}
+	{# score ids are category_videoid_score, category ids are category_videoid #}
+
+		<span id='{{ entry.point_category }}_{{ video.video_id }}_score'>{{ entry.total_points }} </span>
+		<button class ='{{ entry.point_category }}' id='{{ entry.point_category }}_{{ video.video_id }}' onclick=getPoints({{ entry.point_category }}_{{ video.video_id }})>{{ entry.point_category }} 
+		</button>
+	{% endif %}
+{% endfor %}
 <br><br><br>
 
 {% endfor %}

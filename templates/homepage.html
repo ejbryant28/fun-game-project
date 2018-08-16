@@ -50,27 +50,4 @@
 {% endfor %}
 
 
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-
-<script type="text/javascript">
-	function getPoints(test){
-		// debugger;
-		// console.log(test);
-		let data = {
-			"cat_id" : test.id
-		};
-		console.log(data);
-		$.post("/add_point", data, addPoint);
-	}
-	function addPoint(results) {
-		let cat_id = results['cat_id'];
-		let value = results['value'];
-		let button_id = `#${cat_id}`
-		$(`${button_id}_score`).html(results['value']);
-		$(button_id).prop("disabled", true);
-	}
-
-
-</script>
-
 {% endblock %}
