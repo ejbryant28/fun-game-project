@@ -18,9 +18,7 @@
 	Added:
   {{ video.date_uploaded.strftime("%A") }}<br>
 
-  {#{% for point in video.point_given %}
-  {{ point.point_category }}
-  {% endfor %}#}
+
   This video is:<br>
 	 {% for tag_object in video.video_tag %}
 	 <span class='tag'>{{ tag_object.tag_name }}!</span>
@@ -31,12 +29,17 @@
 
 	Your browser doesn't support videos. Consider upgrading to a newer version.
 </video>
+{{ video.video_id }}
 <br>
 <a href="/video-upload/{{ video.filename }}">See Details</a>!<br>
 
 {% for entry in video.video_point_totals %}
 	{% if entry.point_category != 'social' and entry.point_category != 'completion' %}
-		{{ entry.total_points }} <button class ='{{ entry.point_category }}'>{{ entry.point_category }}</button>
+	{# score ids are category_videoid_score, category ids are category_videoid #}
+
+		<span id='{{ entry.point_category }}_{{ video.video_id }}_score'>{{ entry.total_points }} </span>
+		<button class ='{{ entry.point_category }}' id='{{ entry.point_category }}_{{ video.video_id }}' onclick=getPoints({{ entry.point_category }}_{{ video.video_id }})>{{ entry.point_category }} 
+		</button>
 	{% endif %}
 {% endfor %}
 
@@ -46,5 +49,28 @@
 </div>
 {% endfor %}
 
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+<script type="text/javascript">
+	function getPoints(test){
+		// debugger;
+		// console.log(test);
+		let data = {
+			"cat_id" : test.id
+		};
+		console.log(data);
+		$.post("/add_point", data, addPoint);
+	}
+	function addPoint(results) {
+		let cat_id = results['cat_id'];
+		let value = results['value'];
+		let button_id = `#${cat_id}`
+		$(`${button_id}_score`).html(results['value']);
+		$(button_id).prop("disabled", true);
+	}
+
+
+</script>
 
 {% endblock %}

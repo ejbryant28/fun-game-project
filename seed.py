@@ -97,7 +97,7 @@ def load_videotags():
 def load_pointcategories():
     """Create point categories from a list"""
 
-    categories = ['silliness', 'originality', 'enthusiasm', 'social', 'style', 'completion']
+    categories = ['silliness', 'originality', 'enthusiasm', 'social', 'artistry', 'completion']
 
     for item in categories:
 
@@ -120,7 +120,7 @@ def load_point_given():
     for video in videos:
         for i in range(10):
             #categories come from point categories, excluding social and completion which are calculated seperately.
-            categories = ['silliness', 'originality', 'enthusiasm', 'style']
+            categories = ['silliness', 'originality', 'enthusiasm', 'artistry']
             point = choice(categories)
 
             user = choice(users)

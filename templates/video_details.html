@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>{{ video.filename }}</h1>
-{{ video.video_id }}
+{% for object in video.video_challenge%}
+<a href="../challenge/{{ object.challenge_name }}"><h1>{{ object.challenge_name }}</h1></a>
+{% endfor %}
 
 <p>Uploaded at {{video.date_uploaded }} </p>
 
@@ -41,23 +42,24 @@ This video got:<br>
 
 <script type="text/javascript">
 	function getPoints(test){
-		let video_id = {
+		// debugger;
+		let data = {
 			"video_id" : $('#video_id').val(),
-			"category" : test.id
+			"category_id" : test.id
 		};
-		console.log(video_id);
-		$.post("/add_point", video_id, addPoint);
+		console.log(data)
+		$.post("/add_point", data, addPoint);
 	}
 	function addPoint(results) {
-		console.log(results);
-		let category = results['category'];
-		console.log(category);
+		console.log('in addPoint function')
+		let category = results['cat_id'];
+		console.log(category)
 		let value = results['value'];
 		console.log(value)
-		let button_id = `#${category}`
-		console.log(button_id)
-		$(`${button_id}_score`).html(results['value']);
-		$(button_id).prop("disabled", true);
+		let cat = `#${category}`
+		console.log(category)
+		$(`${cat}_score`).html(results['value']);
+		$(cat).prop("disabled", true);
 	}
 
 

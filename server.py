@@ -338,7 +338,7 @@ def show_video_details(filename):
 
     video = videos_by_filename(filename).first()
 
-    points = video_points_by_video_id(video.video_id)
+    points = video_points_by_video_id(video.video_id).all()
 
     return render_template('video_details.html', video=video, points=points)
 
@@ -347,64 +347,39 @@ def add_point():
     """"""
 
     #instanciate new instance of silly point
-    video_id = request.form.get('video_id')
-    category = request.form.get('category')
-    print("CATEGORY IS", category)
-    print("VIDEO_ID IS", video_id)
+    # video_id = request.form.get('video_id')
+    category_video_id = request.form.get('cat_id')
+    cv_list = category_video_id.split('_')
+    category = cv_list[0]
+    if cv_list[1]:
+        video_id = cv_list[1]
     now = datetime.now()
 
     user_id = session['user_id']
 
     new_point = PointGiven(video_id = video_id, point_category = category, time_given = now, user_id = user_id)
-    db.session.add(new_point)
-    db.session.commit()
 
     #give the user a social point
+    new_social_point = PointGiven(video_id = video_id, point_category = 'social', time_given = now, user_id = user_id)
 
+    db.session.add(new_point)
+    db.session.add(new_social_point)
+    db.session.commit()
+    
     #change point totals table to add new point
     video_points = VideoPointTotals.query.filter(VideoPointTotals.video_id == video_id, VideoPointTotals.point_category==category).first()
-    print("VIDEO POINTS OBJECT IS", video_points)
-    print("FIRST POINT VALUE IS", video_points.total_points)
-    video_points.total_points += 1
-    db.session.commit()
-    print("SECOND POINT VALUE IS", video_points.total_points)
 
-    point_value = {'value' :video_points.total_points, 'category': category}
+    video_points.total_points += 1
+
+    #add social point to user
+    social_point = VideoPointTotals.query.filter(VideoPointTotals.video_id == video_id, VideoPointTotals.point_category=='social').first()
+    social_point.total_points += 1
+
+    db.session.commit()
+
+    point_value = {'value' :video_points.total_points, 'cat_id': category_video_id}
     return jsonify(point_value)
 
-
-
-@app.route('/add_originality_point')
-def add_originality_point():
-    pass
-    video_id = request.form.get('video_id')
-    print("VIDEO_ID IS", video_id)
-    now = datetime.now()
-
-    user_id = session['user_id']
-
-    new_point = PointGiven(video_id = video_id, point_category='originality', time_given=now, user_id=user_id)
-    db.session.add(new_point)
-    db.session.commit()
-
-    #change point totals table to add new point
-    video_points = VideoPointTotals.query.filter(VideoPointTotals.video_id == video_id, VideoPointTotals.point_category=='originality').first()
-    print("VIDEO POINTS OBJECT IS", video_points)
-    print("FIRST POINT VALUE IS", video_points.total_points)
-    video_points.total_points += 1
-    db.session.commit()
-    print("SECOND POINT VALUE IS", video_points.total_points)
-
-    point_value = {'originality':video_points.total_points}
-    return jsonify(point_value)
-
-@app.route('/add_enthusiasm_point')
-def add_enthusiasm_point():
-    pass
-
-@app.route('/add_style_point')
-def add_style_point():
-    pass
 
 ######################################################################################################################################
 if __name__ == "__main__":
