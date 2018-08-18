@@ -7,7 +7,8 @@ Directions: {{ challenge.description }}<br><br>
 	You alread completed this challenge! See your video <a href="/video-upload/{{ completed.filename }}"> here</a>
 	<br><br><br>
 {% else %}
-	<a href="/video-upload">Complete this Challenge!</a><br><br><br>
+	<a href="/video-upload/?challenge_name={{ challenge.challenge_name }}">Complete this Challenge!</a><br><br><br>
+
 {% endif %}
 
 {% for video in videos %}

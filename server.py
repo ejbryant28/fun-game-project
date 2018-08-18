@@ -46,13 +46,20 @@ def homepage():
 
     user_id = session['user_id']
 
-    videos = videos_by_date().limit(10).all()
-    challenges = Challenge.query.limit(10).all()
+    videos = videos_by_date().all()
+    challenges = Challenge.query.all()
     # challenges = challenges().all()
 
     categories = PointCategory.query.filter(PointCategory.point_category != 'completion').all()
 
-    return render_template('homepage.html', videos=videos, challenges=challenges, categories=categories)
+    points_given = PointGiven.query.filter(PointGiven.user_id == user_id).all()
+
+    disabled_buttons = []
+    for point in points_given:
+        button_id = '{}_{}'.format(point.point_category, point.video_id)
+        disabled_buttons.append(button_id)
+
+    return render_template('homepage.html', videos=videos, challenges=challenges, disabled_buttons=disabled_buttons)
 
 
 @app.route('/login')
@@ -239,27 +246,22 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/video-upload')
+@app.route('/video-upload/')
 def upload_file_form():
     """Show form to upload a video"""
 
     user_id = session['user_id']
+    # using request.args, figure out what challenges
+    # pass that to jinja to tell them which chanllenge
+
     tags = Tag.query.all()
     # tags = tags().all()
     # print("TAGS ARE", tags)
 
     challenges = Challenge.query.all()
+    # challenge = request.args.get('challenge_name')
+    # print("CHALLENGE IS ", challenge)
 
-    #Find the challenges a user has completed and exclude them from the list
-    # completed_videos = db.session.query(VideoChallenge).join(Video).filter(Video.user_id == user_id).all()
-    # completed_video_ids = []
-    # for video in completed_videos:
-    #     completed_video_ids.append(video.video_id)
-    #     print ("COMPLETED VIDEO CHALLENGE IS", video.video_challenge)
-
-    # challenges = db.session.query(Challenge).join(VideoChallenge).filter(VideoChallenge.video_id not in completed_video_ids).order_by(Challenge.challenge_name).all()
-    # for thing in challenges:
-    #     print("CHALLENGE NAME IS", thing.challenge_name)
 
     return render_template('video_upload_form.html', challenges=challenges, tags=tags)
 
@@ -349,31 +351,24 @@ def add_point():
     #instanciate new instance of silly point
     # video_id = request.form.get('video_id')
     category_video_id = request.form.get('cat_vid_id')
+    print("CAT VID ID IS ", category_video_id)
     cv_list = category_video_id.split('_')
     category = cv_list[0]
+    print("CATEGORY IS", category)
     video_id = cv_list[1]
+    print("VID ID IS", video_id)
 
     now = datetime.now()
 
     user_id = session['user_id']
 
-    new_point = PointGiven(video_id = video_id, point_category = category, time_given = now, user_id = user_id)
-
-    #give the user a social point
-    new_social_point = PointGiven(video_id = video_id, point_category = 'social', time_given = now, user_id = user_id)
-
-    db.session.add(new_point)
-    db.session.add(new_social_point)
-    db.session.commit()
     
     #change point totals table to add new point
     video_points = VideoPointTotals.query.filter(VideoPointTotals.video_id == video_id, VideoPointTotals.point_category==category).first()
-
+    print("VIDEO_POINTS ARE", video_points)
+    print("FIRST VALUE IS", video_points.total_points)
     video_points.total_points += 1
-
-    #add social point to user
-    social_point = VideoPointTotals.query.filter(VideoPointTotals.video_id == video_id, VideoPointTotals.point_category=='social').first()
-    social_point.total_points += 1
+    print("NEW VALUE IS", video_points.total_points)
 
     db.session.commit()
 

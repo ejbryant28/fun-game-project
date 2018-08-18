@@ -157,17 +157,31 @@ def load_point_given():
 def load_challenges():
     """Add three hard coded challenges"""
 
-    challenge1 = Challenge(challenge_name='ostrich', description='Do your best imitation of an ostrich. Running is encouraged.')
-    challenge2 = Challenge(challenge_name='emoji', description='Try to mimic an emoji face')
-    challenge3 = Challenge(challenge_name='hippo', description='Do your best imitation of a hippo. Sound effects are encouraged')
-    challenge4 = Challenge(challenge_name='whale', description='Make whale sounds. Try singing a song.')
-    challenge5 = Challenge(challenge_name='bird', description='Act like your favorite kind of bird. Singing, flying, walking, and squawking are all encouraged.')
-    challenge6 = Challenge(challenge_name='inchworm', description='Move around like an inchworm.')
+    challenges_list = [
+    ('ostrich', 'Do your best imitation of an ostrich. Running is encouraged.'),
+    ('emoji', 'Try to mimic an emoji face'),
+    ('hippo', 'Do your best imitation of a hippo. Sound effects are encouraged'),
+    ('whale', 'Make whale sounds. Try singing a song.'),
+    ('bird', 'Act like your favorite kind of bird. Singing, flying, walking, and squawking are all encouraged.'),
+    ('inchworm', 'Move around like an inchworm. Try not to use your arms'),
+    ('cat', 'Immitate a silly cat. Bat something around, chase a laser, roll around in catnip... Use your imagination!'),
+    ('dog', 'Act like the silliest doggo around. Chase your tail, roll around, do fun tricks, or anything else you can think of.'),
+    ('face squash', 'Make silly faces while pushing your face against a window screen, window, or something similar.'),
+    ('macarena', 'Do the macarena without the music'),
+    ('uncoordinated dance', 'Make a dance where your arms and legs move at very different speeds and/or rythms'),
+    ('jellyfish runway', 'Walk down the runway but imagine you have jellyfish legs'),
+    ('worm', 'Do the worm poorly'),
+    ('upside down songs', 'Sing songs while doing a head or handstand'),
+    ('broken shoe dance', 'Do an upbeat dance (like kazachok or Irish Step Dance) with one high heel and one flat shoe (the shoes can be imaginary).')]
 
-    db.session.add_all([challenge1, challenge2, challenge3, challenge4, challenge5, challenge6])
+
+    for challenge in challenges_list:
+        new_challenge = Challenge(challenge_name = challenge[0], description=challenge[1])
+        db.session.add(new_challenge)
+    # db.session.add_all([challenge1, challenge2, challenge3, challenge4, challenge5, challenge6, challenge7, challenge8, challenge9])
 
     #load 15 random challenges:
-    for i in range(15):
+    for i in range(5):
         challenge_name = 'challenge_{}'.format(i)
         description = 'This is challenge {}'.format(i)
 
