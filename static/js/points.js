@@ -13,3 +13,7 @@ function addPoint(results) {
 	$(`${button_id}_score`).html(results['value']);
 	$(button_id).prop("disabled", true);
 }
+
+function disableButton(button_id) {
+	$(button_id).prop("disabled", true);
+}

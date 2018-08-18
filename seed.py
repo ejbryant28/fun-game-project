@@ -97,7 +97,7 @@ def load_videotags():
 def load_pointcategories():
     """Create point categories from a list"""
 
-    categories = ['silliness', 'originality', 'enthusiasm', 'social', 'artistry', 'completion']
+    categories = ['silliness', 'originality', 'enthusiasm', 'artistry', 'completion']
 
     for item in categories:
 
@@ -142,15 +142,15 @@ def load_point_given():
             db.session.add(new_point)
 
     #social points are calculated based on how many points a user has given other people
-    for user in users:
-        # points_given = PointGiven.query.filter(PointGiven.user_id ==user.user_id).all()
-        points_given = points_by_user_id(user.user_id).all()
+    # for user in users:
+    #     # points_given = PointGiven.query.filter(PointGiven.user_id ==user.user_id).all()
+    #     points_given = points_by_user_id(user.user_id).all()
 
-        for point in points_given:
+    #     for point in points_given:
 
-            new_point = PointGiven(video_id=point.video_id, point_category='social', time_given=point.time_given, user_id=user.user_id)
+    #         new_point = PointGiven(video_id=point.video_id, point_category='social', time_given=point.time_given, user_id=user.user_id)
 
-            db.session.add(new_point)
+    #         db.session.add(new_point)
 
     db.session.commit()
 
@@ -242,7 +242,7 @@ def load_video_point_totals():
             #find the points for a given category on that video
             point_count = PointGiven.query.filter(PointGiven.video_id==video.video_id, PointGiven.point_category==category.point_category).count()
 
-            new_entry = VideoPointTotals(video_id=video.video_id, user_id=video.user_id, point_category=category.point_category, total_points=point_count)
+            new_entry = VideoPointTotals(video_id=video.video_id, point_category=category.point_category, total_points=point_count)
             db.session.add(new_entry)
 
     db.session.commit()

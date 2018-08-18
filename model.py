@@ -140,7 +140,7 @@ class VideoPointTotals(db.Model):
 
     point_total_id=db.Column(db.Integer, autoincrement=True, primary_key=True)
     video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'), nullable=False)
-    user_id=db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    # user_id=db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     # point_level_id=db.Column(db.Integer, db.ForeignKey('point_level.point_level_id'))
     point_category = db.Column(db.String(20), db.ForeignKey('pointcategories.point_category'), nullable=False)
     total_points=db.Column(db.Integer, nullable=False)

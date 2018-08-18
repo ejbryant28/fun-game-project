@@ -170,7 +170,6 @@ def user_profile():
 
     user = user_by_user_id(user_id).first()
 
-    # user = User.query.filter(User.user_id==user_id).first()
     username = user.name.capitalize()
 
     videos = videos_by_user_id(user_id).all()
@@ -182,6 +181,11 @@ def user_profile():
             points_dict[point.point_category] +=1
         else:
             points_dict[point.point_category] = 1
+
+    #calculate social points by finding the number of times their user_id is in point given, then put that key:value pair in the dictionary
+    social_points = PointGiven.query.filter(PointGiven.user_id==user_id).count()
+    print("SOCIAL POINTS VALUE IS ", social_points)
+    points_dict['social'] = social_points
 
     # i want the count of all the points for each category
 
@@ -222,12 +226,6 @@ def show_challenge_videos(challenge_name):
     videos = videos_by_video_challenge(challenge_name).all()
 
     user_id = session['user_id']
-
-    #If challenge has already been completed by user, don't show 'complete challenge' link
-
-    #i want to query VideoChallenges table, join to videos table, search for user_id
-    completed = db.session.query(Video).join(VideoChallenge).filter(Video.user_id==user_id, VideoChallenge.challenge_name==challenge_name).first()
-    print("COMPLETED IS", completed)
 
     return render_template('challenge_details.html', challenge=challenge, videos=videos, completed=completed)
 
@@ -322,7 +320,7 @@ def upload_file():
             categories = PointCategory.query.filter(PointCategory.point_category != 'social', PointCategory.point_category != 'completion')
 
             for category in categories:
-                new_point = VideoPointTotals(video_id = video.video_id, user_id = user_id, point_category=category.point_category, total_points = 0)
+                new_point = VideoPointTotals(video_id = video.video_id, point_category=category.point_category, total_points = 0)
                 db.session.add(new_point)
 
             db.session.commit()
@@ -351,24 +349,22 @@ def add_point():
     #instanciate new instance of silly point
     # video_id = request.form.get('video_id')
     category_video_id = request.form.get('cat_vid_id')
-    print("CAT VID ID IS ", category_video_id)
     cv_list = category_video_id.split('_')
     category = cv_list[0]
-    print("CATEGORY IS", category)
     video_id = cv_list[1]
-    print("VID ID IS", video_id)
 
     now = datetime.now()
 
     user_id = session['user_id']
 
+    #add a point to point_given table:
+    new_point = PointGiven(video_id=video_id, point_category= category, time_given=now, user_id=user_id)
+    db.session.add(new_point)
+
     
     #change point totals table to add new point
     video_points = VideoPointTotals.query.filter(VideoPointTotals.video_id == video_id, VideoPointTotals.point_category==category).first()
-    print("VIDEO_POINTS ARE", video_points)
-    print("FIRST VALUE IS", video_points.total_points)
     video_points.total_points += 1
-    print("NEW VALUE IS", video_points.total_points)
 
     db.session.commit()
 
