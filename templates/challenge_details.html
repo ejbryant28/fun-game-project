@@ -6,7 +6,7 @@ Directions: {{ challenge.description }}<br><br>
 {% if completed %}
 	You alread completed this challenge! See your video <a href="/video-upload/{{ completed.filename }}"> here</a>
 	<br><br><br>
-{% else %}
+{% else %} 
 	<a href="/video-upload/?challenge_name={{ challenge.challenge_name }}">Complete this Challenge!</a><br><br><br>
 
 {% endif %}

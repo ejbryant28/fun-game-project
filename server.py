@@ -54,12 +54,9 @@ def homepage():
 
     points_given = PointGiven.query.filter(PointGiven.user_id == user_id).all()
 
-    disabled_buttons = []
-    for point in points_given:
-        button_id = '{}_{}'.format(point.point_category, point.video_id)
-        disabled_buttons.append(button_id)
+    print("POINTS GIVEN", points_given)
 
-    return render_template('homepage.html', videos=videos, challenges=challenges, disabled_buttons=disabled_buttons)
+    return render_template('homepage.html', videos=videos, challenges=challenges, points_given=points_given)
 
 
 @app.route('/login')
@@ -226,6 +223,13 @@ def show_challenge_videos(challenge_name):
     videos = videos_by_video_challenge(challenge_name).all()
 
     user_id = session['user_id']
+
+    for video in videos:
+        if video.user_id == user_id:
+            completed = video
+            break
+        else:
+            completed = None
 
     return render_template('challenge_details.html', challenge=challenge, videos=videos, completed=completed)
 
