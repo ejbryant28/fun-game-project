@@ -19,6 +19,11 @@
 	Added:
   {{ video.date_uploaded.strftime("%A") }}<br>
 
+  
+{% for object in video.video_challenge %}
+Challenge: <a href="challenge/{{ object.challenge_name }}">{{ object.challenge_name }}</a>
+<br>
+{% endfor %}
 
   This video is:<br>
 	 {% for tag_object in video.video_tag %}

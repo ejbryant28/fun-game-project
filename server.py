@@ -233,12 +233,7 @@ def show_challenge_videos(challenge_name):
         given_tup = (point.point_category, point.video_id)
         given_tups.append(given_tup)
 
-    for video in videos:
-        if video.user_id == user_id:
-            completed = video
-            break
-        else:
-            completed = None
+    completed = db.session.query(Video).join(VideoChallenge).filter(Video.user_id==user_id, VideoChallenge.challenge_name==challenge_name).first()
 
     return render_template('challenge_details.html', challenge=challenge, videos=videos, completed=completed, given_tups=given_tups)
 
