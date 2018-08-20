@@ -14,6 +14,24 @@ function addPoint(results) {
 	$(button_id).prop("disabled", true);
 }
 
-function disableButton(button_id) {
+function getButtons(button_id) {
+	console.log(button_id)
+	console.log(this)
+	let data = {
+		'button_id' : button_id
+	};
+	console.log(data)
+	$.post("/check-point-given", data, disableButtons)
+}
+
+// function disableButtons(results) {
+// 	alert('something')
+// 	// console.log(results)
+// 	// if (results) {
+// 	// 	$.(results['button_id']).prop("disabled", true);
+// 	// }
+// }
+
+function disableButtons(button_id) {
 	$(button_id).prop("disabled", true);
 }

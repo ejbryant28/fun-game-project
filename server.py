@@ -54,9 +54,12 @@ def homepage():
 
     points_given = PointGiven.query.filter(PointGiven.user_id == user_id).all()
 
-    print("POINTS GIVEN", points_given)
+    given_tups = []
+    for point in points_given:
+        given_tup = (point.point_category, point.video_id)
+        given_tups.append(given_tup)
 
-    return render_template('homepage.html', videos=videos, challenges=challenges, points_given=points_given)
+    return render_template('homepage.html', videos=videos, challenges=challenges, given_tups=given_tups)
 
 
 @app.route('/login')
@@ -224,6 +227,12 @@ def show_challenge_videos(challenge_name):
 
     user_id = session['user_id']
 
+    points_given = PointGiven.query.filter(PointGiven.user_id == user_id).all()
+    given_tups = []
+    for point in points_given:
+        given_tup = (point.point_category, point.video_id)
+        given_tups.append(given_tup)
+
     for video in videos:
         if video.user_id == user_id:
             completed = video
@@ -231,7 +240,7 @@ def show_challenge_videos(challenge_name):
         else:
             completed = None
 
-    return render_template('challenge_details.html', challenge=challenge, videos=videos, completed=completed)
+    return render_template('challenge_details.html', challenge=challenge, videos=videos, completed=completed, given_tups=given_tups)
 
 ######################################################################################################################################
 #video-upload functions
@@ -344,7 +353,15 @@ def show_video_details(filename):
 
     points = video_points_by_video_id(video.video_id).all()
 
-    return render_template('video_details.html', video=video, points=points)
+    user_id = session['user_id']
+    points_given = PointGiven.query.filter(PointGiven.user_id == user_id).all()
+
+    given_tups = []
+    for point in points_given:
+        tup = (point.point_category, point.video_id)
+        given_tups.append(tup)
+
+    return render_template('video_details.html', video=video, points=points, given_tups=given_tups)
 
 @app.route('/add_point', methods=["POST"])
 def add_point():

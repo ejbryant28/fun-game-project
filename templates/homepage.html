@@ -4,7 +4,6 @@
 
 <h1>Homepage!</h1>
 
-
 {% for challenge in challenges %}
 
 <span class="challenge_name">Challenge: <a href="/challenge/{{ challenge.challenge_name }}">{{ challenge.challenge_name }}</a></span> |
@@ -14,6 +13,7 @@
 
 <br><br><br>
 <div class='feed'>
+
 {% for video in videos %}
 	<div class='video'>
 	Added:
@@ -34,12 +34,20 @@
 <a href="/video-upload/{{ video.filename }}">See Details</a>!<br>
 
 {% for entry in video.video_point_totals %}
-	{% if entry.point_category != 'social' and entry.point_category != 'completion' %}
-	{# score ids are category_videoid_score, category ids are category_videoid #}
+	{% if entry.point_category != 'completion' %}
 
-		<span id='{{ entry.point_category }}_{{ video.video_id }}_score'>{{ entry.total_points }} </span>
-		<button class ='{{ entry.point_category }}' id='{{ entry.point_category }}_{{ video.video_id }}' onclick=getPoints({{ entry.point_category }}_{{ video.video_id }})>{{ entry.point_category }} 
+		 <span id='{{ entry.point_category }}_{{ video.video_id }}_score'>{{ entry.total_points }} </span>
+
+		 {% if (entry.point_category, video.video_id) in given_tups %}
+				<button class ='{{ entry.point_category }}' id='{{ entry.point_category }}_{{ video.video_id }}' disabled>{{ entry.point_category }} 
+				</button>
+
+		 {% else %}
+
+			<button class ='{{ entry.point_category }}' id='{{ entry.point_category }}_{{ video.video_id }}' onclick=getPoints({{ entry.point_category }}_{{ video.video_id }})>{{ entry.point_category }} 
 		</button>
+		{% endif %} 
+
 	{% endif %}
 {% endfor %}
 

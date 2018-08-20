@@ -33,8 +33,16 @@ Directions: {{ challenge.description }}<br><br>
 	{# score ids are category_videoid_score, category ids are category_videoid #}
 
 		<span id='{{ entry.point_category }}_{{ video.video_id }}_score'>{{ entry.total_points }} </span>
-		<button class ='{{ entry.point_category }}' id='{{ entry.point_category }}_{{ video.video_id }}' onclick=getPoints({{ entry.point_category }}_{{ video.video_id }})>{{ entry.point_category }} 
+		
+		{% if (entry.point_category, video.video_id) in given_tups %}
+			<button class ='{{ entry.point_category }}' id='{{ entry.point_category }}_{{ video.video_id }}' disabled>{{ entry.point_category }} 
+				</button>
+
+		 {% else %}
+
+			<button class ='{{ entry.point_category }}' id='{{ entry.point_category }}_{{ video.video_id }}' onclick=getPoints({{ entry.point_category }}_{{ video.video_id }})>{{ entry.point_category }} 
 		</button>
+		{% endif %} 
 	{% endif %}
 {% endfor %}
 <br><br><br>

@@ -28,10 +28,18 @@ Tags:<br>
 This video got:<br>
 
 {% for point in points %}
-	{% if point.point_category != 'social' and point.point_category != 'completion' %}
+	{% if point.point_category != 'completion' %}
 		<span id='{{ point.point_category }}_{{ video.video_id }}_score' >{{ point.total_points }}</span>
-		<button class='{{ point.point_category }}' id="{{ point.point_category }}_{{ video.video_id }}" onclick=getPoints({{ point.point_category }}_{{ video.video_id}})>
-		{{ point.point_category }}</button>
+
+		{% if (point.point_category, video.video_id) in given_tups %}
+				<button class ='{{ point.point_category }}' id='{{ point.point_category }}_{{ video.video_id }}' disabled>{{ point.point_category }} 
+				</button>
+
+		 {% else %}
+
+			<button class ='{{ point.point_category }}' id='{{ point.point_category }}_{{ video.video_id }}' onclick=getPoints({{ point.point_category }}_{{ video.video_id }})>{{ point.point_category }} 
+		</button>
+		{% endif %} 
 
 	{% endif %}
 
