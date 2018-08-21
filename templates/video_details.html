@@ -5,7 +5,8 @@
 <a href="../challenge/{{ object.challenge_name }}"><h1>{{ object.challenge_name }}</h1></a>
 {% endfor %}
 
-<p>Uploaded at {{video.date_uploaded }} </p>
+<p>Added:
+ {{ video.date_uploaded.strftime("%A") }} at {{ video.date_uploaded.strftime("%I") }}:{{ video.date_uploaded.strftime("%M") }} </p>
 
 <br><br>
 Tags:<br>

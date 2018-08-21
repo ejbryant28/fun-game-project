@@ -17,7 +17,7 @@
 {% for video in videos %}
 	<div class='video'>
 	Added:
-  {{ video.date_uploaded.strftime("%A") }}<br>
+  {{ video.date_uploaded.strftime("%A") }} at {{ video.date_uploaded.strftime("%I") }}:{{ video.date_uploaded.strftime("%M") }}<br>
 
   
 {% for object in video.video_challenge %}

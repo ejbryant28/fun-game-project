@@ -174,38 +174,22 @@ def user_profile():
 
     videos = videos_by_user_id(user_id).all()
 
-    points = points_by_user_id(user_id)
-    points_dict = {}
-    for point in points:
-        if point.point_category in points_dict:
-            points_dict[point.point_category] +=1
-        else:
-            points_dict[point.point_category] = 1
+    # points = points_by_user_id(user_id)
+    # points_dict = {}
+    # for point in points:
+    #     if point.point_category in points_dict:
+    #         points_dict[point.point_category] +=1
+    #     else:
+    #         points_dict[point.point_category] = 1
+
+    point_totals = db.session.execute("SELECT video_point_totals.point_category, sum(video_point_totals.total_points) FROM video_point_totals JOIN videos USING (video_id) WHERE videos.user_id = {} GROUP BY video_point_totals.point_category".format(user_id)).fetchall()
 
     #calculate social points by finding the number of times their user_id is in point given, then put that key:value pair in the dictionary
     social_points = PointGiven.query.filter(PointGiven.user_id==user_id).count()
-    print("SOCIAL POINTS VALUE IS ", social_points)
-    points_dict['social'] = social_points
+    point_totals.append(('social', social_points))
+    # points_dict['social'] = social_points
 
-    # i want the count of all the points for each category
-
-    # point_tup_list = []
-
-    # categories = PointCategory.query.all()
-
-    # for category in categories:
-
-    #         #find the points for a given category for a user
-    #         # point_count = VideoPointTotals.query.filter(VideoPointTotals.point_category).all()
-    #         point_count = PointGiven.query.filter(PointGiven.point_category==category.point_category).count()
-    #         point_tup_list.append((category.point_category, point_count))
-
-    # # point_count = PointGiven.query.filter(PointGiven.video_id==videos[0].video_id).group_by(PointGiven.point_category, PointGiven.point_giving_id).count()
-    # point_count = db.session.query(VideoPointTotals, PointCategory).filter(VideoPointTotals.video_id in videos).all()
-
-    # print("POINT TUP LIST", point_tup_list)
-
-    return render_template('profile.html', videos=videos, username=username, points_dict=points_dict)
+    return render_template('profile.html', videos=videos, username=username, point_totals=point_totals)
 
 @app.route('/challenge')
 def show_challenges():

@@ -13,6 +13,9 @@ Directions: {{ challenge.description }}<br><br>
 
 {% for video in videos %}
 
+Added:
+ {{ video.date_uploaded.strftime("%A") }} at {{ video.date_uploaded.strftime("%I") }}:{{ video.date_uploaded.strftime("%M") }}
+
 	{% for tag in video.video_tag%}
 
 	{{ tag.tag_name }}!
