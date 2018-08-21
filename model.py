@@ -147,7 +147,7 @@ class VideoPointTotals(db.Model):
 
     # point_level = db.relationship("PointLevel", backref=db.backref("user_point_totals"))
     point_categories = db.relationship("PointCategory")
-    video = db.relationship("Video", backref=db.backref("video_point_totals"))
+    video = db.relationship("Video", backref=db.backref("video_point_totals"), order_by="VideoPointTotals.point_category")
 
 
 

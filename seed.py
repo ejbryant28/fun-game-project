@@ -56,7 +56,7 @@ def load_videos():
 
             db.session.add(video)
 
-            open(video.filename, "a")
+            open('./static/uploads/{}'.format(video.filename), "x")
 
     db.session.commit()
 
