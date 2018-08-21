@@ -141,17 +141,6 @@ def load_point_given():
 
             db.session.add(new_point)
 
-    #social points are calculated based on how many points a user has given other people
-    # for user in users:
-    #     # points_given = PointGiven.query.filter(PointGiven.user_id ==user.user_id).all()
-    #     points_given = points_by_user_id(user.user_id).all()
-
-    #     for point in points_given:
-
-    #         new_point = PointGiven(video_id=point.video_id, point_category='social', time_given=point.time_given, user_id=user.user_id)
-
-    #         db.session.add(new_point)
-
     db.session.commit()
 
 def load_challenges():

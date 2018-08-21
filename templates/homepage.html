@@ -43,7 +43,7 @@ Challenge: <a href="challenge/{{ object.challenge_name }}">{{ object.challenge_n
 
 		 <span id='{{ entry.point_category }}_{{ video.video_id }}_score'>{{ entry.total_points }} </span>
 
-		 {% if (entry.point_category, video.video_id) in given_tups %}
+		 {% if (entry.point_category, video.video_id) in given_tups or video.user_id == user_id %}
 				<button class ='{{ entry.point_category }}' id='{{ entry.point_category }}_{{ video.video_id }}' disabled>{{ entry.point_category }} 
 				</button>
 

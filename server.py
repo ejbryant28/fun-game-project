@@ -48,18 +48,18 @@ def homepage():
 
     videos = videos_by_date().all()
     challenges = Challenge.query.all()
-    # challenges = challenges().all()
 
     categories = PointCategory.query.filter(PointCategory.point_category != 'completion').all()
 
-    points_given = PointGiven.query.filter(PointGiven.user_id == user_id).all()
+    # points_given = PointGiven.query.filter(PointGiven.user_id == user_id).all()
+    points_given = points_by_user_id(user_id).all()
 
     given_tups = []
     for point in points_given:
         given_tup = (point.point_category, point.video_id)
         given_tups.append(given_tup)
 
-    return render_template('homepage.html', videos=videos, challenges=challenges, given_tups=given_tups)
+    return render_template('homepage.html', videos=videos, challenges=challenges, given_tups=given_tups, user_id=user_id)
 
 
 @app.route('/login')
@@ -78,7 +78,6 @@ def check_login_info():
     password = request.form.get('password')
 
     #query database to see if username entered exists
-    # user_info = user_by_username().first()
     user_info = User.query.filter(User.username==username).first()
 
     if user_info is None:
@@ -111,9 +110,8 @@ def logout_user():
 @app.route('/logout-check')
 def logout_check():
     """delete user_id from session if they want to logout"""
+
     del session['user_id']
-    # session['user_id'] = None
-    # print(session['user_id'])
 
     flash("You're logged out. See you next time.")
     return redirect('/login')
@@ -170,33 +168,22 @@ def user_profile():
 
     user = user_by_user_id(user_id).first()
 
-    username = user.name.capitalize()
-
     videos = videos_by_user_id(user_id).all()
 
-    # points = points_by_user_id(user_id)
-    # points_dict = {}
-    # for point in points:
-    #     if point.point_category in points_dict:
-    #         points_dict[point.point_category] +=1
-    #     else:
-    #         points_dict[point.point_category] = 1
+    point_totals = video_point_totals_by_user_id_grouped_category(user_id).fetchall()
 
-    point_totals = db.session.execute("SELECT video_point_totals.point_category, sum(video_point_totals.total_points) FROM video_point_totals JOIN videos USING (video_id) WHERE videos.user_id = {} GROUP BY video_point_totals.point_category".format(user_id)).fetchall()
-
-    #calculate social points by finding the number of times their user_id is in point given, then put that key:value pair in the dictionary
-    social_points = PointGiven.query.filter(PointGiven.user_id==user_id).count()
+    #calculate social points by finding the number of times their user_id is in point given, then add tuple to the list
+    # social_points = PointGiven.query.filter(PointGiven.user_id==user_id).count()
+    social_points = social_points_count(user_id)
     point_totals.append(('social', social_points))
-    # points_dict['social'] = social_points
 
-    return render_template('profile.html', videos=videos, username=username, point_totals=point_totals)
+    return render_template('profile.html', videos=videos, point_totals=point_totals)
 
 @app.route('/challenge')
 def show_challenges():
     """Show all the available challenges"""
 
     challenges = Challenge.query.all()
-    # challenges = challenges().all()
 
     return render_template('challenges.html', challenges=challenges)
 
@@ -211,15 +198,16 @@ def show_challenge_videos(challenge_name):
 
     user_id = session['user_id']
 
-    points_given = PointGiven.query.filter(PointGiven.user_id == user_id).all()
+    # points_given = PointGiven.query.filter(PointGiven.user_id == user_id).all()
+    points_given = points_by_user_id(user_id).all()
     given_tups = []
     for point in points_given:
         given_tup = (point.point_category, point.video_id)
         given_tups.append(given_tup)
 
-    completed = db.session.query(Video).join(VideoChallenge).filter(Video.user_id==user_id, VideoChallenge.challenge_name==challenge_name).first()
+    completed = video_by_challenge_name_user_id(challenge_name, user_id).first()
 
-    return render_template('challenge_details.html', challenge=challenge, videos=videos, completed=completed, given_tups=given_tups)
+    return render_template('challenge_details.html', challenge=challenge, videos=videos, completed=completed, user_id=user_id, given_tups=given_tups)
 
 ######################################################################################################################################
 #video-upload functions
@@ -246,7 +234,7 @@ def upload_file_form():
 
     tags = Tag.query.all()
     # tags = tags().all()
-    # print("TAGS ARE", tags)
+
 
     challenges = Challenge.query.all()
     # challenge = request.args.get('challenge_name')
@@ -309,7 +297,7 @@ def upload_file():
             db.session.add(new_point)
 
             #enter video into VideoPointTotals table with initial values at 0 (excluding social and completion points)
-            categories = PointCategory.query.filter(PointCategory.point_category != 'social', PointCategory.point_category != 'completion')
+            categories = PointCategory.query.filter(PointCategory.point_category != 'completion').all()
 
             for category in categories:
                 new_point = VideoPointTotals(video_id = video.video_id, point_category=category.point_category, total_points = 0)
@@ -333,21 +321,19 @@ def show_video_details(filename):
     points = video_points_by_video_id(video.video_id).all()
 
     user_id = session['user_id']
-    points_given = PointGiven.query.filter(PointGiven.user_id == user_id).all()
+    points_given = points_by_user_id(user_id).all()
 
     given_tups = []
     for point in points_given:
         tup = (point.point_category, point.video_id)
         given_tups.append(tup)
 
-    return render_template('video_details.html', video=video, points=points, given_tups=given_tups)
+    return render_template('video_details.html', video=video, points=points, given_tups=given_tups, user_id=user_id)
 
 @app.route('/add_point', methods=["POST"])
 def add_point():
     """"""
 
-    #instanciate new instance of silly point
-    # video_id = request.form.get('video_id')
     category_video_id = request.form.get('cat_vid_id')
     cv_list = category_video_id.split('_')
     category = cv_list[0]
@@ -363,7 +349,7 @@ def add_point():
 
     
     #change point totals table to add new point
-    video_points = VideoPointTotals.query.filter(VideoPointTotals.video_id == video_id, VideoPointTotals.point_category==category).first()
+    video_points = video_point_totals_by_video_id_point_category(video_id, category).first()
     video_points.total_points += 1
 
     db.session.commit()
@@ -374,16 +360,10 @@ def add_point():
 
 ######################################################################################################################################
 if __name__ == "__main__":
-    # We have to set debug=True here, since it has to be True at the
-    # point that we invoke the DebugToolbarExtension
     app.debug = True
-    # make sure templates, etc. are not cached in debug mode
     app.jinja_env.auto_reload = app.debug
 
     connect_to_db(app, 'postgres:///project')
-
-    # Use the DebugToolbar
-    # DebugToolbarExtension(app)
 
     app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 

@@ -32,12 +32,12 @@ Added:
 <a href="/video-upload/{{ video.filename }}">See Details</a>!
 <br>
 {% for entry in video.video_point_totals %}
-	{% if entry.point_category != 'social' and entry.point_category != 'completion' %}
+	{% if entry.point_category != 'completion' %}
 	{# score ids are category_videoid_score, category ids are category_videoid #}
 
 		<span id='{{ entry.point_category }}_{{ video.video_id }}_score'>{{ entry.total_points }} </span>
 		
-		{% if (entry.point_category, video.video_id) in given_tups %}
+		{% if (entry.point_category, video.video_id) in given_tups or video.user_id == user_id %}
 			<button class ='{{ entry.point_category }}' id='{{ entry.point_category }}_{{ video.video_id }}' disabled>{{ entry.point_category }} 
 				</button>
 

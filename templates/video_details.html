@@ -32,7 +32,7 @@ This video got:<br>
 	{% if point.point_category != 'completion' %}
 		<span id='{{ point.point_category }}_{{ video.video_id }}_score' >{{ point.total_points }}</span>
 
-		{% if (point.point_category, video.video_id) in given_tups %}
+		{% if (point.point_category, video.video_id) in given_tups or video.user_id == user_id %}
 				<button class ='{{ point.point_category }}' id='{{ point.point_category }}_{{ video.video_id }}' disabled>{{ point.point_category }} 
 				</button>
 

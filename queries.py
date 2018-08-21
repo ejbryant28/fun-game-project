@@ -36,6 +36,10 @@ def videos_by_video_challenge(challenge_name):
 	
 	return db.session.query(Video).join(VideoChallenge).filter(VideoChallenge.challenge_name == challenge_name).order_by(Video.date_uploaded.desc())
 
+def video_by_challenge_name_user_id(challenge_name, user_id):
+
+	return db.session.query(Video).join(VideoChallenge).filter(Video.user_id==user_id, VideoChallenge.challenge_name==challenge_name)
+
 #Tags
 ######################################################################################################################################
 
@@ -59,8 +63,15 @@ def challenges_by_name(challenge_name):
 
 def points_by_user_id(user_id):
 
+	return PointGiven.query.filter(PointGiven.user_id == user_id)
+
+def points_given_by_user_id(user_id):
+
 	return db.session.query(PointGiven).join(Video).filter(Video.user_id == user_id).group_by(PointGiven.point_category, PointGiven.point_giving_id)
 
+def social_points_count(user_id):
+
+	return PointGiven.query.filter(PointGiven.user_id==user_id).count()
 
 #PointCategory
 ######################################################################################################################################
@@ -75,11 +86,14 @@ def video_points_by_video_id(video_id):
 
 	return VideoPointTotals.query.filter(VideoPointTotals.video_id==video_id)
 
+def video_point_totals_by_video_id_point_category(video_id, point_category):
+
+	return VideoPointTotals.query.filter(VideoPointTotals.video_id == video_id, VideoPointTotals.point_category==point_category)
 
 
+def video_point_totals_by_user_id_grouped_category(user_id):
 
-
-
+	return db.session.execute("SELECT video_point_totals.point_category, sum(video_point_totals.total_points) FROM video_point_totals JOIN videos USING (video_id) WHERE videos.user_id = {} GROUP BY video_point_totals.point_category".format(user_id))
 
 
 
