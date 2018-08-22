@@ -22,14 +22,11 @@ def load_users():
     """load 10 random users into database"""
 
     for _ in range(10):
-        name = fake.name()
-        name = name.lower()
-
+        name = fake.name().lower()
+        # name = name.lower()
         username = name[:5]
         username = username.lower()
-
         password = 'password'
-
         email = fake.free_email()
 
         user = User(name=name, username=username, password=password, email=email)
@@ -38,27 +35,25 @@ def load_users():
     db.session.commit()
 
 
-def load_videos():
+def load_videos(n):
+    """Give each user n videos, create corresponding files in uploads folder"""
 
     #get all the users
     users = User.query.all()
-    # users= users().all()
 
     #give each user 5 videos and create those files in uploads folder
     for user in users:
 
-        for i in range(5):
+        for i in range(n):
             now = datetime.now()
-        
             filename = name_file() 
 
             video = Video(user_id = user.user_id, date_uploaded=now, filename=filename)
-
             db.session.add(video)
+            db.session.commit()
 
             open('./static/uploads/{}'.format(video.filename), "x")
 
-    db.session.commit()
 
 def load_tags():
     """create tags from random list of adjectives"""
@@ -75,12 +70,12 @@ def load_tags():
 
     db.session.commit()
 
+
 def load_videotags():
+    """give each video 2 random tags """
 
     videos = Video.query.all()
-    # videos = videos().all()
     tags = Tag.query.all()
-    # tags = tags().all()
 
     for video in videos:
 
@@ -97,7 +92,7 @@ def load_videotags():
 def load_pointcategories():
     """Create point categories from a list"""
 
-    categories = ['silliness', 'originality', 'enthusiasm', 'artistry', 'completion']
+    categories = ['silliness', 'originality', 'enthusiasm', 'artistry', 'completion', 'social']
 
     for item in categories:
 
@@ -108,17 +103,15 @@ def load_pointcategories():
     db.session.commit()
 
 
-def load_point_given():
-    """Give each video 50 points from a random point category"""
+def load_point_given(n):
+    """Give each video n points from a random point category"""
 
     videos = Video.query.all()
-    # videos = videos().all()
     users = User.query.all()
-    # users = users().all()
     now = datetime.now()
 
     for video in videos:
-        for i in range(10):
+        for i in range(n):
             #categories come from point categories, excluding social and completion which are calculated seperately.
             categories = ['silliness', 'originality', 'enthusiasm', 'artistry']
             point = choice(categories)
@@ -133,7 +126,6 @@ def load_point_given():
     #completion points are based on number of videos uploaded
     for user in users:
 
-        # videos = Video.query.filter(Video.user_id==user.user_id).all()
         videos = videos_by_user_id(user.user_id).all()
 
         for video in videos:
@@ -144,7 +136,7 @@ def load_point_given():
     db.session.commit()
 
 def load_challenges():
-    """Add three hard coded challenges"""
+    """Add challenges from hard coded tuples"""
 
     challenges_list = [
     ('ostrich', 'Do your best imitation of an ostrich. Running is encouraged.'),
@@ -161,16 +153,19 @@ def load_challenges():
     ('jellyfish runway', 'Walk down the runway but imagine you have jellyfish legs'),
     ('worm', 'Do the worm poorly'),
     ('upside down songs', 'Sing songs while doing a head or handstand'),
-    ('broken shoe dance', 'Do an upbeat dance (like kazachok or Irish Step Dance) with one high heel and one flat shoe (the shoes can be imaginary).')]
+    ('broken shoe dance', 'Do an upbeat dance (like Kazachok or Irish Step Dance) with one high heel and one flat shoe (the shoes can be imaginary).'),
+    ('air dancer', 'Immitate an air dancer (those tube things that are in front of car dealerships)'),
+    ('fins', 'Put on fins/flippers (for swimming) then walk or run around in them.'),
+    ('penguin', 'Run as fast as you can like a penguin.')
+    ]
 
 
     for challenge in challenges_list:
         new_challenge = Challenge(challenge_name = challenge[0], description=challenge[1])
         db.session.add(new_challenge)
-    # db.session.add_all([challenge1, challenge2, challenge3, challenge4, challenge5, challenge6, challenge7, challenge8, challenge9])
-
-    #load 15 random challenges:
-    for i in range(5):
+    
+    #load 3 random challenges:
+    for i in range(3):
         challenge_name = 'challenge_{}'.format(i)
         description = 'This is challenge {}'.format(i)
 
@@ -180,15 +175,13 @@ def load_challenges():
 
 
 def load_video_challenge():
+    """Give each video a random challenge"""
 
     videos = Video.query.all()
-    # videos = videos().all()
-    # challenges = Challenge.query.all()
 
     for video in videos:
 
         challenges = Challenge.query.all()
-        # challenges = challenges().all()
         challenge = choice(challenges)
         challenges.remove(challenge)
 
@@ -198,33 +191,16 @@ def load_video_challenge():
 
     db.session.commit()
 
-# def load_point_levels():
-#     """Set the required points for each point_category- right now I'm adding 5 levels each requires 10 points"""
-
-#     categories = ['silliness', 'originality', 'enthusiasm', 'social', 'grace', 'completion']
-
-#     levels = [1, 2, 3, 4, 5]
-
-#     for category in categories:
-
-#         for level in levels:
-
-#             new_entry = PointLevel(point_category=category, level_number=level, points_required=500)
-
-#             db.session.add(new_entry)
-#     db.session.commit()
-
 
 def load_video_point_totals():
+    """Each video gets a total points score (from the count of points given) in each point category"""
 
     videos = Video.query.all()
-    # videos = videos().all()
 
     for video in videos:
 
         #get categories so you can go through and add the points for each category available
-        # categories = PointCategory.query.all()
-        categories = point_categories().all()
+        categories = point_categories().filter(PointCategory.point_category != 'social').all()
 
         for category in categories:
 
@@ -236,20 +212,69 @@ def load_video_point_totals():
 
     db.session.commit()
 
+def load_category_level_points():
+    """Set the required points for each point_category- right now I'm adding 5 levels each requires 10 points"""
+
+    categories = ['silliness', 'originality', 'enthusiasm', 'social', 'artistry', 'completion']
+    initial = [10, 10, 10, 20, 10, 3]
+
+    for i in range(len(categories)):
+
+        original_points = initial[i]
+        points_required = 0
+        point_category = categories[i]
+
+        for n in range(5):
+            level_number = n + 1
+
+            print("NEW ENTRY IS", point_category, level_number, points_required)
+            new_entry = CategoryLevelPoints(point_category = point_category, level_number=level_number, points_required=points_required)
+            db.session.add(new_entry)
+
+            if points_required < 10:
+                points_required += 1 + original_points
+            else:
+                points_required += int(points_required * 0.1) + original_points
+
+    db.session.commit()
+
+
+def load_user_level():
+    """Figure out which level each user is at"""
+
+    users = User.query.all()
+
+    for user in users:
+#         #this will return a list of objects 
+        point_totals = video_point_totals_by_user_id_grouped_category(user.user_id).fetchall()
+
+        social_points = social_points_count(user.user_id)
+        point_totals.append(('social', social_points))
+
+        for entry in point_totals:
+
+            category = entry[0]
+            total_points = entry[1]
+            level = CategoryLevelPoints.query.filter(CategoryLevelPoints.point_category == category, CategoryLevelPoints.points_required < total_points).order_by(CategoryLevelPoints.level_number.desc()).first()
+            level_number = level.level_number
+            new_entry = UserLevelCategory(user_id=user.user_id, point_category=category, user_total_points=total_points, level_number=level_number)
+            db.session.add(new_entry)
+    db.session.commit()
 
 
 if __name__ == '__main__':
     connect_to_db(app, 'postgres:///project')
-    load_users()
-    load_videos()
-    load_tags()
-    load_videotags()
-    load_pointcategories()
-    load_challenges()
-    load_video_challenge()
-    load_point_given()
-    # load_point_levels()
-    load_video_point_totals()
+    # load_users()
+    # load_videos(5)
+    # load_tags()
+    # load_videotags()
+    # load_pointcategories()
+    # load_challenges()
+    # load_video_challenge()
+    # load_point_given(10)
+    # load_video_point_totals()
+    # load_category_level_points()
+    load_user_level()
 
 
 

@@ -51,13 +51,9 @@ def homepage():
 
     categories = PointCategory.query.filter(PointCategory.point_category != 'completion').all()
 
-    # points_given = PointGiven.query.filter(PointGiven.user_id == user_id).all()
     points_given = points_by_user_id(user_id).all()
 
-    given_tups = []
-    for point in points_given:
-        given_tup = (point.point_category, point.video_id)
-        given_tups.append(given_tup)
+    given_tups = cat_vid_id_tups(points_given)
 
     return render_template('homepage.html', videos=videos, challenges=challenges, given_tups=given_tups, user_id=user_id)
 
@@ -173,9 +169,9 @@ def user_profile():
     point_totals = video_point_totals_by_user_id_grouped_category(user_id).fetchall()
 
     #calculate social points by finding the number of times their user_id is in point given, then add tuple to the list
-    # social_points = PointGiven.query.filter(PointGiven.user_id==user_id).count()
     social_points = social_points_count(user_id)
     point_totals.append(('social', social_points))
+    print(levels_by_user_id_grouped_category(user_id))
 
     return render_template('profile.html', videos=videos, point_totals=point_totals)
 
@@ -200,10 +196,8 @@ def show_challenge_videos(challenge_name):
 
     # points_given = PointGiven.query.filter(PointGiven.user_id == user_id).all()
     points_given = points_by_user_id(user_id).all()
-    given_tups = []
-    for point in points_given:
-        given_tup = (point.point_category, point.video_id)
-        given_tups.append(given_tup)
+
+    given_tups = cat_vid_id_tups(points_given)
 
     completed = video_by_challenge_name_user_id(challenge_name, user_id).first()
 
@@ -233,12 +227,9 @@ def upload_file_form():
     # pass that to jinja to tell them which chanllenge
 
     tags = Tag.query.all()
-    # tags = tags().all()
-
 
     challenges = Challenge.query.all()
     # challenge = request.args.get('challenge_name')
-    # print("CHALLENGE IS ", challenge)
 
 
     return render_template('video_upload_form.html', challenges=challenges, tags=tags)
@@ -323,10 +314,7 @@ def show_video_details(filename):
     user_id = session['user_id']
     points_given = points_by_user_id(user_id).all()
 
-    given_tups = []
-    for point in points_given:
-        tup = (point.point_category, point.video_id)
-        given_tups.append(tup)
+    given_tups = cat_vid_id_tups(points_given)
 
     return render_template('video_details.html', video=video, points=points, given_tups=given_tups, user_id=user_id)
 

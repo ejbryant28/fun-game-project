@@ -82,19 +82,6 @@ class PointCategory(db.Model):
     point_category = db.Column(db.String(20), primary_key=True)
 
 
-# class PointLevel(db.Model):
-#     """The required number of points required to reach a level in any given point_category"""
-
-#     __tablename__="point_level"
-
-#     point_level_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-#     point_category = db.Column(db.String(20), db.ForeignKey('pointcategories.point_category'))
-#     level_number = db.Column(db.Integer, nullable=False)
-#     points_required = db.Column(db.Integer, nullable=False)
-
-#     pointcategories = db.relationship("PointCategory")
-
-
 class PointGiven(db.Model):
     """An instance giving a video a point"""
 
@@ -125,7 +112,6 @@ class VideoChallenge(db.Model):
 
     __tablename__="video_challenge"
 
-    # video_challenge_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'), primary_key=True)
     challenge_name = db.Column(db.String(20), db.ForeignKey('challenges.challenge_name'), nullable=False)
 
@@ -140,8 +126,6 @@ class VideoPointTotals(db.Model):
 
     point_total_id=db.Column(db.Integer, autoincrement=True, primary_key=True)
     video_id = db.Column(db.Integer, db.ForeignKey('videos.video_id'), nullable=False)
-    # user_id=db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
-    # point_level_id=db.Column(db.Integer, db.ForeignKey('point_level.point_level_id'))
     point_category = db.Column(db.String(20), db.ForeignKey('pointcategories.point_category'), nullable=False)
     total_points=db.Column(db.Integer, nullable=False)
 
@@ -149,6 +133,33 @@ class VideoPointTotals(db.Model):
     point_categories = db.relationship("PointCategory")
     video = db.relationship("Video", backref=db.backref("video_point_totals"), order_by="VideoPointTotals.point_category")
 
+class CategoryLevelPoints(db.Model):
+    """The required number of points required to reach a level in any given point_category"""
+
+    __tablename__="category_level_points"
+
+    point_level_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    point_category = db.Column(db.String(20), db.ForeignKey('pointcategories.point_category'), nullable=False)
+    level_number = db.Column(db.Integer, nullable=False)
+    points_required = db.Column(db.Integer, nullable=False)
+
+    pointcategories = db.relationship("PointCategory")
+
+
+class UserLevelCategory(db.Model):
+    """Find which level a user is at per category"""
+
+    __tablename__ = 'user_level_category'
+
+    user_level_category_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    point_category = db.Column(db.String(20), db.ForeignKey('pointcategories.point_category'))
+    user_total_points = db.Column(db.Integer, nullable=False)
+    level_number = db.Column(db.Integer, db.ForeignKey("category_level_points.point_level_id"), nullable=False)
+
+    user = db.relationship("User", backref=db.backref("user_level"))
+    pointcategories = db.relationship("PointCategory")
+    level = db.relationship("CategoryLevelPoints", backref=db.backref("user_level"))
 
 
 def connect_to_db(app, database):
