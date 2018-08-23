@@ -166,14 +166,9 @@ def user_profile():
 
     videos = videos_by_user_id(user_id).all()
 
-    point_totals = video_point_totals_by_user_id_grouped_category(user_id).fetchall()
+    category_levels = UserLevelCategory.query.filter(UserLevelCategory.user_id == user_id).all()
 
-    #calculate social points by finding the number of times their user_id is in point given, then add tuple to the list
-    social_points = social_points_count(user_id)
-    point_totals.append(('social', social_points))
-    print(levels_by_user_id_grouped_category(user_id))
-
-    return render_template('profile.html', videos=videos, point_totals=point_totals)
+    return render_template('profile.html', videos=videos, category_levels = category_levels)
 
 @app.route('/challenge')
 def show_challenges():
@@ -339,6 +334,19 @@ def add_point():
     #change point totals table to add new point
     video_points = video_point_totals_by_video_id_point_category(video_id, category).first()
     video_points.total_points += 1
+
+    #change user level table and check to see if leveled up
+    user_point = UserLevelCategory.query.filter(UserLevelCategory.user_id == user_id, UserLevelCategory.point_category == 'social').first()
+    user_point.user_total_points += 1
+
+    level = CategoryLevelPoints.query.filter(CategoryLevelPoints.point_category == 'social', CategoryLevelPoints.points_required < user_point.user_total_points).order_by(CategoryLevelPoints.level_number.desc()).first()
+    print("FIRST LEVEL IS", level.level_number)
+            
+    if level.level_number > user_point.level_number:
+        user_point.level_number = level.level_number
+        print("NEW LEVEL IS", level.level_number)
+    else:
+        print("IT STAYED THE SAME")
 
     db.session.commit()
 

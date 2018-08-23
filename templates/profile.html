@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<p>You have:</p>
-{% for category in point_totals %}
 
-{{ category[1] }} {{ category[0] }}!
+<p>You have:</p>
+{% for entry in category_levels %}
+You have level {{ entry.level_number }} in {{ entry.point_category }} with {{ entry.user_total_points }} points! <br>
 
 {% endfor %}
 

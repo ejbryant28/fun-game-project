@@ -216,7 +216,9 @@ def load_category_level_points():
     """Set the required points for each point_category- right now I'm adding 5 levels each requires 10 points"""
 
     categories = ['silliness', 'originality', 'enthusiasm', 'social', 'artistry', 'completion']
-    initial = [10, 10, 10, 20, 10, 3]
+    initial = [9, 9, 9, 19, 9, 2]
+
+    ##THIS NEEDS TO BE MADE MORE EFFICIENT
 
     for i in range(len(categories)):
 
@@ -224,7 +226,7 @@ def load_category_level_points():
         points_required = 0
         point_category = categories[i]
 
-        for n in range(5):
+        for n in range(10):
             level_number = n + 1
 
             print("NEW ENTRY IS", point_category, level_number, points_required)
@@ -234,7 +236,7 @@ def load_category_level_points():
             if points_required < 10:
                 points_required += 1 + original_points
             else:
-                points_required += int(points_required * 0.1) + original_points
+                points_required += int(points_required * 0.2) + original_points
 
     db.session.commit()
 
@@ -259,21 +261,22 @@ def load_user_level():
             level_number = level.level_number
             new_entry = UserLevelCategory(user_id=user.user_id, point_category=category, user_total_points=total_points, level_number=level_number)
             db.session.add(new_entry)
+            print("USER ", user.user_id, " HAS LEVEL ", level_number, " IN ", category, " CURRENT POINTS OF ", total_points)
     db.session.commit()
 
 
 if __name__ == '__main__':
     connect_to_db(app, 'postgres:///project')
-    # load_users()
-    # load_videos(5)
-    # load_tags()
-    # load_videotags()
-    # load_pointcategories()
-    # load_challenges()
-    # load_video_challenge()
-    # load_point_given(10)
-    # load_video_point_totals()
-    # load_category_level_points()
+    load_users()
+    load_videos(5)
+    load_tags()
+    load_videotags()
+    load_pointcategories()
+    load_challenges()
+    load_video_challenge()
+    load_point_given(10)
+    load_video_point_totals()
+    load_category_level_points()
     load_user_level()
 
 

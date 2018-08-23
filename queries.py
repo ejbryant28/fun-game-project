@@ -96,18 +96,6 @@ def video_point_totals_by_user_id_grouped_category(user_id):
 
 	return db.session.execute("SELECT video_point_totals.point_category, sum(video_point_totals.total_points) FROM video_point_totals JOIN videos USING (video_id) WHERE videos.user_id = {} GROUP BY video_point_totals.point_category".format(user_id))
 
-def levels_by_user_id_grouped_category(user_id):
-
-	user_totals =  db.session.execute("SELECT video_point_totals.point_category, sum(video_point_totals.total_points), category_level_points.level_number FROM video_point_totals LEFT JOIN videos USING (video_id) LEFT JOIN category_level_points USING (point_category) WHERE videos.user_id = {} GROUP BY video_point_totals.point_category, category_level_points.level_number".format(user_id))
-	return user_totals
-
-	# something = db.session.execute("SELECT category_level_points.level_number, video_point_totals.point_category FROM category_level_points JOIN video_point_totals  USING point_category")
-
-	# return something
-
-# levels_by_user_id_grouped_category(1)
-
-
 
 
 
