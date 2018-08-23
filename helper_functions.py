@@ -20,7 +20,10 @@ def name_file(file_ext='mp4'):
     while filename == None:
         attempt = choice(words)
         if videos_by_filename(attempt).first() == None:
+            print("GOT ONE")
             filename = attempt + '.' + file_ext
+        else:
+            print("OOPS. Tried to name a file the same thing")
     
     return filename
 

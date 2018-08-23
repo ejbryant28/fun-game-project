@@ -19,6 +19,8 @@ from queries import *
 
 from helper_functions import *
 
+from sqlalchemy import func
+
 
 app = Flask(__name__)
 
@@ -51,9 +53,21 @@ def homepage():
 
     categories = PointCategory.query.filter(PointCategory.point_category != 'completion').all()
 
-    points_given = points_by_user_id(user_id).all()
+    points_given = social_points(user_id).all()
 
     given_tups = cat_vid_id_tups(points_given)
+
+    #query to see if points have changed:
+    #first find overall points
+    prev_points = overall_point_total(user_id)
+
+    #then find overall point count
+    curr_points = points_videos_by_user_id(user_id).count() + social_points(user_id).count()
+    
+    #check if different
+    if curr_points > prev_points:
+        #find the videos that have gotten points
+        pass
 
     return render_template('homepage.html', videos=videos, challenges=challenges, given_tups=given_tups, user_id=user_id)
 
@@ -89,6 +103,7 @@ def check_login_info():
 
         flash("You're logged in!")
         session['user_id'] = user_info.user_id
+
         return redirect('/')
 
     else:
@@ -138,7 +153,6 @@ def add_user():
 
     #check if the username is already taken
     user_check = user_by_username(username).first()
-    # user_check = User.query.filter(User.username==username).first()
 
     if user_check == None:
 
@@ -190,7 +204,7 @@ def show_challenge_videos(challenge_name):
     user_id = session['user_id']
 
     # points_given = PointGiven.query.filter(PointGiven.user_id == user_id).all()
-    points_given = points_by_user_id(user_id).all()
+    points_given = social_points(user_id).all()
 
     given_tups = cat_vid_id_tups(points_given)
 
@@ -283,7 +297,7 @@ def upload_file():
             db.session.add(new_point)
 
             #enter video into VideoPointTotals table with initial values at 0 (excluding social and completion points)
-            categories = PointCategory.query.filter(PointCategory.point_category != 'completion').all()
+            categories = PointCategory.query.filter(PointCategory.point_category != 'completion', PointCategory.point_category != 'social').all()
 
             for category in categories:
                 new_point = VideoPointTotals(video_id = video.video_id, point_category=category.point_category, total_points = 0)
@@ -307,7 +321,7 @@ def show_video_details(filename):
     points = video_points_by_video_id(video.video_id).all()
 
     user_id = session['user_id']
-    points_given = points_by_user_id(user_id).all()
+    points_given = social_points(user_id).all()
 
     given_tups = cat_vid_id_tups(points_given)
 
@@ -332,8 +346,8 @@ def add_point():
 
     
     #change point totals table to add new point
-    video_points = video_point_totals_by_video_id_point_category(video_id, category).first()
-    video_points.total_points += 1
+    # video_points = video_point_totals_by_video_id_point_category(video_id, category).first()
+    # video_points.total_points += 1
 
     #change social points for user in user level table and check to see if leveled up
     user_point = points_by_user_id_category(user_id, 'social').first()

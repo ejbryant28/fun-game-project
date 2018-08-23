@@ -250,8 +250,8 @@ def load_user_level():
 #         #this will return a list of objects 
         point_totals = video_point_totals_by_user_id_grouped_category(user.user_id).fetchall()
 
-        social_points = social_points_count(user.user_id)
-        point_totals.append(('social', social_points))
+        social = social_points(user.user_id).count()
+        point_totals.append(('social', social))
 
         for entry in point_totals:
 
@@ -259,7 +259,8 @@ def load_user_level():
             total_points = entry[1]
             level = CategoryLevelPoints.query.filter(CategoryLevelPoints.point_category == category, CategoryLevelPoints.points_required < total_points).order_by(CategoryLevelPoints.level_number.desc()).first()
             level_number = level.level_number
-            new_entry = UserLevelCategory(user_id=user.user_id, point_category=category, user_total_points=total_points, level_number=level_number)
+            last_updated = datetime.now()
+            new_entry = UserLevelCategory(user_id=user.user_id, point_category=category, user_total_points=total_points, level_number=level_number, last_updated=last_updated)
             db.session.add(new_entry)
             print("USER ", user.user_id, " HAS LEVEL ", level_number, " IN ", category, " CURRENT POINTS OF ", total_points)
     db.session.commit()
@@ -267,16 +268,16 @@ def load_user_level():
 
 if __name__ == '__main__':
     connect_to_db(app, 'postgres:///project')
-    load_users()
-    load_videos(5)
-    load_tags()
-    load_videotags()
-    load_pointcategories()
-    load_challenges()
-    load_video_challenge()
-    load_point_given(10)
-    load_video_point_totals()
-    load_category_level_points()
+    # load_users()
+    # load_videos(5)
+    # load_tags()
+    # load_videotags()
+    # load_pointcategories()
+    # load_challenges()
+    # load_video_challenge()
+    # load_point_given(10)
+    # load_video_point_totals()
+    # load_category_level_points()
     load_user_level()
 
 

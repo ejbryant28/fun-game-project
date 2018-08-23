@@ -16,8 +16,6 @@ class User(db.Model):
     email = db.Column(db.String(100), nullable=False)
     #add username uniqueness constraint
 
-    # friend = db.relationship("Connections", backref=db.backref("users"))
-
     def __repr__(self):
         """Provide helpful representation when printed"""
 
@@ -47,7 +45,6 @@ class Tag(db.Model):
 
     __tablename__="tags"
 
-    # tag_code = db.Column(db.String(5), primary_key=True)
     tag_name = db.Column(db.String(20), primary_key=True)
 
 
@@ -129,7 +126,6 @@ class VideoPointTotals(db.Model):
     point_category = db.Column(db.String(20), db.ForeignKey('pointcategories.point_category'), nullable=False)
     total_points=db.Column(db.Integer, nullable=False)
 
-    # point_level = db.relationship("PointLevel", backref=db.backref("user_point_totals"))
     point_categories = db.relationship("PointCategory")
     video = db.relationship("Video", backref=db.backref("video_point_totals"), order_by="VideoPointTotals.point_category")
 
@@ -156,6 +152,7 @@ class UserLevelCategory(db.Model):
     point_category = db.Column(db.String(20), db.ForeignKey('pointcategories.point_category'))
     user_total_points = db.Column(db.Integer, nullable=False)
     level_number = db.Column(db.Integer, db.ForeignKey("category_level_points.point_level_id"), nullable=False)
+    last_updated = db.Column(db.DateTime, nullable=False)
 
     user = db.relationship("User", backref=db.backref("user_level"))
     pointcategories = db.relationship("PointCategory")
