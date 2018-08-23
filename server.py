@@ -57,17 +57,29 @@ def homepage():
 
     given_tups = cat_vid_id_tups(points_given)
 
-    #query to see if points have changed:
-    #first find overall points
-    prev_points = overall_point_total(user_id)
+    #query find most recent entry in in UserLevel
+    date_table_updated = UserLevelCategory.query.filter(UserLevelCategory.user_id == user_id).order_by(UserLevelCategory.last_updated.desc()).first()
+    #find most recent entry in points_given table
+    # last_point_given = points_videos_by_user_id(user_id).order_by(PointGiven.time_given.desc()).first()
+    new_point = None
+    if date_table_updated:
+        new_point = newest_points(user_id, date_table_updated.last_updated).first()
 
-    #then find overall point count
-    curr_points = points_videos_by_user_id(user_id).count() + social_points(user_id).count()
+
+    #check if they're different
+    if new_point:
+        print("NEED TO UPDATE")
+        flash_messages = []
+
+        #if different, find all the points that are more recent than date updated
+        # new_points = points_videos_by_user_id(user_id).order_by(PointGiven.time_given.desc()).all()
+        new_points = newest_points(user_id, date_table_updated.last_updated).all()
+
+        #call function that updates all the tables and returns flash messages
+        flash_messages = update_tables(new_points, user_id)
     
-    #check if different
-    if curr_points > prev_points:
-        #find the videos that have gotten points
-        pass
+        for message in flash_messages:
+            flash(message)
 
     return render_template('homepage.html', videos=videos, challenges=challenges, given_tups=given_tups, user_id=user_id)
 
@@ -289,7 +301,6 @@ def upload_file():
             challenge_name = request.form.get('challenge')
             video_challenge = VideoChallenge(video_id=video.video_id, challenge_name=challenge_name)
             db.session.add(video_challenge)
-            db.session.commit()
 
             #add a completion point to PointGiven table for the user
 
@@ -298,6 +309,15 @@ def upload_file():
 
             #enter video into VideoPointTotals table with initial values at 0 (excluding social and completion points)
             categories = PointCategory.query.filter(PointCategory.point_category != 'completion', PointCategory.point_category != 'social').all()
+
+            #update user_level table with new completion point:
+            user_level = level_category_current_point('completion', user_point.user_total_points).first()
+            user_level.user_total_points += 1
+            #check to see if user leveled up in completion
+            max_level = level_category_current_point('social', user_point.user_total_points).first()
+            
+            if max_level.level_number > user_level.level_number:
+                user_point.level_number = level.level_number
 
             for category in categories:
                 new_point = VideoPointTotals(video_id = video.video_id, point_category=category.point_category, total_points = 0)
@@ -346,8 +366,8 @@ def add_point():
 
     
     #change point totals table to add new point
-    # video_points = video_point_totals_by_video_id_point_category(video_id, category).first()
-    # video_points.total_points += 1
+    video_points = video_point_totals_by_video_id_point_category(video_id, category).first()
+    video_points.total_points += 1
 
     #change social points for user in user level table and check to see if leveled up
     user_point = points_by_user_id_category(user_id, 'social').first()

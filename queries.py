@@ -79,6 +79,9 @@ def points_userid_grouped(user_id):
 def points_by_user_id_category(user_id, category):
 
     return UserLevelCategory.query.filter(UserLevelCategory.user_id == user_id, UserLevelCategory.point_category == category)
+def newest_points(user_id, last_updated):
+    
+    return db.session.query(PointGiven).join(Video).filter(Video.user_id ==user_id, PointGiven.time_given > last_updated)
 
 #PointCategory
 ######################################################################################################################################

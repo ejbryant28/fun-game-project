@@ -17,16 +17,6 @@ class NoDbNoSession(unittest.TestCase):
 		""""""
 		pass
 
-
-# 	def test_homepage_no_session(self):
-# 		"""Test what you can see in the homepage if nothing in session"""
-
-# 		result = self.client.get("/")
-# 		# self.assertEqual(result.status_code, 200)
-# 		self.assertIn(b'Log In', result.data)
-# 		self.assertIn(b'Create Profile', result.data)
-# 		self.assertNotIn(b'Log out', result.data)
-
 	def test_login_no_session(self):
 		"""test login page when you're not logged in"""
 
@@ -198,7 +188,25 @@ class YesDbandSession(unittest.TestCase):
 		self.assertNotIn(b"Log In", result.data)
 		self.assertNotIn(b"Create Profile", result.data)
 
+	def test_logout(self):
+		"""Test log out page"""
 
+		result = self.client.get('/logout', data={}, follow_redirects=True)
+
+		self.assertIn(b"Yes, please", result.data)
+		self.assertIn(b"No, take", result.data)
+		self.assertNotIn(b"Log In", result.data)
+
+	def test_logout_check(self):
+		"""Test log out check"""
+
+		result = self.client.get('/logout-check', data={}, follow_redirects=True)
+
+		# self.assertIn(b"You're logged out", result.data)
+		self.assertIn(b"Log In", result.data)
+		self.assertNotIn(b"Log Out", result.data)
+
+	
 
 ######################################################################################################################################
 if __name__ == "__main__":

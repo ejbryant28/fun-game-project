@@ -15,6 +15,7 @@
 <div class='feed'>
 
 {% for video in videos %}
+{{ video.user_id }}<br>
 	<div class='video'>
 	Added:
   {{ video.date_uploaded.strftime("%A") }} at {{ video.date_uploaded.strftime("%I") }}:{{ video.date_uploaded.strftime("%M") }}<br>
