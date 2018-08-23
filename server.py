@@ -335,18 +335,14 @@ def add_point():
     video_points = video_point_totals_by_video_id_point_category(video_id, category).first()
     video_points.total_points += 1
 
-    #change user level table and check to see if leveled up
-    user_point = UserLevelCategory.query.filter(UserLevelCategory.user_id == user_id, UserLevelCategory.point_category == 'social').first()
+    #change social points for user in user level table and check to see if leveled up
+    user_point = points_by_user_id_category(user_id, 'social').first()
     user_point.user_total_points += 1
 
-    level = CategoryLevelPoints.query.filter(CategoryLevelPoints.point_category == 'social', CategoryLevelPoints.points_required < user_point.user_total_points).order_by(CategoryLevelPoints.level_number.desc()).first()
-    print("FIRST LEVEL IS", level.level_number)
+    level = level_category_current_point('social', user_point.user_total_points).first()
             
     if level.level_number > user_point.level_number:
         user_point.level_number = level.level_number
-        print("NEW LEVEL IS", level.level_number)
-    else:
-        print("IT STAYED THE SAME")
 
     db.session.commit()
 

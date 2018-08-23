@@ -72,6 +72,9 @@ def points_given_by_user_id(user_id):
 def social_points_count(user_id):
 
 	return PointGiven.query.filter(PointGiven.user_id==user_id).count()
+def points_by_user_id_category(user_id, category):
+
+	return UserLevelCategory.query.filter(UserLevelCategory.user_id == user_id, UserLevelCategory.point_category == category)
 
 #PointCategory
 ######################################################################################################################################
@@ -97,6 +100,9 @@ def video_point_totals_by_user_id_grouped_category(user_id):
 	return db.session.execute("SELECT video_point_totals.point_category, sum(video_point_totals.total_points) FROM video_point_totals JOIN videos USING (video_id) WHERE videos.user_id = {} GROUP BY video_point_totals.point_category".format(user_id))
 
 
+#level requirements
+######################################################################################################################################
 
-
+def level_category_current_point(category, total_points):
+	return CategoryLevelPoints.query.filter(CategoryLevelPoints.point_category == category, CategoryLevelPoints.points_required < total_points).order_by(CategoryLevelPoints.level_number.desc())
 
