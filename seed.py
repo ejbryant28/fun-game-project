@@ -18,10 +18,10 @@ fake = Faker()
 fake.uri_path(deep=None)
 
 
-def load_users():
+def load_users(n):
     """load 10 random users into database"""
 
-    for _ in range(10):
+    for _ in range(n):
         name = fake.name().lower()
         # name = name.lower()
         username = name[:5]
@@ -35,7 +35,7 @@ def load_users():
     db.session.commit()
 
 
-def load_videos(n):
+def load_videos(n, location):
     """Give each user n videos, create corresponding files in uploads folder"""
 
     #get all the users
@@ -52,7 +52,7 @@ def load_videos(n):
             db.session.add(video)
             db.session.commit()
 
-            open('./static/uploads/{}'.format(video.filename), "x")
+            open('./static/{}/{}'.format(location, video.filename), "x")
 
 
 def load_tags():
@@ -200,7 +200,7 @@ def load_video_point_totals():
     for video in videos:
 
         #get categories so you can go through and add the points for each category available
-        categories = point_categories().filter(PointCategory.point_category != 'social').all()
+        categories = point_categories().filter(PointCategory.point_category != 'social', PointCategory.point_category != 'completion').all()
 
         for category in categories:
 
@@ -229,7 +229,6 @@ def load_category_level_points():
         for n in range(10):
             level_number = n + 1
 
-            print("NEW ENTRY IS", point_category, level_number, points_required)
             new_entry = CategoryLevelPoints(point_category = point_category, level_number=level_number, points_required=points_required)
             db.session.add(new_entry)
 
@@ -247,39 +246,101 @@ def load_user_level():
     users = User.query.all()
 
     for user in users:
-#         #this will return a list of objects 
         point_totals = video_point_totals_by_user_id_grouped_category(user.user_id).fetchall()
 
         social = social_points(user.user_id).count()
         point_totals.append(('social', social))
 
+        #add completion points
+        completion = Video.query.filter(Video.user_id==user.user_id).count()
+        point_totals.append(('completion', completion))
+
         for entry in point_totals:
 
             category = entry[0]
             total_points = entry[1]
-            level = CategoryLevelPoints.query.filter(CategoryLevelPoints.point_category == category, CategoryLevelPoints.points_required < total_points).order_by(CategoryLevelPoints.level_number.desc()).first()
+            level = CategoryLevelPoints.query.filter(CategoryLevelPoints.point_category == category, CategoryLevelPoints.points_required <= total_points).order_by(CategoryLevelPoints.level_number.desc()).first()
             level_number = level.level_number
             last_updated = datetime.now()
             new_entry = UserLevelCategory(user_id=user.user_id, point_category=category, user_total_points=total_points, level_number=level_number, last_updated=last_updated)
             db.session.add(new_entry)
-            print("USER ", user.user_id, " HAS LEVEL ", level_number, " IN ", category, " CURRENT POINTS OF ", total_points)
     db.session.commit()
+
+def seed_test():
+    load_users(2)
+    # load_videos(1, 'uploads')
+    users = User.query.all()
+    n = 1
+
+    new_category = PointCategory(point_category='category')
+    new_category_2 = PointCategory(point_category='social')
+    new_category_3 = PointCategory(point_category='completion')
+
+    db.session.add_all([new_category, new_category_2, new_category_3])
+    db.session.commit()
+
+
+    for user in users:
+        now = datetime.now()
+        filename = 'filename_' + str(n) + '.mp4'
+        n += 1
+        video = Video(user_id = user.user_id, date_uploaded=now, filename=filename)
+        db.session.add(video)
+        db.session.commit()
+
+        #give user a competion point for new video
+        new_point = PointGiven(video_id=video.video_id, user_id=user.user_id, time_given=now, point_category='completion')
+        db.session.add(new_point)
+
+    new_tag = Tag(tag_name='adjective')
+    db.session.add(new_tag)
+    db.session.commit()
+
+    new_challenge = Challenge(challenge_name = 'challenge', description='description')
+    db.session.add(new_challenge)
+    db.session.commit()
+
+    videos = Video.query.all()
+    for video in videos:
+        vid_tag = VideoTag(video_id=video.video_id, tag_name='adjective')
+        db.session.add(vid_tag)
+
+        vid_chal = VideoChallenge(video_id=video.video_id, challenge_name='challenge')
+        db.session.add(vid_chal)
+
+        other_user = User.query.filter(User.user_id != video.user_id).first()
+
+        #add a point given to each video from the other user
+        now = datetime.now()
+        new_point = PointGiven(video_id = video.video_id, point_category='category', time_given=now, user_id=other_user.user_id)
+        db.session.add(new_point)
+    db.session.commit()
+
+    # #give users social points for points given
+    # for user in users:
+    #     social = social_points(user.user_id).count()
+    #     new_point = PointGiven()
+
+
+    load_video_point_totals()
+
+    #levels
+    #user level
 
 
 if __name__ == '__main__':
     connect_to_db(app, 'postgres:///project')
-    # load_users()
-    # load_videos(5)
-    # load_tags()
-    # load_videotags()
-    # load_pointcategories()
-    # load_challenges()
-    # load_video_challenge()
-    # load_point_given(10)
-    # load_video_point_totals()
-    # load_category_level_points()
+    load_users(10)
+    load_videos(5, 'uploads')
+    load_tags()
+    load_videotags()
+    load_pointcategories()
+    load_challenges()
+    load_video_challenge()
+    load_point_given(10)
+    load_video_point_totals()
+    load_category_level_points()
     load_user_level()
-
 
 
 

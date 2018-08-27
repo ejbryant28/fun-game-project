@@ -14,14 +14,18 @@ def words_list():
 
 
 def name_file(file_ext='mp4'):
-    """choose a random word from words_list, make sure there isn't another file with same name, return filename """
+    """choose a random word from words_list, make sure there isn't another file with same name, return filename 
+    >>> new_file = name_file()
+    >>> test = Video.query.filter(Video.filename==new_file).first()
+    >>> test == None
+    True
+    """
 
     words = words_list()
     filename = None
     while filename == None:
         attempt = choice(words)
         if videos_by_filename(attempt).first() == None:
-            print("GOT ONE")
             filename = attempt + '.' + file_ext
         else:
             print("OOPS. Tried to name a file the same thing")
@@ -65,3 +69,12 @@ def update_tables(new_points, user_id):
         db.session.commit()
 
     return flash_messages
+
+if __name__ == "__main__":
+    import doctest
+
+    print()
+    result = doctest.testmod()
+    if not result.failed:
+        print("ALL TESTS PASSED. GOOD WORK!")
+    print()

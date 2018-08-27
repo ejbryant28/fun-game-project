@@ -3,6 +3,8 @@
 
 
 <p>You have:</p>
+
+<canvas id="myChart"></canvas>
 {% for entry in category_levels %}
 You have level {{ entry.level_number }} in {{ entry.point_category }} with {{ entry.user_total_points }} points! <br>
 
@@ -51,7 +53,58 @@ Challenge: <a href="challenge/{{ object.challenge_name }}">{{ object.challenge_n
 {% endfor %}
 	<br><br><br>
 
-
 {% endfor %}
+
+<script type="text/javascript">
+
+getData();
+
+function getData() {
+	$.get('/point-chart', makeChart);
+}
+
+
+function makeChart(result){
+	let chartLabels = Object.keys(result);
+	let finishedPointValues = [result['originality'][0], result['silliness'][0], result['artistry'][0], result['completion'][0], result['enthusiasm'][0], result['social'][0]];
+	let unfinishedPointValues = [result['originality'][1], result['silliness'][1], result['artistry'][1], result['completion'][1], result['enthusiasm'][1], result['social'][1]];
+
+	let ctx = document.getElementById('myChart').getContext('2d');
+	let chart = new Chart(ctx, {
+	    // The type of chart we want to create
+	    type: 'bar',
+
+	    // The data for our dataset
+	    data: {
+	        labels: chartLabels,
+	        datasets: [{
+	            label: "Completed Levels",
+	            backgroundColor: 'rgb(255, 99, 132)',
+	            borderColor: 'rgb(255, 99, 132)',
+	            data: finishedPointValues,
+	        },
+
+	        {
+	            label: "Incomplete Levels",
+	            backgroundColor: 'rgb(83, 189, 184)',
+	            borderColor: 'rgb(83, 189, 184)',
+	            data: unfinishedPointValues,
+	        }]
+	    },
+
+	    // Configuration options go here
+	    options: {
+        scales: {
+            xAxes: [{
+                stacked: true
+            }],
+            yAxes: [{
+                stacked: true
+            }]
+        }
+    }
+	});
+	}
+</script>
 
 {% endblock %}

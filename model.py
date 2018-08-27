@@ -78,6 +78,12 @@ class PointCategory(db.Model):
 
     point_category = db.Column(db.String(20), primary_key=True)
 
+    def __repr__(self):
+        """Provide helpful representation when printed"""
+
+        return "<Point_category = {}>".format(self.point_category)
+
+
 
 class PointGiven(db.Model):
     """An instance giving a video a point"""
@@ -94,6 +100,12 @@ class PointGiven(db.Model):
     user = db.relationship("User", backref=db.backref("point_given")) #this is for who GAVE the point
     video = db.relationship("Video", backref=db.backref("point_given"))
     point_categories = db.relationship("PointCategory")
+
+    def __repr__(self):
+        """Provide helpful representation when printed"""
+
+        return "<video_id = {}, point_category = {}, user_id>".format(self.point_category, self.point_category, self.user_id)
+
 
 
 class Challenge(db.Model):

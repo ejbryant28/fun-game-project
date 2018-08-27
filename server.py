@@ -51,7 +51,7 @@ def homepage():
     videos = videos_by_date().all()
     challenges = Challenge.query.all()
 
-    categories = PointCategory.query.filter(PointCategory.point_category != 'completion').all()
+    # categories = PointCategory.query.filter(PointCategory.point_category != 'completion').all()
 
     points_given = social_points(user_id).all()
 
@@ -68,11 +68,9 @@ def homepage():
 
     #check if they're different
     if new_point:
-        print("NEED TO UPDATE")
         flash_messages = []
 
         #if different, find all the points that are more recent than date updated
-        # new_points = points_videos_by_user_id(user_id).order_by(PointGiven.time_given.desc()).all()
         new_points = newest_points(user_id, date_table_updated.last_updated).all()
 
         #call function that updates all the tables and returns flash messages
@@ -96,6 +94,7 @@ def check_login_info():
     """check login info from login form"""
 
     username = request.form.get('username')
+
     username = username.lower()
     password = request.form.get('password')
 
@@ -190,11 +189,17 @@ def user_profile():
 
     user = user_by_user_id(user_id).first()
 
-    videos = videos_by_user_id(user_id).all()
+    test_vid = videos_by_user_id(user_id).first()
+
+    if test_vid:
+        videos = videos_by_user_id(user_id).all()
+    else:
+        videos = []
 
     category_levels = UserLevelCategory.query.filter(UserLevelCategory.user_id == user_id).all()
 
     return render_template('profile.html', videos=videos, category_levels = category_levels)
+
 
 @app.route('/challenge')
 def show_challenges():
@@ -316,7 +321,7 @@ def upload_file():
             #check to see if user leveled up in completion
             max_level = level_category_current_point('social', user_point.user_total_points).first()
             
-            if max_level.level_number > user_level.level_number:
+            if max_level.level_number >= user_level.level_number:
                 user_point.level_number = level.level_number
 
             for category in categories:
@@ -375,13 +380,33 @@ def add_point():
 
     level = level_category_current_point('social', user_point.user_total_points).first()
             
-    if level.level_number > user_point.level_number:
+    if level.level_number >= user_point.level_number:
         user_point.level_number = level.level_number
 
     db.session.commit()
 
     point_value = {'value' :video_points.total_points, 'cat_vid_id': category_video_id}
     return jsonify(point_value)
+
+
+@app.route('/point-chart')
+def make_point_chart():
+
+    user_id = session['user_id']
+
+    level_points = UserLevelCategory.query.filter(UserLevelCategory.user_id==user_id).all()
+
+    level_dict = {}
+
+    for entry in level_points:
+        level_num = entry.level_number
+        level_require = CategoryLevelPoints.query.filter(CategoryLevelPoints.point_category==entry.point_category, CategoryLevelPoints.level_number-1 ==level_num).first()
+        fraction_complete = (entry.user_total_points / level_require.points_required)
+        level_dict[entry.point_category] = [entry.level_number, fraction_complete]
+
+    print("LEVEL DICT IS ", level_dict)
+
+    return jsonify(level_dict)
 
 
 ######################################################################################################################################

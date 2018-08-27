@@ -111,7 +111,7 @@ def video_point_totals_by_user_id_grouped_category(user_id):
 ######################################################################################################################################
 
 def level_category_current_point(category, total_points):
-    return CategoryLevelPoints.query.filter(CategoryLevelPoints.point_category == category, CategoryLevelPoints.points_required < total_points).order_by(CategoryLevelPoints.level_number.desc())
+    return CategoryLevelPoints.query.filter(CategoryLevelPoints.point_category == category, CategoryLevelPoints.points_required <= total_points).order_by(CategoryLevelPoints.level_number.desc())
 
 #UserLevelCategory
 ######################################################################################################################################
