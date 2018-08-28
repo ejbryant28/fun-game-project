@@ -6,11 +6,11 @@ from server import app, upload_file
 
 from faker import Faker
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from helper_functions import name_file
 
-from random import choice
+from random import choice, randint
 
 from queries import * 
 
@@ -46,9 +46,12 @@ def load_videos(n, location):
 
         for i in range(n):
             now = datetime.now()
+            delta = timedelta(days=(-randint(0, 366)))
+            time = now+delta
+            print("TIME UPLOADED IS", time)
             filename = name_file() 
 
-            video = Video(user_id = user.user_id, date_uploaded=now, filename=filename)
+            video = Video(user_id = user.user_id, date_uploaded=time, filename=filename)
             db.session.add(video)
             db.session.commit()
 
@@ -108,7 +111,7 @@ def load_point_given(n):
 
     videos = Video.query.all()
     users = User.query.all()
-    now = datetime.now()
+    # now = datetime.now()
 
     for video in videos:
         for i in range(n):
@@ -118,20 +121,27 @@ def load_point_given(n):
 
             user = choice(users)
 
-            new_point = PointGiven(video_id=video.video_id, point_category=point, time_given=now, user_id=user.user_id)
+            #time given will be between time uploaded and now
+            uploaded = video.date_uploaded
+            now = datetime.now()
+            difference = now - uploaded
+            delta = timedelta(days=(randint(0, difference.days)))
+            time_given = uploaded + delta
+
+            new_point = PointGiven(video_id=video.video_id, point_category=point, time_given=time_given, user_id=user.user_id)
         
             db.session.add(new_point)
     db.session.commit()
 
     #completion points are based on number of videos uploaded
-    for user in users:
+    # for user in users:
 
-        videos = videos_by_user_id(user.user_id).all()
+    #     videos = videos_by_user_id(user.user_id).all()
 
-        for video in videos:
-            new_point = PointGiven(video_id=video.video_id, point_category='completion', time_given=video.date_uploaded, user_id=user.user_id)
+    #     for video in videos:
+    #         new_point = PointGiven(video_id=video.video_id, point_category='completion', time_given=video.date_uploaded, user_id=user.user_id)
 
-            db.session.add(new_point)
+    #         db.session.add(new_point)
 
     db.session.commit()
 

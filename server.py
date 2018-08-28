@@ -59,8 +59,8 @@ def homepage():
 
     #query find most recent entry in in UserLevel
     date_table_updated = UserLevelCategory.query.filter(UserLevelCategory.user_id == user_id).order_by(UserLevelCategory.last_updated.desc()).first()
+
     #find most recent entry in points_given table
-    # last_point_given = points_videos_by_user_id(user_id).order_by(PointGiven.time_given.desc()).first()
     new_point = None
     if date_table_updated:
         new_point = newest_points(user_id, date_table_updated.last_updated).first()
@@ -197,6 +197,9 @@ def user_profile():
         videos = []
 
     category_levels = UserLevelCategory.query.filter(UserLevelCategory.user_id == user_id).all()
+    # print("CATEGORY LEVELS ARE", category_levels)
+    # for entry in category_levels:
+    #     print(entry.point_category, entry.level_number)
 
     return render_template('profile.html', videos=videos, category_levels = category_levels)
 
@@ -307,22 +310,21 @@ def upload_file():
             video_challenge = VideoChallenge(video_id=video.video_id, challenge_name=challenge_name)
             db.session.add(video_challenge)
 
-            #add a completion point to PointGiven table for the user
+            #query to find users current point numbers for competion and add one
+            user_point = UserLevelCategory.query.filter(UserLevelCategory.user_id == user_id, UserLevelCategory.point_category =='completion').first()
+            user_point.user_total_points +=1
 
-            new_point = PointGiven(video_id=video.video_id, point_category='completion', time_given=video.date_uploaded, user_id=user_id)
-            db.session.add(new_point)
+            #find current level
+            current_level = UserLevelCategory.query.filter(UserLevelCategory.user_id == user_id, UserLevelCategory.point_category=='completion').first()
+        
+            #check to see if user leveled up in completion
+            max_level = level_category_current_point('completion', user_point.user_total_points).first()
+            
+            if max_level.level_number > current_level.level_number:
+                current_level.level_number = max_level.level_number
 
             #enter video into VideoPointTotals table with initial values at 0 (excluding social and completion points)
             categories = PointCategory.query.filter(PointCategory.point_category != 'completion', PointCategory.point_category != 'social').all()
-
-            #update user_level table with new completion point:
-            user_level = level_category_current_point('completion', user_point.user_total_points).first()
-            user_level.user_total_points += 1
-            #check to see if user leveled up in completion
-            max_level = level_category_current_point('social', user_point.user_total_points).first()
-            
-            if max_level.level_number >= user_level.level_number:
-                user_point.level_number = level.level_number
 
             for category in categories:
                 new_point = VideoPointTotals(video_id = video.video_id, point_category=category.point_category, total_points = 0)
@@ -399,14 +401,50 @@ def make_point_chart():
     level_dict = {}
 
     for entry in level_points:
-        level_num = entry.level_number
-        level_require = CategoryLevelPoints.query.filter(CategoryLevelPoints.point_category==entry.point_category, CategoryLevelPoints.level_number-1 ==level_num).first()
-        fraction_complete = (entry.user_total_points / level_require.points_required)
-        level_dict[entry.point_category] = [entry.level_number, fraction_complete]
+        curr_level_num = entry.level_number
 
-    print("LEVEL DICT IS ", level_dict)
+        #find the next level up 
+        curr_level =CategoryLevelPoints.query.filter(CategoryLevelPoints.point_category==entry.point_category, CategoryLevelPoints.level_number ==curr_level_num).first()
+        nex_level = CategoryLevelPoints.query.filter(CategoryLevelPoints.point_category==entry.point_category, CategoryLevelPoints.level_number ==curr_level_num+1).first()
+    
+        #find the difference in point requirements between current level requirements and next level
+        difference = nex_level.points_required - curr_level.points_required
+
+        #find the surplus of points that the user has
+        excess = entry.user_total_points - curr_level.points_required
+
+        #find the percentace of the difference that the user has finished
+        fraction_complete = excess/difference
+        
+        level_dict[entry.point_category] = [curr_level_num, fraction_complete]
 
     return jsonify(level_dict)
+
+@app.route('/progress-chart')
+def make_progress_chart():
+
+    user_id = session['user_id']
+
+    #find all the points a user has been given 
+
+    # all_points = PointGiven.query.filter(PointGiven.video.user == user_id).all()
+    all_points = points_userid_grouped(user_id).order_by(PointGiven.time_given.asc()).all()
+    print("ALL POINTS ARE", all_points)
+    points_dict = {}
+    for point in all_points:
+        point_num = 1
+        if point.point_category == 'enthusiasm':
+            if 'enthusiasm' in points_dict:
+                points_dict['enthusiasm'].append((point.time_given, point_num))
+            else:
+                points_dict['enthusiasm'] = [(point.time_given, point_num)]
+            point_num += 1
+        else:
+            continue
+    print("POINTS DICT IS", points_dict)
+
+
+    return jsonify(points_dict)
 
 
 ######################################################################################################################################
