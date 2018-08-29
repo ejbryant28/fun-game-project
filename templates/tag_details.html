@@ -1,18 +1,5 @@
 {% extends 'base.html' %}
-
 {% block content %}
-
-<h1>Homepage!</h1>
-
-{% for challenge in challenges %}
-
-<span class="challenge_name">Challenge: <a href="/challenge/{{ challenge.challenge_name }}">{{ challenge.challenge_name }}</a></span> |
-<span class="challenge_description">Description: {{ challenge.description }}</span><br><br>
-
-{% endfor %}
-
-<br><br><br>
-<div class='feed'>
 
 {% for video in videos %}
 {{ video.user_id }}<br>
@@ -22,7 +9,7 @@
 
   
 {% for object in video.video_challenge %}
-Challenge: <a href="challenge/{{ object.challenge_name }}">{{ object.challenge_name }}</a>
+Challenge: <a href="../challenge/{{ object.challenge_name }}">{{ object.challenge_name }}</a>
 <br>
 {% endfor %}
 

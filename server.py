@@ -235,7 +235,6 @@ def show_challenge_videos(challenge_name):
 
     user_id = session['user_id']
 
-    # points_given = PointGiven.query.filter(PointGiven.user_id == user_id).all()
     points_given = social_points(user_id).all()
 
     given_tups = cat_vid_id_tups(points_given)
@@ -243,6 +242,28 @@ def show_challenge_videos(challenge_name):
     completed = video_by_challenge_name_user_id(challenge_name, user_id).first()
 
     return render_template('challenge_details.html', challenge=challenge, videos=videos, completed=completed, user_id=user_id, given_tups=given_tups)
+
+@app.route('/tags')
+def show_all_tags():
+
+    tags = Tag.query.all()
+
+    return render_template('tags.html', tags=tags)
+
+@app.route('/tags/<tag_name>')
+def show_tag(tag_name):
+
+
+    videos = db.session.query(Video).join(VideoTag).filter(VideoTag.tag_name==tag_name).all()
+
+    user_id = session['user_id']
+
+    points_given = social_points(user_id).all()
+
+    given_tups = cat_vid_id_tups(points_given)
+
+
+    return render_template('tag_details.html', videos=videos, user_id=user_id, given_tups=given_tups)
 
 ######################################################################################################################################
 #video-upload functions

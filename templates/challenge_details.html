@@ -16,11 +16,9 @@ Directions: {{ challenge.description }}<br><br>
 Added:
  {{ video.date_uploaded.strftime("%A") }} at {{ video.date_uploaded.strftime("%I") }}:{{ video.date_uploaded.strftime("%M") }}<br>
 
-	{% for tag in video.video_tag%}
-
-	{{ tag.tag_name }}!
-
-	{% endfor %}
+	{% for tag_object in video.video_tag %}
+	 <span class='tag'><a href="/tags/{{tag_object.tag_name}}">{{ tag_object.tag_name }}!</a></span>
+	 {% endfor %} 
 	<br>
 
 <video width="320" height="240" controls>
