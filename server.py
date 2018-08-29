@@ -247,8 +247,10 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# @app.route('/video-upload/<challenge-name>')
+
 @app.route('/video-upload/')
-def upload_file_form():
+def upload_file_form(challenge_name):
     """Show form to upload a video"""
 
     user_id = session['user_id']
@@ -428,21 +430,78 @@ def make_progress_chart():
     #find all the points a user has been given 
 
     # all_points = PointGiven.query.filter(PointGiven.video.user == user_id).all()
-    all_points = points_userid_grouped(user_id).order_by(PointGiven.time_given.asc()).all()
-    print("ALL POINTS ARE", all_points)
+    # originality_points = points_userid_grouped(user_id).order_by(PointGiven.time_given.asc()).all()
+    originality_points = db.session.query(PointGiven).join(Video).filter(Video.user_id ==user_id, PointGiven.point_category=='originality').order_by(PointGiven.time_given.asc()).all()
+
     points_dict = {}
-    # point_num = 1
-    for point in all_points:
-        # point_num = 1
-        # if point.point_category == 'enthusiasm':
+    orig_num = 1
+    for point in originality_points:
 
         if point.point_category in points_dict:
-            points_dict[point.point_category].append(point.time_given)
+            points_dict[point.point_category].append((point.time_given, 1 + orig_num/10))
         else:
-            points_dict[point.point_category] = [point.time_given]
-        # point_num += 1
+            points_dict[point.point_category] = [(point.time_given, 1 + orig_num/10)]
+        orig_num+=1
 
-    print("POINTS DICT IS", points_dict)
+    silly_points = db.session.query(PointGiven).join(Video).filter(Video.user_id ==user_id, PointGiven.point_category=='silliness').order_by(PointGiven.time_given.asc()).all()
+
+    sill_num = 1
+    for point in silly_points:
+
+        if point.point_category in points_dict:
+            points_dict[point.point_category].append((point.time_given, 1 + sill_num/10))
+        else:
+            points_dict[point.point_category] = [(point.time_given, 1 + sill_num/10)]
+        sill_num+=1
+
+    enthusiasm_points = db.session.query(PointGiven).join(Video).filter(Video.user_id ==user_id, PointGiven.point_category=='enthusiasm').order_by(PointGiven.time_given.asc()).all()
+
+
+    enth_num = 1
+    for point in enthusiasm_points:
+
+        if point.point_category in points_dict:
+            points_dict[point.point_category].append((point.time_given, 1 + enth_num/10))
+        else:
+            points_dict[point.point_category] = [(point.time_given, 1 + enth_num/10)]
+        enth_num+=1
+
+    artistry_points = db.session.query(PointGiven).join(Video).filter(Video.user_id ==user_id, PointGiven.point_category=='artistry').order_by(PointGiven.time_given.asc()).all()
+
+    art_num = 1
+    for point in artistry_points:
+
+        if point.point_category in points_dict:
+            points_dict[point.point_category].append((point.time_given, 1 + art_num/10))
+        else:
+            points_dict[point.point_category] = [(point.time_given, 1 + art_num/10)]
+        art_num+=1
+
+    #query social points and order by time given
+    social_points = PointGiven.query.filter(PointGiven.user_id == user_id).order_by(PointGiven.time_given.asc()).all()
+
+    soc_point = 1
+    for point in social_points:
+        # points_dict['social'] = point.time_given
+        if 'social' in points_dict:
+            points_dict['social'].append((point.time_given, 1 + soc_point/20))
+        else:
+            points_dict['social'] = [(point.time_given, 1 + soc_point/20)]
+        soc_point+=1
+
+    #query for when videos were uploaded to add completion points
+    completion = Video.query.filter(Video.user_id==user_id).order_by(Video.date_uploaded.asc()).all()
+    com_point = 1
+
+    for video in completion:
+        if 'completion' in points_dict:
+            points_dict['completion'].append((video.date_uploaded, 1 + com_point/3))
+        else:
+            points_dict['completion'] = [(video.date_uploaded, 1 + com_point/3)]
+        com_point+=1
+
+    # print("POINTS DICT IS", points_dict)
+    # print("ORIG POINTS ARE", points_dict['originality'])
 
 
     return jsonify(points_dict)

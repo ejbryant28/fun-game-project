@@ -4,7 +4,7 @@ from server import app
 
 from model import User, connect_to_db, db
 
-from seed import seed_test
+from seed import seed_test, load_users
 
 class NoDbNoSession(unittest.TestCase):
     """tests that don't need session or db"""
@@ -38,62 +38,45 @@ class NoDbNoSession(unittest.TestCase):
         self.assertNotIn(b'Log Out', result.data)
 
 
-# class YesDbNoSession(unittest.TestCase):
-#     """Tests that need db but no session"""
+class YesDbNoSession(unittest.TestCase):
+    """Tests that need db but no session"""
 
-#     def setUp(self):
-#         """set up test with db, and users"""
+    def setUp(self):
+        """set up test with db, and users"""
 
-#         #set up testing configurations
-#         app.config['TESTING'] = True
-#         app.config['SECRET_KEY'] = 'key'
-#         self.client = app.test_client()
+        #set up testing configurations
+        app.config['TESTING'] = True
+        app.config['SECRET_KEY'] = 'key'
+        self.client = app.test_client()
 
-#         #connect to db
-#         connect_to_db(app, 'postgres:///testdb')
-#         db.create_all()
+        #connect to db
+        connect_to_db(app, 'postgres:///testdb')
+        db.create_all()
 
-#         #add a user to db
-#         user = User(user_id= 1, name='joe', username='joey', password='password', email='email@email.com')
-#         db.session.add(user)
-#         db.session.commit()
+        #add a user to db
+        load_users(1)
 
 
-#     def tearDown(self):
-#         """close session at end"""
+    def tearDown(self):
+        """close session at end"""
 
-#         db.session.remove()
-#         db.drop_all()
-#         db.engine.dispose()
+        db.session.remove()
+        db.drop_all()
+        db.engine.dispose()
 
 
-#     def test_login_incorrect_password(self):
-#         """Test login with wrong password"""
+    def test_login_incorrect_info(self):
+        """Test login with wrong password and wrong username"""
 
-#         # example_user = User.query.get(1)
+        result = self.client.post('/login-check',
+                                data={"username": 'wrong',
+                                    "password": 'wrong'},
+                                follow_redirects=True)
 
-#         result = self.client.post('/login-check',
-#                                 data={"username": 'joey',
-#                                     "password": 'wrong'},
-#                                 follow_redirects=True)
-
-#         self.assertIn(b"Ooops. Looks like you", result.data)
-#         self.assertIn(b"Log In", result.data)
-#         self.assertNotIn(b"Log Out", result.data)
-#         self.assertNotIn(b"Ooops. The username", result.data)
-
-#     def test_login_incorrect_info(self):
-#         """Test login with wrong password and wrong username"""
-
-#         result = self.client.post('/login-check',
-#                                 data={"username": 'wrong',
-#                                     "password": 'wrong'},
-#                                 follow_redirects=True)
-
-#         self.assertIn(b"Ooops. The username you ", result.data)
-#         self.assertIn(b"Log In", result.data)
-#         self.assertNotIn(b"Log Out", result.data)
-#         self.assertNotIn(b"Ooops. Looks like you", result.data)
+        self.assertIn(b"Ooops. The username you ", result.data)
+        self.assertIn(b"Log In", result.data)
+        self.assertNotIn(b"Log Out", result.data)
+        self.assertNotIn(b"Ooops. Looks like you", result.data)
 
 
 class EmptyDbNoSession(unittest.TestCase):
@@ -266,7 +249,9 @@ class SeededDbandSession(unittest.TestCase):
         self.assertIn(b"Added", result.data)
         self.assertIn(b"Challenge", result.data)
         self.assertIn(b'category', result.data)
-        # self.assertIn(b'completion', result.data)
+        self.assertIn(b'completion', result.data)
+        self.assertIn(b'social', result.data)
+
 
 
     def test_video_details(self):
@@ -279,18 +264,39 @@ class SeededDbandSession(unittest.TestCase):
         self.assertIn(b'category', result.data)
         self.assertIn(b'1', result.data)
 
-    def test_video_upload(self):
+    def test_video_upload_form(self):
         """Test the video upload form"""
 
-        pass
-        # form = {}
-        # result = self.client.get('/video-upload/', data = {}, follow_redirects=True)
+        result = self.client.get('/video-upload/', data = {}, follow_redirects=True)
+
+        self.assertIn(b'Upload a video', result.data)
+        self.assertIn(b'tags', result.data)
+
+    def test_video_upload(self):
+
+        form = {'file': 'new_file.mp4', 'challenge': 'challenge', 'tag': 'adjective'}
+        result = self.client.get('/video-upload/', data =form, follow_redirects=True)
+
+        self.assertIn(b'challenge', result.data)
+        self.assertIn(b'tags', result.data)
+
 
     def test_point_giving(self):
         """Test one users giving another user a point"""
 
         info = {'cat_vid_id': 'category_1'}
         result = self.client.post('/add_point', data=info, follow_redirects=True)
+
+        self.assertIn(b'2', result.data)
+
+    def test_social_points_update(self):
+
+        info = {'cat_vid_id': 'category_1'}
+        self.client.post('/add_point', data=info, follow_redirects=True)
+
+        result = self.client.get('/profile', data={}, follow_redirects=True)
+
+        self.assertIn(b"You\'re level 1 in category with 1 points", result.data)
 
 
 

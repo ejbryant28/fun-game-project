@@ -19,7 +19,7 @@ class User(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed"""
 
-        return "<User username= {} name = {} email = {}>".format(self.username, self.name, self.email)
+        return "<User username= {} name = {} email = {}>".format(self.username, self.name, self.email) # pragma: no cover
 
 
 class Video(db.Model):
@@ -38,7 +38,7 @@ class Video(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed"""
 
-        return "<Video video_id= {} user_id = {} date_uploaded = {}>".format(self.video_id, self.user_id, self.date_uploaded)
+        return "<Video video_id= {} user_id = {} date_uploaded = {}>".format(self.video_id, self.user_id, self.date_uploaded) # pragma: no cover
 
 class Tag(db.Model):
     """The video tags available"""
@@ -52,7 +52,7 @@ class Tag(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed"""
 
-        return "<Tags tag_name = {}>".format(self.tag_name)
+        return "<Tags tag_name = {}>".format(self.tag_name) # pragma: no cover
 
 class VideoTag(db.Model):
     """An instance of a video being given a tag"""
@@ -69,7 +69,7 @@ class VideoTag(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed"""
 
-        return "<Video-Tags video_id = {} tag_name= {}>".format(self.video_id, self.tag_name)
+        return "<Video-Tags video_id = {} tag_name= {}>".format(self.video_id, self.tag_name) # pragma: no cover
 
 class PointCategory(db.Model):
     """All the possible categories of points"""
@@ -81,7 +81,7 @@ class PointCategory(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed"""
 
-        return "<Point_category = {}>".format(self.point_category)
+        return "<Point_category = {}>".format(self.point_category) # pragma: no cover
 
 
 
@@ -104,7 +104,7 @@ class PointGiven(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed"""
 
-        return "<video_id = {}, point_category = {}, user_id>".format(self.point_category, self.point_category, self.user_id)
+        return "<video_id = {}, point_category = {}, user_id>".format(self.point_category, self.point_category, self.user_id) # pragma: no cover
 
 
 
@@ -185,6 +185,6 @@ def connect_to_db(app, database):
 
 if __name__ == "__main__":
 
-    from server import app 
-    connect_to_db(app, 'postgres:///project')
-    db.create_all()
+    from server import app  # pragma: no cover
+    connect_to_db(app, 'postgres:///project') # pragma: no cover
+    db.create_all() # pragma: no cover

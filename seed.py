@@ -35,14 +35,14 @@ def load_users(n):
     db.session.commit()
 
 
-def load_videos(n, location):
+def load_videos(n, location): # pragma: no cover
     """Give each user n videos, create corresponding files in uploads folder"""
 
     #get all the users
-    users = User.query.all()
+    users = User.query.all() 
 
     #give each user 5 videos and create those files in uploads folder
-    for user in users:
+    for user in users: 
 
         for i in range(n):
             now = datetime.now()
@@ -58,12 +58,12 @@ def load_videos(n, location):
             open('./static/{}/{}'.format(location, video.filename), "x")
 
 
-def load_tags():
+def load_tags(): # pragma: no cover
     """create tags from random list of adjectives"""
 
-    adjectives = ['agreeable', 'ambitious', 'brave', 'calm', 'delightful', 'eager', 'gentle', 'happy', 'jolly', 'kind', 'silly', 'wonderful']
+    adjectives = ['agreeable', 'ambitious', 'brave', 'calm', 'delightful', 'eager', 'gentle', 'happy', 'jolly', 'kind', 'silly', 'wonderful'] # pragma: no cover
 
-    for adjective in adjectives:
+    for adjective in adjectives: 
 
         tag_code = adjective[:5]
 
@@ -71,16 +71,16 @@ def load_tags():
 
         db.session.add(new_tag)
 
-    db.session.commit()
+    db.session.commit() 
 
 
-def load_videotags():
+def load_videotags(): # pragma: no cover
     """give each video 2 random tags """
 
-    videos = Video.query.all()
-    tags = Tag.query.all()
+    videos = Video.query.all() 
+    tags = Tag.query.all() 
 
-    for video in videos:
+    for video in videos: 
 
         choice_1 = choice(tags)
         choice_2 = choice(tags)
@@ -90,15 +90,14 @@ def load_videotags():
 
         db.session.add_all([new_tag_1, new_tag_2])
 
-    db.session.commit()
+    db.session.commit() 
 
-def load_pointcategories():
+def load_pointcategories(): # pragma: no cover
     """Create point categories from a list"""
 
-    categories = ['silliness', 'originality', 'enthusiasm', 'artistry', 'completion', 'social']
+    categories = ['silliness', 'originality', 'enthusiasm', 'artistry', 'completion', 'social'] 
 
-    for item in categories:
-
+    for item in categories: 
         new_category = PointCategory(point_category=item)
 
         db.session.add(new_category)
@@ -106,7 +105,7 @@ def load_pointcategories():
     db.session.commit()
 
 
-def load_point_given(n):
+def load_point_given(n): # pragma: no cover
     """Give each video n points from a random point category"""
 
     videos = Video.query.all()
@@ -145,7 +144,7 @@ def load_point_given(n):
 
     db.session.commit()
 
-def load_challenges():
+def load_challenges(): # pragma: no cover
     """Add challenges from hard coded tuples"""
 
     challenges_list = [
@@ -184,7 +183,7 @@ def load_challenges():
     db.session.commit()
 
 
-def load_video_challenge():
+def load_video_challenge(): # pragma: no cover
     """Give each video a random challenge"""
 
     videos = Video.query.all()
@@ -202,7 +201,7 @@ def load_video_challenge():
     db.session.commit()
 
 
-def load_video_point_totals():
+def load_video_point_totals(): # pragma: no cover
     """Each video gets a total points score (from the count of points given) in each point category"""
 
     videos = Video.query.all()
@@ -222,7 +221,7 @@ def load_video_point_totals():
 
     db.session.commit()
 
-def load_category_level_points():
+def load_category_level_points(): # pragma: no cover
     """Set the required points for each point_category- right now I'm adding 5 levels each requires 10 points"""
 
     categories = ['silliness', 'originality', 'enthusiasm', 'social', 'artistry', 'completion']
@@ -250,7 +249,7 @@ def load_category_level_points():
     db.session.commit()
 
 
-def load_user_level():
+def load_user_level(): # pragma: no cover
     """Figure out which level each user is at"""
 
     users = User.query.all()
@@ -276,18 +275,12 @@ def load_user_level():
             db.session.add(new_entry)
     db.session.commit()
 
-def seed_test():
-    load_users(2)
-    # load_videos(1, 'uploads')
+##########################################################################################################################################################
+##TEST DB 
+
+def load_test_videos_and_points(): # pragma: no cover
     users = User.query.all()
     n = 1
-
-    new_category = PointCategory(point_category='category')
-    new_category_2 = PointCategory(point_category='social')
-    new_category_3 = PointCategory(point_category='completion')
-
-    db.session.add_all([new_category, new_category_2, new_category_3])
-    db.session.commit()
 
 
     for user in users:
@@ -302,6 +295,15 @@ def seed_test():
         new_point = PointGiven(video_id=video.video_id, user_id=user.user_id, time_given=now, point_category='completion')
         db.session.add(new_point)
 
+        db.session.commit()
+
+def load_test_categories_tags_and_challenge(): # pragma: no cover
+    new_category = PointCategory(point_category='category')
+    new_category_2 = PointCategory(point_category='social')
+    new_category_3 = PointCategory(point_category='completion')
+
+    db.session.add_all([new_category, new_category_2, new_category_3])
+
     new_tag = Tag(tag_name='adjective')
     db.session.add(new_tag)
     db.session.commit()
@@ -310,6 +312,7 @@ def seed_test():
     db.session.add(new_challenge)
     db.session.commit()
 
+def load_test_vidtags_vidchal_socpoints(): # pragma: no cover
     videos = Video.query.all()
     for video in videos:
         vid_tag = VideoTag(video_id=video.video_id, tag_name='adjective')
@@ -324,21 +327,46 @@ def seed_test():
         now = datetime.now()
         new_point = PointGiven(video_id = video.video_id, point_category='category', time_given=now, user_id=other_user.user_id)
         db.session.add(new_point)
+
     db.session.commit()
 
-    # #give users social points for points given
-    # for user in users:
-    #     social = social_points(user.user_id).count()
-    #     new_point = PointGiven()
+def load_test_levs(): # pragma: no cover
+    categories = ['category', 'social', 'completion']
+    initial = [3, 2, 2]
+
+    ##THIS NEEDS TO BE MADE MORE EFFICIENT
+
+    for i in range(len(categories)):
+
+        original_points = initial[i]
+        points_required = 0
+        point_category = categories[i]
+
+        for n in range(2):
+            level_number = n + 1
+
+            new_entry = CategoryLevelPoints(point_category = point_category, level_number=level_number, points_required=points_required)
+            db.session.add(new_entry)
+
+            if points_required < 10:
+                points_required += 1 + original_points
+            else:
+                points_required += int(points_required * 0.2) + original_points
+
+    db.session.commit()
 
 
+def seed_test(): # pragma: no cover
+    load_users(2)
+    load_test_categories_tags_and_challenge()
+    load_test_videos_and_points()
+    load_test_vidtags_vidchal_socpoints()
     load_video_point_totals()
+    load_test_levs()
+    load_user_level()
 
-    #levels
-    #user level
 
-
-if __name__ == '__main__':
+if __name__ == '__main__': # pragma: no cover
     connect_to_db(app, 'postgres:///project')
     load_users(10)
     load_videos(5, 'uploads')
