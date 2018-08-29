@@ -21,6 +21,8 @@ from helper_functions import *
 
 from sqlalchemy import func
 
+import bcrypt
+
 
 app = Flask(__name__)
 
@@ -95,6 +97,8 @@ def check_login_info():
 
     username = username.lower()
     password = request.form.get('password')
+    bpass = b'password'
+    hashed = bcrypt.hashpw(bpass, bcrypt.gensalt())
 
     #query database to see if username entered exists
     user_info = User.query.filter(User.username==username).first()
@@ -107,13 +111,21 @@ def check_login_info():
                     create a profile?""")
         return redirect('/login')
 
-    elif user_info.password == password:
-        #add user's info to session and redirect to homepage
+    elif bcrypt.checkpw(bpass, hashed):
+        print("BCRYPT PASSWORD MATCH")
 
         flash("You're logged in!")
         session['user_id'] = user_info.user_id
 
         return redirect('/')
+
+    # elif user_info.password == password:
+    #     #add user's info to session and redirect to homepage
+
+    #     flash("You're logged in!")
+    #     session['user_id'] = user_info.user_id
+
+    #     return redirect('/')
 
     else:
         #suggest they check their password
@@ -159,6 +171,7 @@ def add_user():
     email = email.lower()
     
     password = request.form.get('password')
+    password = b'password'
     hashed = bcrypt.hashpw(password, bcrypt.gensalt())
 
     #check if the username is already taken
@@ -169,7 +182,7 @@ def add_user():
         #add info to database and redirect to homepage if username is available
         flash('Welcome!')
 
-        user = User(name=name, username=username, email=email, password=password)
+        user = User(name=name, username=username, email=email, password=hashed)
         db.session.add(user)
         db.session.commit()
         session['user_id'] = user.user_id

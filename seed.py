@@ -14,6 +14,8 @@ from random import choice, randint
 
 from queries import * 
 
+import bcrypt
+
 fake = Faker()
 fake.uri_path(deep=None)
 
@@ -23,13 +25,14 @@ def load_users(n):
 
     for _ in range(n):
         name = fake.name().lower()
-        # name = name.lower()
         username = name[:5]
         username = username.lower()
-        password = 'password'
+        password = b'password'
+        # password = 'password'
+        hashed = bcrypt.hashpw(password, bcrypt.gensalt())
         email = fake.free_email()
 
-        user = User(name=name, username=username, password=password, email=email)
+        user = User(name=name, username=username, password=hashed, email=email)
         db.session.add(user)
 
     db.session.commit()
