@@ -70,44 +70,108 @@ getData()
 
 function makeProgressChart(result) {
 	console.log("results are", result);
-	let i;
-	let times = [];
-	for (i = 0; i < result['enthusiasm'].length; i++) {
-		times.push(result['enthusiasm'][i][0])
+	let categories = Object.keys(result)
+	console.log('categories are', categories)
+	let datamap = {}
+	let j;
+	for (j=0; j < categories.length; j++) {
+		let i;
+		let category = categories[j]
+		console.log('category is currently', category)
+		let categoryarray = [];
+		for (i = 0; i < result[category].length; i++) {
+			categoryarray.push({'x': new Date(result[category][i]), 'y':(i+1)});
+			// categoryarray.push(new Date(result[category][i]))
+			if (categoryarray.length == result[category].length) {
+				datamap[category] = categoryarray
+			}
+		};
 	};
-	console.log('times are', times)
-	// let p;
-	let points = [];
-	for (i = 0; i < result['enthusiasm'].length; i++) {
-		points.push(i+1)
+	console.log('enthusiasm data is ', datamap['enthusiasm']);
+	let enthusiasmTimes = [];
+	for (j=0; j< datamap['enthusiasm'].length; j++) {
+		enthusiasmTimes.push(new Date(datamap['enthusiasm'][0]))
 	};
-	console.log('points are', points)
-
-	let dataPoints = []
-	for (i = 0; i < result['enthusiasm'].length; i++) {
-		dataPoints.push({'x': new Date(result['enthusiasm'][i][0]), 'y':(i+1)})
-	};
-	console.log('dataPoints are', dataPoints);
+	console.log('enthusiasm times are', enthusiasmTimes);
 
 	let ctx = document.getElementById('progressChart').getContext('2d');
 	let chart = new Chart(ctx, {
-    // The type of chart we want to create
-    type: 'scatter',
+//     // The type of chart we want to create
+    type: 'line',
 
     // The data for our dataset
     data: {
-        labels: times,
+    	labels: enthusiasmTimes,
         datasets: [{
             label: "enthusiasm",
-            backgroundColor: 'rgb(255, 99, 132)',
-            borderColor: 'rgb(255, 99, 132)',
-            data: dataPoints,
+            // backgroundColor: 'rgb(52, 73, 94)',
+            borderColor: 'rgb(52, 73, 94)',
+            data: datamap['enthusiasm'],
         }]
+        // {
+        //     label: "silliness",
+        //     // backgroundColor: 'rgb(110, 44, 0)',
+        //     borderColor: 'rgb(110, 44, 0)',
+        //     data: datamap['silliness'],
+        // },
+        // {
+        //     label: "artistry",
+        //     // backgroundColor: 'rgb(14, 102, 85)',
+        //     borderColor: 'rgb(14, 102, 85)',
+        //     data: datamap['artistry'],
+        // },
+        // {
+        //     label: "originality",
+        //     // backgroundColor: 'rgb(21, 67, 96)',
+        //     borderColor: 'rgb(21, 67, 96)',
+        //     data: datamap['originality'],
+        // }
+        // ]
     },
 
     // Configuration options go here
-    options: {}
+    options: {
+    	// backgroundColor:
+    }
 });
+// 	let chart = new Chart(ctx, {
+//     // The type of chart we want to create
+//     type: 'scatter',
+
+//     // The data for our dataset
+//     data: {
+//         labels: 'times',
+//         datasets: [
+//         {
+//             label: "enthusiasm",
+//             backgroundColor: 'rgb(52, 73, 94)',
+//             borderColor: 'rgb(52, 73, 94)',
+//             data: datamap['enthusiasm'],
+//         },
+//         {
+//             label: "silliness",
+//             backgroundColor: 'rgb(110, 44, 0)',
+//             borderColor: 'rgb(110, 44, 0)',
+//             data: datamap['silliness'],
+//         },
+//         {
+//             label: "artistry",
+//             backgroundColor: 'rgb(14, 102, 85)',
+//             borderColor: 'rgb(14, 102, 85)',
+//             data: datamap['artistry'],
+//         },
+//         {
+//             label: "originality",
+//             backgroundColor: 'rgb(21, 67, 96)',
+//             borderColor: 'rgb(21, 67, 96)',
+//             data: datamap['originality'],
+//         }
+//         ]
+//     },
+
+//     // Configuration options go here
+//     options: {}
+// });
 }
 </script>
 

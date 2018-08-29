@@ -431,16 +431,17 @@ def make_progress_chart():
     all_points = points_userid_grouped(user_id).order_by(PointGiven.time_given.asc()).all()
     print("ALL POINTS ARE", all_points)
     points_dict = {}
+    # point_num = 1
     for point in all_points:
-        point_num = 1
-        if point.point_category == 'enthusiasm':
-            if 'enthusiasm' in points_dict:
-                points_dict['enthusiasm'].append((point.time_given, point_num))
-            else:
-                points_dict['enthusiasm'] = [(point.time_given, point_num)]
-            point_num += 1
+        # point_num = 1
+        # if point.point_category == 'enthusiasm':
+
+        if point.point_category in points_dict:
+            points_dict[point.point_category].append(point.time_given)
         else:
-            continue
+            points_dict[point.point_category] = [point.time_given]
+        # point_num += 1
+
     print("POINTS DICT IS", points_dict)
 
 
