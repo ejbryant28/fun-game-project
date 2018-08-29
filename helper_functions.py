@@ -71,6 +71,47 @@ def update_tables(new_points, user_id):
 
     return flash_messages
 
+def make_chart_core_lst(category, user_id):
+    all_points = db.session.query(PointGiven).join(Video).filter(Video.user_id ==user_id, PointGiven.point_category==category).order_by(PointGiven.time_given.asc()).all()
+
+    points_lst = []
+    point_num = 1
+    for point in all_points:
+
+        points_lst.append((point.time_given, 1 + point_num/10))
+        point_num += 1
+
+    return points_lst
+
+def make_chart_soc(user_id):
+
+    social_points = PointGiven.query.filter(PointGiven.user_id == user_id).order_by(PointGiven.time_given.asc()).all()
+
+    points_lst = []
+    point_num = 1
+    for point in social_points:
+
+        points_lst.append((point.time_given, 1 + point_num/22))
+
+        point_num+=1
+
+    return points_lst
+
+def make_chart_comp(user_id):
+
+    completion = Video.query.filter(Video.user_id==user_id).order_by(Video.date_uploaded.asc()).all()
+    com_point = 1
+    points_lst = []
+
+    for video in completion:
+
+        # if 'completion' in points_dict:
+        #     points_dict['completion'].append((video.date_uploaded, 1 + com_point/3))
+        # else:
+        points_lst.append((video.date_uploaded, 1 + com_point/3))
+        com_point+=1
+    return points_lst
+
 if __name__ == "__main__":
     import doctest
 

@@ -51,8 +51,6 @@ def homepage():
     videos = videos_by_date().all()
     challenges = Challenge.query.all()
 
-    # categories = PointCategory.query.filter(PointCategory.point_category != 'completion').all()
-
     points_given = social_points(user_id).all()
 
     given_tups = cat_vid_id_tups(points_given)
@@ -161,6 +159,7 @@ def add_user():
     email = email.lower()
     
     password = request.form.get('password')
+    hashed = bcrypt.hashpw(password, bcrypt.gensalt())
 
     #check if the username is already taken
     user_check = user_by_username(username).first()
@@ -250,7 +249,7 @@ def allowed_file(filename):
 # @app.route('/video-upload/<challenge-name>')
 
 @app.route('/video-upload/')
-def upload_file_form(challenge_name):
+def upload_file_form():
     """Show form to upload a video"""
 
     user_id = session['user_id']
@@ -429,80 +428,19 @@ def make_progress_chart():
 
     #find all the points a user has been given 
 
-    # all_points = PointGiven.query.filter(PointGiven.video.user == user_id).all()
-    # originality_points = points_userid_grouped(user_id).order_by(PointGiven.time_given.asc()).all()
-    originality_points = db.session.query(PointGiven).join(Video).filter(Video.user_id ==user_id, PointGiven.point_category=='originality').order_by(PointGiven.time_given.asc()).all()
-
     points_dict = {}
-    orig_num = 1
-    for point in originality_points:
 
-        if point.point_category in points_dict:
-            points_dict[point.point_category].append((point.time_given, 1 + orig_num/10))
-        else:
-            points_dict[point.point_category] = [(point.time_given, 1 + orig_num/10)]
-        orig_num+=1
+    points_dict['originality'] = make_chart_core_lst('originality', user_id)
 
-    silly_points = db.session.query(PointGiven).join(Video).filter(Video.user_id ==user_id, PointGiven.point_category=='silliness').order_by(PointGiven.time_given.asc()).all()
+    points_dict['silliness'] = make_chart_core_lst('silliness', user_id)
 
-    sill_num = 1
-    for point in silly_points:
+    points_dict['enthusiasm'] = make_chart_core_lst('enthusiasm', user_id)
 
-        if point.point_category in points_dict:
-            points_dict[point.point_category].append((point.time_given, 1 + sill_num/10))
-        else:
-            points_dict[point.point_category] = [(point.time_given, 1 + sill_num/10)]
-        sill_num+=1
+    points_dict['artistry'] = make_chart_core_lst('artistry', user_id)
 
-    enthusiasm_points = db.session.query(PointGiven).join(Video).filter(Video.user_id ==user_id, PointGiven.point_category=='enthusiasm').order_by(PointGiven.time_given.asc()).all()
+    points_dict['social'] = make_chart_soc(user_id)
 
-
-    enth_num = 1
-    for point in enthusiasm_points:
-
-        if point.point_category in points_dict:
-            points_dict[point.point_category].append((point.time_given, 1 + enth_num/10))
-        else:
-            points_dict[point.point_category] = [(point.time_given, 1 + enth_num/10)]
-        enth_num+=1
-
-    artistry_points = db.session.query(PointGiven).join(Video).filter(Video.user_id ==user_id, PointGiven.point_category=='artistry').order_by(PointGiven.time_given.asc()).all()
-
-    art_num = 1
-    for point in artistry_points:
-
-        if point.point_category in points_dict:
-            points_dict[point.point_category].append((point.time_given, 1 + art_num/10))
-        else:
-            points_dict[point.point_category] = [(point.time_given, 1 + art_num/10)]
-        art_num+=1
-
-    #query social points and order by time given
-    social_points = PointGiven.query.filter(PointGiven.user_id == user_id).order_by(PointGiven.time_given.asc()).all()
-
-    soc_point = 1
-    for point in social_points:
-        # points_dict['social'] = point.time_given
-        if 'social' in points_dict:
-            points_dict['social'].append((point.time_given, 1 + soc_point/20))
-        else:
-            points_dict['social'] = [(point.time_given, 1 + soc_point/20)]
-        soc_point+=1
-
-    #query for when videos were uploaded to add completion points
-    completion = Video.query.filter(Video.user_id==user_id).order_by(Video.date_uploaded.asc()).all()
-    com_point = 1
-
-    for video in completion:
-        if 'completion' in points_dict:
-            points_dict['completion'].append((video.date_uploaded, 1 + com_point/3))
-        else:
-            points_dict['completion'] = [(video.date_uploaded, 1 + com_point/3)]
-        com_point+=1
-
-    # print("POINTS DICT IS", points_dict)
-    # print("ORIG POINTS ARE", points_dict['originality'])
-
+    points_dict['completion'] = make_chart_comp(user_id)
 
     return jsonify(points_dict)
 
