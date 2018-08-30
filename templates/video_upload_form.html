@@ -1,17 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>Upload a video!</h1>
+<h1>Complete the {{ challenge.challenge_name }} challenge!</h1>
+
+<p>Instructions: {{challenge.description }}</p>
 
 
 <form action="/video-upload-submit" method="POST" enctype=multipart/form-data>
-	<input type="file" name="file"><br><br><br>
-	Which challenge were you completing?<br>
-	<select name="challenge">
-	{% for challenge in challenges %}
-	<option value="{{ challenge.challenge_name }}" required>{{ challenge.challenge_name }}</option><br>
-	{% endfor %}
-	</select> 
+	<input type="file" name="file">
+	<input type="hidden" name="challenge" value="{{ challenge.challenge_name }}">
 
 	<br><br><br>
 	Choose some tags!

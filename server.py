@@ -205,9 +205,6 @@ def user_profile():
         videos = []
 
     category_levels = UserLevelCategory.query.filter(UserLevelCategory.user_id == user_id).all()
-    # print("CATEGORY LEVELS ARE", category_levels)
-    # for entry in category_levels:
-    #     print(entry.point_category, entry.level_number)
 
     return render_template('profile.html', videos=videos, category_levels = category_levels)
 
@@ -250,7 +247,7 @@ def show_all_tags():
 def show_tag(tag_name):
 
 
-    videos = db.session.query(Video).join(VideoTag).filter(VideoTag.tag_name==tag_name).all()
+    videos = db.session.query(Video).join(VideoTag).filter(VideoTag.tag_name==tag_name).order_by(Video.date_uploaded.desc()).all()
 
     user_id = session['user_id']
 
@@ -288,11 +285,13 @@ def upload_file_form():
 
     tags = Tag.query.all()
 
-    challenges = Challenge.query.all()
-    # challenge = request.args.get('challenge_name')
+    # challenges = Challenge.query.all()
+    challenge_name = request.args.get('challenge-name')
+    # print("CHALLENGE IS", challenge)
+    challenge = Challenge.query.filter(Challenge.challenge_name==challenge_name).first()
 
 
-    return render_template('video_upload_form.html', challenges=challenges, tags=tags)
+    return render_template('video_upload_form.html', challenge=challenge, tags=tags)
 
 
 @app.route('/video-upload-submit', methods=['GET', 'POST'])
