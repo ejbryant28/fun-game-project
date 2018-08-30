@@ -13,7 +13,7 @@ def words_list():
     return words
 
 
-def name_file(file_ext='mp4'):
+def name_file(file_ext='mp4', filename=None):
     """choose a random word from words_list, make sure there isn't another file with same name, return filename 
     >>> new_file = name_file()
     >>> test = Video.query.filter(Video.filename==new_file).first()
@@ -22,16 +22,16 @@ def name_file(file_ext='mp4'):
     """
 
     words = words_list()
-    filename = None
-    while filename == None:
-        attempt = choice(words)
-        if videos_by_filename(attempt).first() == None:
-            print("I found a name")
-            filename = attempt + '.' + file_ext
-        else:
-            print("OOPS. Tried to name a file the same thing")
+    attempt = choice(words)
+    query = Video.query.filter(Video.filename == attempt).first()
+
+    if query:
+        return name_file(file_ext, filename)
+    else:
+        filename = attempt + '.' + file_ext
+        return filename
     
-    return filename
+    # return filename
 
 def cat_vid_id_tups(points_given):
     """Create tuples of categories and video ids from point_given objects"""

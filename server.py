@@ -99,12 +99,9 @@ def check_login_info():
     password = request.form.get('password')
 
     #query database to see if username entered exists
-    user_info = User.query.filter(User.username==username).first()
+    user = User.query.filter(User.username==username).first()
 
-    #find users password
-    user_pass = user_info.password
-
-    if user_info is None:
+    if user is None:
         #Suggest create profile or check username
 
         flash("""Ooops. The username you entered isn't in our database. 
@@ -113,12 +110,10 @@ def check_login_info():
         return redirect('/login')
 
     else:
-
-
-        if bcrypt.checkpw(password.encode('utf-8'), user_pass.encode('utf-8')):
+        if bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
 
             flash("You're logged in!")
-            session['user_id'] = user_info.user_id
+            session['user_id'] = user.user_id
 
             return redirect('/')
 
@@ -166,8 +161,7 @@ def add_user():
     email = email.lower()
     
     password = request.form.get('password')
-    # password = b'password'
-    # password = password.encode('ut-8')
+
     hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
     #check if the username is already taken
@@ -181,9 +175,15 @@ def add_user():
         user = User(name=name, username=username, email=email, password=hashed.decode('utf-8'))
         db.session.add(user)
         db.session.commit()
+        #add entries to the UserLevelCategory for all the point categories
+        categories = PointCategory.query.all()
+        for category in categories:
+            user_points = UserLevelCategory(user_id=user.user_id, point_category=category.point_category, user_total_points=0, level_number=1, last_updated=datetime.now())
+            db.session.add(user_points)
+        db.session.commit()
         session['user_id'] = user.user_id
 
-        return redirect('/')
+        return redirect('/about')
     
     else:
         #suggest trying a different username if it's already being used
@@ -258,6 +258,11 @@ def show_tag(tag_name):
 
     return render_template('tag_details.html', videos=videos, user_id=user_id, given_tups=given_tups)
 
+@app.route('/about')
+def show_about():
+
+    return render_template('about.html')
+
 ######################################################################################################################################
 #video-upload functions
 
@@ -275,21 +280,13 @@ def allowed_file(filename):
 
 # @app.route('/video-upload/<challenge-name>')
 
-@app.route('/video-upload/')
-def upload_file_form():
+@app.route('/video-upload/challenge/<challenge_name>')
+def upload_file_form(challenge_name):
     """Show form to upload a video"""
 
     user_id = session['user_id']
-    # using request.args, figure out what challenges
-    # pass that to jinja to tell them which chanllenge
-
     tags = Tag.query.all()
-
-    # challenges = Challenge.query.all()
-    challenge_name = request.args.get('challenge-name')
-    # print("CHALLENGE IS", challenge)
     challenge = Challenge.query.filter(Challenge.challenge_name==challenge_name).first()
-
 
     return render_template('video_upload_form.html', challenge=challenge, tags=tags)
 
@@ -337,6 +334,7 @@ def upload_file():
 
             #get challenge and add that to video_challenge table
             challenge_name = request.form.get('challenge')
+
             video_challenge = VideoChallenge(video_id=video.video_id, challenge_name=challenge_name)
             db.session.add(video_challenge)
 
@@ -363,6 +361,8 @@ def upload_file():
             db.session.commit()
 
             return redirect('/video-upload/{}'.format(filename))
+            # return redirect('/')
+
 
     else:
         flash("oops. Something went wrong. Check the file extension on your file")

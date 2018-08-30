@@ -19,7 +19,7 @@ class User(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed"""
 
-        return "<User username= {} name = {} email = {}>".format(self.username, self.name, self.email) # pragma: no cover
+        return "<User username = {} name = {} email = {}>".format(self.username, self.name, self.email) # pragma: no cover
 
 
 class Video(db.Model):
@@ -34,11 +34,10 @@ class Video(db.Model):
 
     user = db.relationship("User", backref=db.backref("video"))
 
-
     def __repr__(self):
         """Provide helpful representation when printed"""
 
-        return "<Video video_id= {} user_id = {} date_uploaded = {}>".format(self.video_id, self.user_id, self.date_uploaded) # pragma: no cover
+        return "<Video video_id = {} user_id = {} date_uploaded = {}>".format(self.video_id, self.user_id, self.date_uploaded) # pragma: no cover
 
 class Tag(db.Model):
     """The video tags available"""
@@ -47,12 +46,11 @@ class Tag(db.Model):
 
     tag_name = db.Column(db.String(20), primary_key=True)
 
-
-
     def __repr__(self):
         """Provide helpful representation when printed"""
 
         return "<Tags tag_name = {}>".format(self.tag_name) # pragma: no cover
+        
 
 class VideoTag(db.Model):
     """An instance of a video being given a tag"""
@@ -69,7 +67,7 @@ class VideoTag(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed"""
 
-        return "<Video-Tags video_id = {} tag_name= {}>".format(self.video_id, self.tag_name) # pragma: no cover
+        return "<Video-Tags video_id = {} tag_name = {}>".format(self.video_id, self.tag_name) # pragma: no cover
 
 class PointCategory(db.Model):
     """All the possible categories of points"""
@@ -104,7 +102,7 @@ class PointGiven(db.Model):
     def __repr__(self):
         """Provide helpful representation when printed"""
 
-        return "<video_id = {}, point_category = {}, user_id>".format(self.point_category, self.point_category, self.user_id) # pragma: no cover
+        return "<video_id = {}, point_category = {}, user_id = {}>".format(self.point_category, self.point_category, self.user_id) # pragma: no cover
 
 
 

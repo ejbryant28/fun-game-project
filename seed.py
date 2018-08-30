@@ -51,20 +51,23 @@ def load_videos(n, location): # pragma: no cover
             now = datetime.now()
             delta = timedelta(days=(-randint(0, 366)))
             time = now+delta
-            print("TIME UPLOADED IS", time)
+            # print("TIME UPLOADED IS", time)
             filename = name_file() 
 
             video = Video(user_id = user.user_id, date_uploaded=time, filename=filename)
             db.session.add(video)
             db.session.commit()
 
-            open('./static/{}/{}'.format(location, video.filename), "x")
+            open('./static/{}/{}'.format(location, video.filename), "a")
 
 
 def load_tags(): # pragma: no cover
     """create tags from random list of adjectives"""
 
-    adjectives = ['agreeable', 'ambitious', 'brave', 'calm', 'delightful', 'eager', 'gentle', 'happy', 'jolly', 'kind', 'silly', 'wonderful'] # pragma: no cover
+    adjectives_set = {'agreeable', 'ambitious', 'brave', 'calm', 'delightful', 'eager', 'gentle', 'happy', 'jolly', 'kind', 'silly', 'wonderful', 'cute', 'summer', 'fall', 'fitness', 'food', 'look', 'model', 'friends', 'red', 'success', 'explore', 'travel', 'sea', 'beach', 'night', 'family', 'artist', 'sky', 'nature', 'color', 'black', 'italy', 'blue', 'mood', 'adventure', 'awesome', 'dog', 'live', 'goals', 'smile', 'health', 'sweet', 'beautiful', 'lol', 'sun', 'paris', 'happiness', 'training', 'love', 'beautiful', 'happy', 'cute', 'art', 'friends', 'nature', 'fun', 'smile', 'family', 'travel', 'fitness', 'life', 'beauty', 'amazing', 'sun', 'photo', 'music', 'beach', 'sky', 'dog', 'pretty', 'swag', 'cat', 'motivation', 'baby', 'party', 'cool', 'lol', 'gym', 'funny', 'healthy', 'night', 'yummy', 'flowers', 'fit', 'black', 'pink', 'blue', 'workout', 'home', 'holiday', 'christmas', 'nyc', 'london', 'sea', 'goodmorning', 'funny', 'lol', 'lmao', 'lmfao', 'hilarious', 'laugh', 'laughing', 'fun', 'friends', 'photooftheday', 'friend', 'wacky', 'crazy', 'silly', 'witty', 'joke', 'jokes', 'joking', 'epic', 'instagood', 'instafun', 'funnypictures', 'haha', 'humor',}
+
+    adjectives = sorted(list(adjectives_set))
+
 
     for adjective in adjectives: 
 
@@ -86,7 +89,12 @@ def load_videotags(): # pragma: no cover
     for video in videos: 
 
         choice_1 = choice(tags)
-        choice_2 = choice(tags)
+        choice_2 = None
+        while choice_2 == None:
+            attempt = choice(tags)
+            if attempt != choice_1:
+                choice_2 = attempt
+
 
         new_tag_1 = VideoTag(video_id=video.video_id, tag_name=choice_1.tag_name)
         new_tag_2 = VideoTag(video_id=video.video_id, tag_name=choice_2.tag_name)
@@ -378,7 +386,7 @@ if __name__ == '__main__': # pragma: no cover
     load_pointcategories()
     load_challenges()
     load_video_challenge()
-    load_point_given(10)
+    load_point_given(20)
     load_video_point_totals()
     load_category_level_points()
     load_user_level()

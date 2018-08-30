@@ -3,14 +3,19 @@
 
 <p>You have:</p>
 
-<canvas id="levelbarchart"></canvas>
-{% for entry in category_levels %}
-You're level {{ entry.level_number }} in {{ entry.point_category }} with {{ entry.user_total_points }} points! <br>
+{% if videos %}
+	<canvas id="levelbarchart"></canvas>
+	{% for entry in category_levels %}
+	You're level {{ entry.level_number }} in {{ entry.point_category }} with {{ entry.user_total_points }} points! <br>
 
-{% endfor %}
+	{% endfor %}
 
-<p>Your progress over time :)</p>
-<canvas id="progressChart"></canvas>
+	<p>Your progress over time :)</p>
+	<canvas id="progressChart"></canvas>
+{% else %}
+You don't have any videos yet. Would you like to complete some <a href="/challenge">challenges</a>?
+
+{% endif %}
 
 <br><br>
 
