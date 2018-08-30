@@ -97,11 +97,12 @@ def check_login_info():
 
     username = username.lower()
     password = request.form.get('password')
-    bpass = b'password'
-    hashed = bcrypt.hashpw(bpass, bcrypt.gensalt())
 
     #query database to see if username entered exists
     user_info = User.query.filter(User.username==username).first()
+
+    #find users password
+    user_pass = user_info.password
 
     if user_info is None:
         #Suggest create profile or check username
@@ -111,26 +112,20 @@ def check_login_info():
                     create a profile?""")
         return redirect('/login')
 
-    elif bcrypt.checkpw(bpass, hashed):
-        print("BCRYPT PASSWORD MATCH")
-
-        flash("You're logged in!")
-        session['user_id'] = user_info.user_id
-
-        return redirect('/')
-
-    # elif user_info.password == password:
-    #     #add user's info to session and redirect to homepage
-
-    #     flash("You're logged in!")
-    #     session['user_id'] = user_info.user_id
-
-    #     return redirect('/')
-
     else:
-        #suggest they check their password
-        flash("Ooops. Looks like you entered your password incorrectly.")
-        return redirect('/login')
+
+
+        if bcrypt.checkpw(password.encode('utf-8'), user_pass.encode('utf-8')):
+
+            flash("You're logged in!")
+            session['user_id'] = user_info.user_id
+
+            return redirect('/')
+
+        else:
+            #suggest they check their password
+            flash("Ooops. Looks like you entered your password incorrectly.")
+            return redirect('/login')
 
 @app.route('/logout')
 def logout_user():
@@ -171,8 +166,9 @@ def add_user():
     email = email.lower()
     
     password = request.form.get('password')
-    password = b'password'
-    hashed = bcrypt.hashpw(password, bcrypt.gensalt())
+    # password = b'password'
+    # password = password.encode('ut-8')
+    hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
     #check if the username is already taken
     user_check = user_by_username(username).first()
@@ -182,7 +178,7 @@ def add_user():
         #add info to database and redirect to homepage if username is available
         flash('Welcome!')
 
-        user = User(name=name, username=username, email=email, password=hashed)
+        user = User(name=name, username=username, email=email, password=hashed.decode('utf-8'))
         db.session.add(user)
         db.session.commit()
         session['user_id'] = user.user_id

@@ -27,12 +27,12 @@ def load_users(n):
         name = fake.name().lower()
         username = name[:5]
         username = username.lower()
-        password = b'password'
+        password = 'password'
         # password = 'password'
-        hashed = bcrypt.hashpw(password, bcrypt.gensalt())
+        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         email = fake.free_email()
 
-        user = User(name=name, username=username, password=hashed, email=email)
+        user = User(name=name, username=username, password=hashed.decode('utf-8'), email=email)
         db.session.add(user)
 
     db.session.commit()
