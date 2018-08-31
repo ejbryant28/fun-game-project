@@ -288,6 +288,16 @@ def load_user_level(): # pragma: no cover
 
 ##########################################################################################################################################################
 ##TEST DB 
+def load_test_users():
+    hashed_1 = bcrypt.hashpw('password'.encode('utf-8'), bcrypt.gensalt())
+    hashed_2 = bcrypt.hashpw('password'.encode('utf-8'), bcrypt.gensalt())
+
+    user_1 = User(name='user_1', username='username_1', password=hashed_1.decode('utf-8'), email='email@email.com')
+    user_2 = User(name='user_2', username='username_2', password=hashed_2.decode('utf-8'), email='email@email.com')
+
+    db.session.add_all([user_1, user_2])
+    db.session.commit()
+
 
 def load_test_videos_and_points(): # pragma: no cover
     users = User.query.all()
@@ -368,7 +378,8 @@ def load_test_levs(): # pragma: no cover
 
 
 def seed_test(): # pragma: no cover
-    load_users(2)
+    # load_users(2)
+    load_test_users()
     load_test_categories_tags_and_challenge()
     load_test_videos_and_points()
     load_test_vidtags_vidchal_socpoints()

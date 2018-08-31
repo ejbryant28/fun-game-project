@@ -6,6 +6,10 @@ from model import User, connect_to_db, db
 
 from seed import seed_test, load_users
 
+import bcrypt
+
+from datetime import datetime
+
 class NoDbNoSession(unittest.TestCase):
     """tests that don't need session or db"""
 
@@ -130,7 +134,9 @@ class AlmostEmptyDbandSession(unittest.TestCase):
         db.create_all()
 
         #add a user to db
-        user = User(user_id= 1, name='joe', username='joey', password='password', email='email@email.com')
+        hashed = bcrypt.hashpw('password'.encode('utf-8'), bcrypt.gensalt())
+
+        user = User(user_id= 1, name='joe', username='joey', password=hashed.decode('utf-8'), email='email@email.com')
         db.session.add(user)
         db.session.commit()
 
@@ -183,6 +189,7 @@ class AlmostEmptyDbandSession(unittest.TestCase):
         """Test login with correct info"""
 
         self.client.get('/logout', data={}, follow_redirects=True)
+        # hashed = bcrypt.hashpw('password'.encode('utf-8'), bcrypt.gensalt())
 
         result = self.client.post('/login-check',
                                 data={'username': 'joey',
@@ -267,18 +274,25 @@ class SeededDbandSession(unittest.TestCase):
     def test_video_upload_form(self):
         """Test the video upload form"""
 
-        result = self.client.get('/video-upload/', data = {}, follow_redirects=True)
+        result = self.client.get('/video-upload/challenge/challenge', data = {}, follow_redirects=True)
 
-        self.assertIn(b'Upload a video', result.data)
-        self.assertIn(b'tags', result.data)
+        self.assertIn(b'challenge', result.data)
+        self.assertIn(b'description', result.data)
+
+        self.assertIn(b'Choose some tags', result.data)
 
     def test_video_upload(self):
 
         form = {'file': 'new_file.mp4', 'challenge': 'challenge', 'tag': 'adjective'}
-        result = self.client.get('/video-upload/', data =form, follow_redirects=True)
+        result = self.client.get('video-upload/challenge/challenge', data =form, follow_redirects=True)
 
         self.assertIn(b'challenge', result.data)
         self.assertIn(b'tags', result.data)
+
+        result_2 = self.client.get('/profile', data={}, follow_redirects=True)
+        self.assertIn(b'completion', result_2.data)
+        self.assertIn(b'You\'re level 1 in completion', result_2.data)
+
 
 
     def test_point_giving(self):
@@ -297,6 +311,23 @@ class SeededDbandSession(unittest.TestCase):
         result = self.client.get('/profile', data={}, follow_redirects=True)
 
         self.assertIn(b"You\'re level 1 in category with 1 points", result.data)
+
+    def test_point_flashing(self):
+        """Tests that if a user gets a point while logged out, they get a flash message when they log back in"""
+
+        #first (logged in as user 1) give a point to user 2
+        info = {'cat_vid_id': 'category_2'}
+        self.client.post('/add_point', data=info, follow_redirects=True)
+
+        #log user 1 out
+        self.client.get('/logout-check', data={}, follow_redirects=True)
+
+
+        # log in  as user_2 and check for flash message
+        login_info_1 = {'username': 'username_2', 'password':'password'}
+        result_1 = self.client.post('/login-check', data=login_info_1, follow_redirects=True)
+        self.assertIn(b"You got a new category point", result_1.data)
+
 
 
 

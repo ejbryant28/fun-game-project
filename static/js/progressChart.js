@@ -1,5 +1,5 @@
 function getData() {
-	console.log("getting data");
+	// console.log("getting data");
 	$.get('/progress-chart', makeProgressChart);
 }
 
@@ -10,50 +10,29 @@ function makeProgressChart(result) {
 	let datamap = {};
 	let j;
     let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    // let months = Object.keys(monthMap);
 
 	for (j=0; j < categories.length; j++) {
 		let i;
 		let category = categories[j];
 		let categoryarray = [];
-        // let monthMap = {'Jan':0, 'Feb':1, 'Mar':2, 'Apr':3, 'May':4, 'Jun':5, 'Jul':6, 'Aug':7, 'Sep':8, 'Oct':9, 'Nov':10, 'Dec':1}
 		for (i = 0; i < result[category].length; i++) {
-			// categoryarray.push({'x': new Date(result[category][i][0]), 'y':result[category][i][1]});
-            // let date = new Date(year, monthIndex [, day [, hours [, minutes [, seconds [, milliseconds]]]]])
-            // categoryarray.push({'x': date(result[category][i][0]), 'y':result[category][i][1]});
             let dateAr = result[category][i][0].split(' ');
-            // console.log(dateAr)
             let time = dateAr[4].split(':');
-            // console.log(time)
-            // console.log(typeof(dateAr))
-            // console.log(date_ar)
-            // let test = parseInt(dateAr[3])
-            // console.log(test)
-            // console.log(typeof(test))
-            // let month = monthMap[dateAr[2]];
-            // console.log('month n is', month)
             monthIndex = months.indexOf(dateAr[2])
             let parsedDate = new Date( parseInt(dateAr[3]), monthIndex, parseInt(dateAr[1]), parseInt(time[0]), parseInt(time[1]), parseInt(time[2]))
             categoryarray.push({'x': parsedDate, 'y':result[category][i][1]});
-            // categoryarray.push({'x': result[category][i][0], 'y':result[category][i][1]});
-            console.log(categoryarray)
-
-            // console.log(parsedDate)
 
 			if (categoryarray.length == result[category].length) {
 				datamap[category] = categoryarray
 			}
 		};
 	};
-	// console.log('enthusiasm data is ', datamap['enthusiasm']);
 
 	let ctx = document.getElementById('progressChart').getContext('2d');
 
 	let chart = new Chart(ctx, {
-    // The type of chart we want to create
     type: 'scatter',
 
-    // The data for our dataset
     data: {
         labels: months,
         datasets: [
@@ -124,9 +103,8 @@ function makeProgressChart(result) {
             scales: {
                 xAxes: [{
                     ticks: {
-                        // Include a dollar sign in the ticks
                         callback: function(value, index, values) {
-                            console.log(value, index, values)
+                            // console.log(value, index, values)
                             return months[index]
                         }
 

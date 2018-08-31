@@ -97,6 +97,7 @@ def check_login_info():
 
     username = username.lower()
     password = request.form.get('password')
+    # hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
     #query database to see if username entered exists
     user = User.query.filter(User.username==username).first()
@@ -384,6 +385,9 @@ def show_video_details(filename):
 
     return render_template('video_details.html', video=video, points=points, given_tups=given_tups, user_id=user_id)
 
+######################################################################################################################################
+##AJAX routes
+
 @app.route('/add_point', methods=["POST"])
 def add_point():
     """"""
@@ -423,6 +427,7 @@ def add_point():
 
 @app.route('/point-chart')
 def make_point_chart():
+    """ generates the data for a chart on profile showing completed and in-progress levels"""
 
     user_id = session['user_id']
 
