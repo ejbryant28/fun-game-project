@@ -2,6 +2,7 @@ env
 *.pyc
 *pychache*
 secrets.sh
+.coverage
 *webm
 *mkv
 *flv

@@ -2,14 +2,15 @@
 {% block content %}
 
 {% for video in videos %}
-{{ video.user_id }}<br>
-	<div class='video'>
+	<!-- <div class='video' style="width:25%"> -->
+	<div class='container-fluid video'>
+
 	Added:
   {{ video.date_uploaded.strftime("%A") }} at {{ video.date_uploaded.strftime("%I") }}:{{ video.date_uploaded.strftime("%M") }}<br>
 
   
 {% for object in video.video_challenge %}
-Challenge: <a href="../challenge/{{ object.challenge_name }}">{{ object.challenge_name }}</a>
+Challenge: <a href="challenge/{{ object.challenge_name }}">{{ object.challenge_name }}</a>
 <br>
 {% endfor %}
 
@@ -18,7 +19,11 @@ Challenge: <a href="../challenge/{{ object.challenge_name }}">{{ object.challeng
 	 <span class='tag'><a href="/tags/{{tag_object.tag_name}}">{{ tag_object.tag_name }}!</a></span>
 	 {% endfor %} 
  <br>
-<video width="320" height="240" controls>
+<!-- <video width="320" height="240" controls> -->
+<video width="80%" controls>
+<!-- <video class='video' controls> -->
+
+
 	<source src="/static/uploads/{{ video.filename }}" type="video/{{ video.filename.split('.', 1)[1] }}">
 
 	Your browser doesn't support videos. Consider upgrading to a newer version.
@@ -28,6 +33,7 @@ Challenge: <a href="../challenge/{{ object.challenge_name }}">{{ object.challeng
 
 {% for entry in video.video_point_totals %}
 	{% if entry.point_category != 'completion' %}
+
 
 		 <span id='{{ entry.point_category }}_{{ video.video_id }}_score'>{{ entry.total_points }} </span>
 

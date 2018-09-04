@@ -85,21 +85,20 @@ def load_videotags(): # pragma: no cover
 
     videos = Video.query.all() 
     tags = Tag.query.all() 
+    print('in the tags part')
 
     for video in videos: 
+        chosen = set()
 
-        choice_1 = choice(tags)
-        choice_2 = None
-        while choice_2 == None:
-            attempt = choice(tags)
-            if attempt != choice_1:
-                choice_2 = attempt
-
-
-        new_tag_1 = VideoTag(video_id=video.video_id, tag_name=choice_1.tag_name)
-        new_tag_2 = VideoTag(video_id=video.video_id, tag_name=choice_2.tag_name)
-
-        db.session.add_all([new_tag_1, new_tag_2])
+        while len(chosen) < 6:
+            print('in the while loop, len is currently', len(chosen))
+            choice_1 = choice(tags)
+            if choice_1 in chosen:
+                continue
+            else:
+                chosen.add(choice_1)
+                new_tag = VideoTag(video_id=video.video_id, tag_name=choice_1.tag_name)
+                db.session.add(new_tag)
 
     db.session.commit() 
 

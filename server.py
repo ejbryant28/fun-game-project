@@ -282,6 +282,7 @@ def allowed_file(filename):
 # @app.route('/video-upload/<challenge-name>')
 
 @app.route('/video-upload/challenge/<challenge_name>')
+# @app.route('/video-upload/')
 def upload_file_form(challenge_name):
     """Show form to upload a video"""
 
@@ -292,9 +293,11 @@ def upload_file_form(challenge_name):
     return render_template('video_upload_form.html', challenge=challenge, tags=tags)
 
 
-@app.route('/video-upload-submit', methods=['GET', 'POST'])
-def upload_file():
-    """Upload video and save file to uploads folder"""
+@app.route('/video-upload-submit', methods=['GET', 'POST']) #pragma no cover
+def upload_file(): 
+    """Upload video and save file to uploads folder
+    ##It's not possible to effectively test this route. Most people seem to just make a mock route and test that the folder works  
+    """
 
     if request.method == 'POST':
         # check if the post request has the file part
@@ -456,7 +459,7 @@ def make_point_chart():
     return jsonify(level_dict)
 
 @app.route('/progress-chart')
-def make_progress_chart():
+def make_progress_chart(): 
 
     user_id = session['user_id']
 

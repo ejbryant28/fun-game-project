@@ -275,24 +275,13 @@ class SeededDbandSession(unittest.TestCase):
         """Test the video upload form"""
 
         result = self.client.get('/video-upload/challenge/challenge', data = {}, follow_redirects=True)
+        # result = self.client.get('/video-upload/', data = {}, follow_redirects=True)
+
 
         self.assertIn(b'challenge', result.data)
         self.assertIn(b'description', result.data)
 
         self.assertIn(b'Choose some tags', result.data)
-
-    def test_video_upload(self):
-
-        form = {'file': 'new_file.mp4', 'challenge': 'challenge', 'tag': 'adjective'}
-        result = self.client.get('video-upload/challenge/challenge', data =form, follow_redirects=True)
-
-        self.assertIn(b'challenge', result.data)
-        self.assertIn(b'tags', result.data)
-
-        result_2 = self.client.get('/profile', data={}, follow_redirects=True)
-        self.assertIn(b'completion', result_2.data)
-        self.assertIn(b'You\'re level 1 in completion', result_2.data)
-
 
 
     def test_point_giving(self):
