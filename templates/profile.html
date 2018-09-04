@@ -4,14 +4,20 @@
 <p>You have:</p>
 
 {% if videos %}
+<div class="row">
+	<div class="col">
 	<canvas id="levelbarchart"></canvas>
-	{% for entry in category_levels %}
+</div>
+<div class="col">
+	<canvas id="progressChart"></canvas>
+</div>
+</div>
+{% for entry in category_levels %}
 	You're level {{ entry.level_number }} in {{ entry.point_category }} with {{ entry.user_total_points }} points! <br>
 
 	{% endfor %}
-
+	
 	<p>Your progress over time :)</p>
-	<canvas id="progressChart"></canvas>
 {% else %}
 You don't have any videos yet. Would you like to complete some <a href="/challenge">challenges</a>?
 
@@ -22,23 +28,24 @@ You don't have any videos yet. Would you like to complete some <a href="/challen
 {% for video in videos %}
 	<!-- <div class='video' style="width:25%"> -->
 	<div class='container-fluid video'>
+		<br>
 
-	Added:
-  {{ video.date_uploaded.strftime("%A") }} at {{ video.date_uploaded.strftime("%I") }}:{{ video.date_uploaded.strftime("%M") }}<br>
+	{# Added:
+  {{ video.date_uploaded.strftime("%A") }} at {{ video.date_uploaded.strftime("%I") }}:{{ video.date_uploaded.strftime("%M") }}<br> #}
 
   
 {% for object in video.video_challenge %}
-Challenge: <a href="challenge/{{ object.challenge_name }}">{{ object.challenge_name }}</a>
-<br>
+<h3> Challenge: <a href="challenge/{{ object.challenge_name }}">{{ object.challenge_name }}</a> </h3>
+<a href="/video-upload/{{ video.filename }}">See Details</a>!<br>
 {% endfor %}
 
-  This video is:<br>
+  Tags:
 	 {% for tag_object in video.video_tag %}
 	 <span class='tag'><a href="/tags/{{tag_object.tag_name}}">{{ tag_object.tag_name }}!</a></span>
 	 {% endfor %} 
  <br>
 <!-- <video width="320" height="240" controls> -->
-<video width="80%" controls>
+<video width="70%" controls>
 <!-- <video class='video' controls> -->
 
 
@@ -47,13 +54,13 @@ Challenge: <a href="challenge/{{ object.challenge_name }}">{{ object.challenge_n
 	Your browser doesn't support videos. Consider upgrading to a newer version.
 </video>
 <br>
-<a href="/video-upload/{{ video.filename }}">See Details</a>!<br>
 
 {% for entry in video.video_point_totals %}
 	{% if entry.point_category != 'completion' %}
 
 
 		 <span id='{{ entry.point_category }}_{{ video.video_id }}_score'>{{ entry.total_points }} </span>
+
 				<button class ='{{ entry.point_category }}' id='{{ entry.point_category }}_{{ video.video_id }}' disabled>{{ entry.point_category }} 
 				</button>
 
@@ -63,6 +70,7 @@ Challenge: <a href="challenge/{{ object.challenge_name }}">{{ object.challenge_n
  <br><br><br>
 
 </div>
+<br>
 </div>
 {% endfor %}
 

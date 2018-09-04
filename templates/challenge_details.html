@@ -13,23 +13,24 @@ Directions: {{ challenge.description }}<br><br>
 {% for video in videos %}
 	<!-- <div class='video' style="width:25%"> -->
 	<div class='container-fluid video'>
+		<br>
 
-	Added:
-  {{ video.date_uploaded.strftime("%A") }} at {{ video.date_uploaded.strftime("%I") }}:{{ video.date_uploaded.strftime("%M") }}<br>
+	{# Added:
+  {{ video.date_uploaded.strftime("%A") }} at {{ video.date_uploaded.strftime("%I") }}:{{ video.date_uploaded.strftime("%M") }}<br> #}
 
   
 {% for object in video.video_challenge %}
-Challenge: <a href="challenge/{{ object.challenge_name }}">{{ object.challenge_name }}</a>
-<br>
+<h3> Challenge: <a href="challenge/{{ object.challenge_name }}">{{ object.challenge_name }}</a> </h3>
+<a href="/video-upload/{{ video.filename }}">See Details</a>!<br>
 {% endfor %}
 
-  This video is:<br>
+  Tags:
 	 {% for tag_object in video.video_tag %}
 	 <span class='tag'><a href="/tags/{{tag_object.tag_name}}">{{ tag_object.tag_name }}!</a></span>
 	 {% endfor %} 
  <br>
 <!-- <video width="320" height="240" controls> -->
-<video width="80%" controls>
+<video width="90%" controls>
 <!-- <video class='video' controls> -->
 
 
@@ -38,7 +39,6 @@ Challenge: <a href="challenge/{{ object.challenge_name }}">{{ object.challenge_n
 	Your browser doesn't support videos. Consider upgrading to a newer version.
 </video>
 <br>
-<a href="/video-upload/{{ video.filename }}">See Details</a>!<br>
 
 {% for entry in video.video_point_totals %}
 	{% if entry.point_category != 'completion' %}
@@ -62,6 +62,7 @@ Challenge: <a href="challenge/{{ object.challenge_name }}">{{ object.challenge_n
  <br><br><br>
 
 </div>
+<br>
 </div>
 {% endfor %}
 

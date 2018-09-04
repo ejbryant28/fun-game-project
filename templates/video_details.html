@@ -2,14 +2,12 @@
 {% block content %}
 
 {% for object in video.video_challenge%}
-<a href="../challenge/{{ object.challenge_name }}"><h1>{{ object.challenge_name }}</h1></a>
+<br>
+<div class="container-fluid video">
+<a href="../challenge/{{ object.challenge_name }}"><h1>{{ object.challenge_name.capitalize() }}</h1></a>
 {% endfor %}
 
-<p>Added:
- {{ video.date_uploaded.strftime("%A") }} at {{ video.date_uploaded.strftime("%I") }}:{{ video.date_uploaded.strftime("%M") }} </p>
-
-<br><br>
-Tags:<br>
+Tags:
 {% for tag_object in video.video_tag %}
 	 <span class='tag'><a href="/tags/{{tag_object.tag_name}}">{{ tag_object.tag_name }}!</a></span>
 	 {% endfor %} 
@@ -28,7 +26,6 @@ Tags:<br>
 </video>
 
 <div>
-This video got:<br>
 
 {% for point in points %}
 	{% if point.point_category != 'completion' %}
@@ -42,12 +39,16 @@ This video got:<br>
 
 			<button class ='{{ point.point_category }}' id='{{ point.point_category }}_{{ video.video_id }}' onclick=getPoints({{ point.point_category }}_{{ video.video_id }})>{{ point.point_category }} 
 		</button>
+
 		{% endif %} 
 
 	{% endif %}
 
 {% endfor %}
+<br>
 </div>
+</div>
+<br>
 
 
 

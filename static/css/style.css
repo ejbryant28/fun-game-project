@@ -1,15 +1,20 @@
 
-
-/*.video {
-	Col: 4;
-	columns: 4;
-}*/
 .container-fluid.video {
-  /*box-sizing: content-box;*/
-  display: inline-block;
-  width: 40%;
-  padding-right: 5px;
+  width: 90%;
+/*  padding-right: 5px;
   padding-left: 5px;
-  margin-right: 3%;
-  margin-left: 3%;
+  margin-right: 10%;
+  margin-left: 10%;*/
+  background-color: white;
+  align-content: center;
+  text-align: center;
+  align-items: center;
+}
+
+.card {
+  display: inline-block;
+  margin: 5px;
+  align-items: center;
+  height: 200px
+  /*width: 25%;*/
 }

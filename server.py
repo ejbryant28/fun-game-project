@@ -39,7 +39,7 @@ def before_request():
     """redirect user if they aren't logged in"""
     current_url = request.path
     user_id = session.get('user_id')
-    ok_urls = ['/login', '/login-check', '/add-user-form', '/add-user']
+    ok_urls = ['/login', '/login-check', '/add-user-form', '/add-user', '/about']
     if (user_id is None) and (current_url not in ok_urls):
         return redirect('/login')
 

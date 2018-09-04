@@ -16,15 +16,16 @@ function makeChart(result){
 	        labels: chartLabels,
 	        datasets: [{
 	            label: "Completed Levels",
-	            backgroundColor: 'rgb(52, 73, 94)',
-	            borderColor: 'rgb(52, 73, 94)',
+	            // fill: false
+	            backgroundColor: ['rgb(245, 236, 135)', 'rgb(26, 82, 118)', 'rgb(196, 43, 81)', 'rgb(149, 127, 189)', 'rgb(93, 173, 226)', 'rgb(44, 119, 108)'],
+	            borderColor: ['rgb(245, 236, 135)', 'rgb(26, 82, 118)', 'rgb(196, 43, 81)', 'rgb(149, 127, 189)', 'rgb(93, 173, 226)', 'rgb(44, 119, 108)'],
 	            data: finishedPointValues,
 	        },
 
 	        {
 	            label: "In progress",
-	            backgroundColor: 'rgb(83, 189, 184)',
-	            borderColor: 'rgb(83, 189, 184)',
+	            backgroundColor: 'rbg(209, 242, 235)',
+	            borderColor: 'rgb(209, 242, 235)',
 	            data: unfinishedPointValues,
 	        }]
 	    },
