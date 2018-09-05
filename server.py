@@ -39,7 +39,6 @@ def before_request():
     """redirect user if they aren't logged in"""
     
     current_url = request.path
-    print("URL IS", current_url)
     user_id = session.get('user_id')
     ok_urls = ['/login', '/login-check', '/add-user-form', '/add-user', '/about',] # '/static/css/style.css', '/static/photos/bright-3324408_1920.jpg']
     if (user_id is None) and (current_url not in ok_urls) and not current_url.startswith('/static'):

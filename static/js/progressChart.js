@@ -101,6 +101,16 @@ function makeProgressChart(result) {
 
     // Configuration options go here
     options: {
+            legend: {
+                labels: {
+                    boxWidth: 4,
+                }
+            
+            },
+            title: {
+                display: true,
+                text: 'Progress Over Time'
+            },
             scales: {
                 xAxes: [{
                     ticks: {
@@ -108,7 +118,17 @@ function makeProgressChart(result) {
                             // console.log(value, index, values)
                             return months[index]
                         }
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString:'Time'
+                    },
+                }],
 
+                yAxes: [{
+                   scaleLabel: {
+                        display: true,
+                        labelString:'Level' 
                     }
                 }]
             }

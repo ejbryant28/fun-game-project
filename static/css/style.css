@@ -22,11 +22,11 @@
   text-align: center;
 }
 
-.chart {
+/*.chart {
   background-color: white;
   width:90%;
-  height: 300px;
-}
+  padding: 1%;
+}*/
 
 .text {
   width: 90%;
@@ -38,30 +38,43 @@
   margin: 1%;
   border: 1%;
 }
+.chart-container {
+  position: relative;
+  /*height: 500vh;*/
+  background-color: white;
+  width:90%;
+  padding: 1%;
+}
+/*#levelbarchart {
+  height: 500vh;
+}
 
-/*.enthusiasm {
+#progressChart {
+  height: 500px
+}*/
+.enthusiasm-chart {
   color: rgb(196, 43, 81);
 }
 
-.silliness {
+.silliness-chart {
   color: rgb(93, 205, 220);
 }
 
-.artistry {
+.artistry-chart {
   color: rgb(214, 136, 38);
 }
 
-.originality {
+.originality-chart {
   color: rgb(149, 127, 189);
 }
 
-.social {
+.social-chart {
   color: rgb(44, 119, 108);
 }
 
-.completion {
+.completion-chart {
   color: rgb(55, 125, 168);
-}*/
+}
 
 
 /*h1, h2, h3 {

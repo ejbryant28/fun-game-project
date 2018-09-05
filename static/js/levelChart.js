@@ -31,11 +31,25 @@ function makeChart(result){
 	    },
 	    options: {
         scales: {
+        	title: {
+        		display: true,
+        		text: 'Current Levels'
+        	},
             xAxes: [{
-                stacked: true
+                stacked: true,
+                
+               	scaleLabel: {
+                        display: true,
+                        labelString:'Category'
+                    },
             }],
             yAxes: [{
-                stacked: true
+                stacked: true,
+
+                scaleLabel: {
+                        display: true,
+                        labelString:'Level'
+                    },
             }]
         }
     }
