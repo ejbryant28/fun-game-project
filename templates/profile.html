@@ -1,25 +1,31 @@
 {% extends 'base.html' %}
 {% block content %}
-
-<p>You have:</p>
+<br>
 
 {% if videos %}
 <div class="row">
-	<div class="col">
-	<canvas id="levelbarchart"></canvas>
-</div>
-<div class="col">
+	<!-- <div class="col-1"></div> -->
+	<div class="col-lg-4 offset-1 col-xs-10 chart">
 	<canvas id="progressChart"></canvas>
 </div>
+<!-- <div class="col-2"></div> -->
+	<div class="col-lg-4 offset-1 col-xs-10 chart">
+	
+	<canvas id="levelbarchart"></canvas>
 </div>
+{#
+<div class="col-4 chart">
 {% for entry in category_levels %}
 	You're level {{ entry.level_number }} in {{ entry.point_category }} with {{ entry.user_total_points }} points! <br>
 
 	{% endfor %}
-	
-	<p>Your progress over time :)</p>
+</div> #}
+</div>
+
 {% else %}
+<div class="text">
 You don't have any videos yet. Would you like to complete some <a href="/challenge">challenges</a>?
+</div>
 
 {% endif %}
 
@@ -35,7 +41,7 @@ You don't have any videos yet. Would you like to complete some <a href="/challen
 
   
 {% for object in video.video_challenge %}
-<h3> Challenge: <a href="challenge/{{ object.challenge_name }}">{{ object.challenge_name }}</a> </h3>
+<h3> Challenge: <a href="challenge/{{ object.challenge_name }}">{{ object.challenge_name.capitalize() }}</a> </h3>
 <a href="/video-upload/{{ video.filename }}">See Details</a>!<br>
 {% endfor %}
 

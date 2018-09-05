@@ -1,54 +1,58 @@
 {% extends 'base.html' %}
 {% block content %}
-
-{% for object in video.video_challenge%}
 <br>
-<div class="container-fluid video">
-<a href="../challenge/{{ object.challenge_name }}"><h1>{{ object.challenge_name.capitalize() }}</h1></a>
+	<div class='container-fluid video'>
+		<br>
+
+	{# Added:
+  {{ video.date_uploaded.strftime("%A") }} at {{ video.date_uploaded.strftime("%I") }}:{{ video.date_uploaded.strftime("%M") }}<br> #}
+
+  
+{% for object in video.video_challenge %}
+<h3> Challenge: <a href="challenge/{{ object.challenge_name }}">{{ object.challenge_name.capitalize() }}</a> </h3>
+<a href="/video-upload/{{ video.filename }}">See Details</a>!<br>
 {% endfor %}
 
-Tags:
-{% for tag_object in video.video_tag %}
+  Tags:
+	 {% for tag_object in video.video_tag %}
 	 <span class='tag'><a href="/tags/{{tag_object.tag_name}}">{{ tag_object.tag_name }}!</a></span>
 	 {% endfor %} 
-<br><br>
-
-<form>
-	<input type="hidden" name="video_id" id="video_id" value="{{ video.video_id }}">
-</form>
-
+ <br>
 <!-- <video width="320" height="240" controls> -->
-<video controls width="80%">
+<video width="90%" controls>
+<!-- <video class='video' controls> -->
 
-	<source src="/static/uploads/{{ video.filename }}" type="video/{{ video.filename.rsplit('.', 1)[1] }}">
+
+	<source src="/static/uploads/{{ video.filename }}" type="video/{{ video.filename.split('.', 1)[1] }}">
 
 	Your browser doesn't support videos. Consider upgrading to a newer version.
 </video>
+<br>
 
-<div>
+{% for entry in video.video_point_totals %}
+	{% if entry.point_category != 'completion' %}
 
-{% for point in points %}
-	{% if point.point_category != 'completion' %}
-		<span id='{{ point.point_category }}_{{ video.video_id }}_score' >{{ point.total_points }}</span>
 
-		{% if (point.point_category, video.video_id) in given_tups or video.user_id == user_id %}
-				<button class ='{{ point.point_category }}' id='{{ point.point_category }}_{{ video.video_id }}' disabled>{{ point.point_category }} 
+		 <span id='{{ entry.point_category }}_{{ video.video_id }}_score'>{{ entry.total_points }} </span>
+
+		 {% if (entry.point_category, video.video_id) in given_tups or video.user_id == user_id %}
+				<button class ='{{ entry.point_category }}' id='{{ entry.point_category }}_{{ video.video_id }}' disabled>{{ entry.point_category }} 
 				</button>
 
 		 {% else %}
 
-			<button class ='{{ point.point_category }}' id='{{ point.point_category }}_{{ video.video_id }}' onclick=getPoints({{ point.point_category }}_{{ video.video_id }})>{{ point.point_category }} 
+			<button class ='{{ entry.point_category }}' id='{{ entry.point_category }}_{{ video.video_id }}' onclick=getPoints({{ entry.point_category }}_{{ video.video_id }})>{{ entry.point_category }} 
 		</button>
-
 		{% endif %} 
 
 	{% endif %}
-
 {% endfor %}
+
+ <br><br><br>
+
+</div>
 <br>
 </div>
-</div>
-<br>
 
 
 

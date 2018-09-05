@@ -24,7 +24,7 @@ function makeChart(result){
 
 	        {
 	            label: "In progress",
-	            backgroundColor: 'rbg(209, 242, 235)',
+	            backgroundColor: 'rgba(245, 236, 135, .5)',
 	            borderColor: 'rgb(209, 242, 235)',
 	            data: unfinishedPointValues,
 	        }]
