@@ -25,6 +25,7 @@
 .chart {
   background-color: white;
   width:90%;
+  height: 300px;
 }
 
 .text {
@@ -37,6 +38,31 @@
   margin: 1%;
   border: 1%;
 }
+
+/*.enthusiasm {
+  color: rgb(196, 43, 81);
+}
+
+.silliness {
+  color: rgb(93, 205, 220);
+}
+
+.artistry {
+  color: rgb(214, 136, 38);
+}
+
+.originality {
+  color: rgb(149, 127, 189);
+}
+
+.social {
+  color: rgb(44, 119, 108);
+}
+
+.completion {
+  color: rgb(55, 125, 168);
+}*/
+
 
 /*h1, h2, h3 {
   color: rgb(44, 119, 108);

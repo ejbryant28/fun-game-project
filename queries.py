@@ -6,8 +6,6 @@ from sqlalchemy import func
 
 #User queries
 ######################################################################################################################################
-def users():
-    return User.query
 
 def user_by_user_id(user_id):
 
@@ -19,8 +17,6 @@ def user_by_username(username):
 
 #Video queries
 ######################################################################################################################################
-def videos():
-    return Video.query
 
 def videos_by_date():
 
@@ -45,16 +41,10 @@ def video_by_challenge_name_user_id(challenge_name, user_id):
 #Tags
 ######################################################################################################################################
 
-def tags():
-
-    return Tag.query
 
 #Challenges
 ######################################################################################################################################
 
-def challenges():
-
-    return Challenge.query
 
 def challenges_by_name(challenge_name):
 
@@ -85,9 +75,6 @@ def newest_points(user_id, last_updated):
 
 #PointCategory
 ######################################################################################################################################
-def point_categories():
-    
-    return PointCategory.query
 
 
 

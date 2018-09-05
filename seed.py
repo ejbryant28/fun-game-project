@@ -219,7 +219,9 @@ def load_video_point_totals(): # pragma: no cover
     for video in videos:
 
         #get categories so you can go through and add the points for each category available
-        categories = point_categories().filter(PointCategory.point_category != 'social', PointCategory.point_category != 'completion').all()
+        # categories = point_categories().filter(PointCategory.point_category != 'social', PointCategory.point_category != 'completion').all()
+        categories = PointCategory.query.filter(PointCategory.point_category != 'social', PointCategory.point_category != 'completion').all()
+
 
         for category in categories:
 

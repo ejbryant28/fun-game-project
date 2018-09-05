@@ -69,18 +69,18 @@ class YesDbNoSession(unittest.TestCase):
         db.engine.dispose()
 
 
-    def test_login_incorrect_info(self):
-        """Test login with wrong password and wrong username"""
+    # def test_login_incorrect_info(self):
+    #     """Test login with wrong password and wrong username"""
 
-        result = self.client.post('/login-check',
-                                data={"username": 'wrong',
-                                    "password": 'wrong'},
-                                follow_redirects=True)
+    #     result = self.client.post('/login-check',
+    #                             data={"username": 'wrong',
+    #                                 "password": 'wrong'},
+    #                             follow_redirects=True)
 
-        self.assertIn(b"Ooops. The username you ", result.data)
-        self.assertIn(b"Log In", result.data)
-        self.assertNotIn(b"Log Out", result.data)
-        self.assertNotIn(b"Ooops. Looks like you", result.data)
+    #     self.assertIn(b"Ooops. The username you ", result.data)
+    #     self.assertIn(b"Log In", result.data)
+    #     self.assertNotIn(b"Log Out", result.data)
+    #     self.assertNotIn(b"Ooops. Looks like you", result.data)
 
 
 class EmptyDbNoSession(unittest.TestCase):
@@ -253,7 +253,6 @@ class SeededDbandSession(unittest.TestCase):
 
         self.assertIn(b"Details", result.data)
         self.assertIn(b"adjective", result.data)
-        self.assertIn(b"Added", result.data)
         self.assertIn(b"Challenge", result.data)
         self.assertIn(b'category', result.data)
         self.assertIn(b'completion', result.data)
@@ -266,7 +265,7 @@ class SeededDbandSession(unittest.TestCase):
 
         result = self.client.get('/video-upload/filename_1.mp4', data = {}, follow_redirects=True)
 
-        self.assertIn(b'Added', result.data)
+        # self.assertIn(b'Added', result.data)
         self.assertIn(b'adjective', result.data)
         self.assertIn(b'category', result.data)
         self.assertIn(b'1', result.data)

@@ -3,7 +3,7 @@
 <br>
 
 {% if videos %}
-<div class="row">
+<div class="row charts">
 	<!-- <div class="col-1"></div> -->
 	<div class="col-lg-4 offset-1 col-xs-10 chart">
 	<canvas id="progressChart"></canvas>
@@ -13,13 +13,17 @@
 	
 	<canvas id="levelbarchart"></canvas>
 </div>
+<br>
+<br>
 {#
+<div class="col-1"></div>
 <div class="col-4 chart">
 {% for entry in category_levels %}
 	You're level {{ entry.level_number }} in {{ entry.point_category }} with {{ entry.user_total_points }} points! <br>
 
 	{% endfor %}
-</div> #}
+</div>
+#}
 </div>
 
 {% else %}

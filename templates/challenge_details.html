@@ -13,8 +13,8 @@ Directions: {{ challenge.description }}<br><br>
 {% endif %}
 </div>
 <br>
+{% if videos %}
 {% for video in videos %}
-	<!-- <div class='video' style="width:25%"> -->
 	<div class='container-fluid video'>
 		<br>
 
@@ -68,5 +68,9 @@ Directions: {{ challenge.description }}<br><br>
 <br>
 </div>
 {% endfor %}
+
+{% else %}
+<div class="text">No one has completed this challenge. Be the first!</div>
+{% endif %}
 
 {% endblock %}

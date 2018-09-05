@@ -41,10 +41,10 @@
 
     {% else %}
     <a class="nav-link" href="/about">About</a>
-    <a class="nav-link" href="/create-profile">Create Profile</a>
+    <a class="nav-link" href="/add-user-form">Create Profile</a>
     <a class="nav-link" href="/login">Log In</a>
 
-
+ 
     {% endif %}
 
 
@@ -71,7 +71,8 @@
 	<hr> #}
 
 	{% for message in get_flashed_messages() %}
-		<h2> <font color="red"> {{ message }} </font></h2>
+		<!-- <h2> <font color="red"> {{ message }} </font></h2> -->
+    <div class="alert alert-success" role="alert"> {{ message }}</div>
 	{% endfor %}
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
