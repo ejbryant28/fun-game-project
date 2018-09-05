@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-
+<br>
+<div class="text">
 <h1>Challenge: {{ challenge.challenge_name.capitalize() }} </h1><br>
 Directions: {{ challenge.description }}<br><br>
 {% if completed %}
@@ -10,6 +11,8 @@ Directions: {{ challenge.description }}<br><br>
 	<a href="/video-upload/challenge/{{ challenge.challenge_name }}">Complete this Challenge!</a><br><br><br>
 
 {% endif %}
+</div>
+<br>
 {% for video in videos %}
 	<!-- <div class='video' style="width:25%"> -->
 	<div class='container-fluid video'>

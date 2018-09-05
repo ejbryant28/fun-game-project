@@ -216,9 +216,17 @@ def user_profile():
 def show_challenges():
     """Show all the available challenges"""
 
+    user_id = session['user_id']
+
     challenges = Challenge.query.all()
 
-    return render_template('challenges.html', challenges=challenges)
+    completed_videos = Video.query.filter(Video.user_id==user_id).all()
+    completed = {}
+    for video in completed_videos:
+        for thing in video.video_challenge:
+            completed[thing.challenge_name] = video.filename
+
+    return render_template('challenges.html', challenges=challenges, completed=completed)
 
 
 @app.route('/challenge/<challenge_name>')
@@ -264,7 +272,11 @@ def show_tag(tag_name):
 @app.route('/about')
 def show_about():
 
-    return render_template('about.html')
+    user_id = session['user_id']
+
+    user = User.query.filter(User.user_id==user_id).first()
+
+    return render_template('about.html', user=user)
 
 ######################################################################################################################################
 #video-upload functions

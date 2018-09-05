@@ -17,15 +17,15 @@ function makeChart(result){
 	        datasets: [{
 	            label: "Completed Levels",
 	            // fill: false
-	            backgroundColor: ['rgb(245, 236, 135)', 'rgb(26, 82, 118)', 'rgb(196, 43, 81)', 'rgb(149, 127, 189)', 'rgb(93, 173, 226)', 'rgb(44, 119, 108)'],
-	            borderColor: ['rgb(245, 236, 135)', 'rgb(26, 82, 118)', 'rgb(196, 43, 81)', 'rgb(149, 127, 189)', 'rgb(93, 173, 226)', 'rgb(44, 119, 108)'],
+	            backgroundColor: ['rgb(214, 136, 38)', 'rgb(55, 125, 168)', 'rgb(196, 43, 81)', 'rgb(149, 127, 189)', 'rgb(93, 205, 220)', 'rgb(44, 119, 108)'],
+	            borderColor: ['rgb(214, 136, 38)', 'rgb(26, 82, 118)', 'rgb(196, 43, 81)', 'rgb(149, 127, 189)', 'rgb(93, 205, 220)', 'rgb(44, 119, 108)'],
 	            data: finishedPointValues,
 	        },
 
 	        {
 	            label: "In progress",
-	            backgroundColor: 'rgba(245, 236, 135, .5)',
-	            borderColor: 'rgb(209, 242, 235)',
+	            backgroundColor: ['rgba(214, 136, 38, .5)', 'rgba(55, 125, 168, .5)', 'rgba(196, 43, 81, .5)', 'rgba(149, 127, 189, .5)', 'rgb(93, 205, 220, .5)', 'rgba(44, 119, 108, .5)',],
+	            borderColor: ['rgba(214, 136, 38, .5)', 'rgba(26, 82, 118, .5)', 'rgba(196, 43, 81, .5)', 'rgba(149, 127, 189, .5)', 'rgb(93, 205, 220, .5)', 'rgba(44, 119, 108, .5)',],
 	            data: unfinishedPointValues,
 	        }]
 	    },

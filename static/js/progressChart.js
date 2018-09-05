@@ -49,8 +49,8 @@ function makeProgressChart(result) {
         {
             label: "silliness",
             // pointBackgroundColor: 'rgb(100, 30, 22)',
-            borderColor: 'rgb(93, 173, 226)',
-            pointBorderColor: 'rgb(93, 173, 226)',
+            borderColor: 'rgb(93, 205, 220)',
+            pointBorderColor: 'rgb(93, 205, 220)',
             data: datamap['silliness'],
             showLine: 'True',
             lineTension: 0.5,
@@ -59,8 +59,8 @@ function makeProgressChart(result) {
         },
         {
             label: "artistry",
-            pointBackgroundColor: 'rgb(245, 236, 135)',
-            borderColor: 'rgb(245, 236, 135)',
+            pointBackgroundColor: 'rgb(214, 136, 38)',
+            borderColor: 'rgb(214, 136, 38)',
             data: datamap['artistry'],
             showLine: 'True',
             lineTension: 0.5,
@@ -88,8 +88,8 @@ function makeProgressChart(result) {
         },
         {
             label: "completion",
-            pointBackgroundColor: 'rgb(26, 82, 118)',
-            borderColor: 'rgb(26, 82, 118)',
+            pointBackgroundColor: 'rgb(55, 125, 168)',
+            borderColor: 'rgb(55, 125, 168)',
             data: datamap['completion'],
             showLine: 'True',
             lineTension: 0.5,

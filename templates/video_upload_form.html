@@ -1,11 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
-
-<h1>Complete the {{ challenge.challenge_name }} challenge!</h1>
+<br>
+<div class="text">
+<h1>Complete the {{ challenge.challenge_name.capitalize() }} challenge!</h1>
 
 <p>Instructions: {{challenge.description }}</p>
-
-{{ challenge.challenge_name }}
 
 
 <form action="/video-upload-submit" method="POST" enctype=multipart/form-data>
@@ -15,12 +14,19 @@
 	<br><br><br>
 	Choose some tags!
 	<br>
+	<div class="row">
 	{% for tag in tags %}
-	<input type="checkbox" name="tag" value="{{ tag.tag_name }}">{{ tag.tag_name }}
+	<div class="card tag">
+	<input type="checkbox" name="tag" value="{{ tag.tag_name }}">  {{ tag.tag_name }}
+</div>
 	{% endfor %}
+	</div>
 	<br><br>
+
 	<input type="submit">
 </form>
+</div>
+<br>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script type="text/javascript"></script>

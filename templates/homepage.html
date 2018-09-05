@@ -21,7 +21,7 @@
 
   
 {% for object in video.video_challenge %}
-<h3> Challenge: <a href="challenge/{{ object.challenge_name }}">{{ object.challenge_name }}</a> </h3>
+<h3> Challenge: <a href="challenge/{{ object.challenge_name }}">{{ object.challenge_name.capitalize() }}</a> </h3>
 <a href="/video-upload/{{ video.filename }}">See Details</a>!<br>
 {% endfor %}
 
