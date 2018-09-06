@@ -43,7 +43,12 @@
   /*height: 500vh;*/
   background-color: white;
   width:90%;
-  padding: 1%;
+  /*padding: 1%;*/
+  padding-top: 1%;
+  padding-bottom: 1%;
+  padding-right: 0;
+/*  margin-right: -5px;
+  margin-left: -5px;*/
 }
 /*#levelbarchart {
   height: 500vh;

@@ -12,7 +12,7 @@
 	<div class="col-md-2 offset-1 col-xs-10 chart chart-container">
 
 	{% for entry in category_levels %}
-	<strong><span class="{{ entry.point_category }}-chart">{{ entry.point_category.capitalize() }}</span></strong>: level {{ entry.level_number }}, total: {{ entry.user_total_points}}
+	<strong><span class="{{ entry.point_category }}-chart">{{ entry.point_category.capitalize() }}</span></strong>: level {{ entry.level_number }} | total: {{ entry.user_total_points}}
 	<br><br>
 	{% endfor %}
 	</div>
@@ -64,15 +64,13 @@ You don't have any videos yet. Would you like to complete some <a href="/challen
 <br>
 
 {% for entry in video.video_point_totals %}
-	{% if entry.point_category != 'completion' %}
 
 
-		 <span id='{{ entry.point_category }}_{{ video.video_id }}_score'>{{ entry.total_points }} </span>
+		 <span id='{{ entry.point_category }}_{{ video.video_id }}_score'>{{ entry.total_points }}</span>
 
 				<button class ='{{ entry.point_category }}' id='{{ entry.point_category }}_{{ video.video_id }}' disabled>{{ entry.point_category }} 
 				</button>
 
-	{% endif %}
 {% endfor %}
 
  <br><br><br>

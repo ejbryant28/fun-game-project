@@ -103,13 +103,16 @@ function makeProgressChart(result) {
     options: {
             legend: {
                 labels: {
-                    boxWidth: 4,
+                    boxWidth: 1,
+                    fontSize: 15,
                 }
             
             },
             title: {
                 display: true,
-                text: 'Progress Over Time'
+                text: 'Progress Over Time',
+                fontSize: 20,
+                fontStyle: 'bold'
             },
             scales: {
                 xAxes: [{
@@ -121,14 +124,16 @@ function makeProgressChart(result) {
                     },
                     scaleLabel: {
                         display: true,
-                        labelString:'Time'
+                        labelString:'Time',
+                        fontSize: 20,
                     },
                 }],
 
                 yAxes: [{
                    scaleLabel: {
                         display: true,
-                        labelString:'Level' 
+                        labelString:'Level',
+                        fontSize: 20,
                     }
                 }]
             }

@@ -30,17 +30,21 @@ function makeChart(result){
 	        }]
 	    },
 	    options: {
+	    // title: {
+     //            display: true,
+     //            text: 'Current Levels',
+     //            fontSize: 20,
+     //            fontStyle: 'bold'
+     //        },
         scales: {
-        	title: {
-        		display: true,
-        		text: 'Current Levels'
-        	},
+
             xAxes: [{
                 stacked: true,
                 
                	scaleLabel: {
                         display: true,
-                        labelString:'Category'
+                        labelString:'Category',
+                        fontSize: 20,
                     },
             }],
             yAxes: [{
@@ -48,7 +52,8 @@ function makeChart(result){
 
                 scaleLabel: {
                         display: true,
-                        labelString:'Level'
+                        labelString:'Level',
+                        fontSize: 20,
                     },
             }]
         }
