@@ -89,3 +89,28 @@
 a {
   color: rgb(55, 125, 168);
 }*/
+
+.alert {
+  color: rgb(196, 43, 81);
+  background-color: white;
+  font-size: large;
+  
+}
+
+.point {
+  color: rgb(55, 125, 168);
+  font-style: bold;
+  background-color: white;
+  font-size: large;
+  font-weight: bolder;
+
+}
+.level {
+  color: rgb(44, 119, 108);
+  font-style: bold;
+  background-color: white;
+  font-size: large;
+  font-weight: bolder;
+
+
+}

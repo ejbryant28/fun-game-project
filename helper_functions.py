@@ -55,7 +55,8 @@ def update_tables(new_points, user_id):
         #update user level table accordingly
         user_level = UserLevelCategory.query.filter(UserLevelCategory.user_id==user_id, UserLevelCategory.point_category==category).first()
         user_level.user_total_points +=1
-        flash_messages.append("You got a new {} point for video {}!".format(category, video_id))
+        message ="You got a new {} point!".format(category)
+        flash_messages.append(('point', message,))
 
         #reset time updated to be now
         now = datetime.now()
@@ -65,7 +66,7 @@ def update_tables(new_points, user_id):
         new_level = level_category_current_point(category, user_level.user_total_points).first()
 
         if new_level.level_number > user_level.level_number:
-            flash_messages.append("YOU LEVELED UP IN {}".format(category))
+            flash_messages.append(('level', "YOU LEVELED UP IN {}".format(category)))
             user_level.level_number = new_level.level_number
         db.session.commit()
 

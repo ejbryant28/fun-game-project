@@ -23,6 +23,7 @@
 <div class="col-md-8 offset-2 col-xs-10 chart chart-container">
 	<canvas id="progressChart"></canvas>
 </div>
+<a href=""></a>
 
 {% else %}
 <div class="text">
@@ -48,14 +49,11 @@ You don't have any videos yet. Would you like to complete some <a href="/challen
 {% endfor %}
 
   Tags:
-	 {% for tag_object in video.video_tag %}
-	 <span class='tag'><a href="/tags/{{tag_object.tag_name}}">{{ tag_object.tag_name }}!</a></span>
-	 {% endfor %} 
+ 	{% for tag_object in video.video_tag %}
+ 	<span class='tag'><a href="/tags/{{tag_object.tag_name}}">@{{ tag_object.tag_name }}!</a></span>
+ 	{% endfor %} 
  <br>
-<!-- <video width="320" height="240" controls> -->
 <video width="70%" controls>
-<!-- <video class='video' controls> -->
-
 
 	<source src="/static/uploads/{{ video.filename }}" type="video/{{ video.filename.split('.', 1)[1] }}">
 

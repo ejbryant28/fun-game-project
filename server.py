@@ -76,9 +76,15 @@ def homepage():
 
         #call function that updates all the tables and returns flash messages
         flash_messages = update_tables(new_points, user_id)
+        print(flash_messages)
     
         for message in flash_messages:
-            flash(message)
+            if message[0]=='point':
+                print('found a point')
+                flash(message[1], "point")
+            if message[0]=='level':
+                print('found a level')
+                flash(message[1], 'level')
 
     return render_template('homepage.html', videos=videos, challenges=challenges, given_tups=given_tups, user_id=user_id)
 
@@ -106,22 +112,20 @@ def check_login_info():
     if user is None:
         #Suggest create profile or check username
 
-        flash("""Ooops. The username you entered isn't in our database. 
-                    Are you sure you entered it correctly? Do you want to
-                    create a profile?""")
+        flash("Ooops. The username that username doesn't exist. Try again.", "alert")
         return redirect('/login')
 
     else:
         if bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
 
-            flash("You're logged in!")
+            flash("You're logged in!", "alert")
             session['user_id'] = user.user_id
 
             return redirect('/')
 
         else:
             #suggest they check their password
-            flash("Ooops. Looks like you entered your password incorrectly.")
+            flash("Ooops. Looks like you entered your password incorrectly.", "alert")
             return redirect('/login')
 
 @app.route('/logout')
@@ -137,7 +141,7 @@ def logout_check():
 
     del session['user_id']
 
-    flash("You're logged out. See you next time.")
+    flash("You're logged out. See you next time.", "alert")
     return redirect('/login')
 
 
@@ -172,7 +176,7 @@ def add_user():
     if user_check == None:
 
         #add info to database and redirect to homepage if username is available
-        flash('Welcome!')
+        flash('Welcome!', "alert")
 
         user = User(name=name, username=username, email=email, password=hashed.decode('utf-8'))
         db.session.add(user)
@@ -189,7 +193,7 @@ def add_user():
     
     else:
         #suggest trying a different username if it's already being used
-        flash('Sorry, that username is taken. Try another')
+        flash('Sorry, that username is taken. Try another', "alert")
         return redirect('/add-user-form')
 
 @app.route('/profile')
@@ -315,7 +319,7 @@ def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
-            flash('No file part')
+            flash('No file part', "alert")
             return redirect('/video-upload')
 
         file = request.files['file']
@@ -323,7 +327,7 @@ def upload_file():
         # if user does not select file, browser also
         # submit an empty part without filename
         if file.filename == '':
-            flash('No selected file')
+            flash('No selected file', "alert")
             return redirect('/video-upload')
 
         if file and allowed_file(file.filename):
@@ -382,7 +386,7 @@ def upload_file():
 
 
     else:
-        flash("oops. Something went wrong. Check the file extension on your file")
+        flash("oops. Something went wrong. Check the file extension on your file", "alert")
         return redirect('/video-upload')
 
 

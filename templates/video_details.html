@@ -9,13 +9,13 @@
 
   
 {% for object in video.video_challenge %}
-<h3> Challenge: <a href="challenge/{{ object.challenge_name }}">{{ object.challenge_name.capitalize() }}</a> </h3>
+<h3> Challenge: <a href="../challenge/{{ object.challenge_name }}">{{ object.challenge_name.capitalize() }}</a> </h3>
 <a href="/video-upload/{{ video.filename }}">See Details</a>!<br>
 {% endfor %}
 
   Tags:
 	 {% for tag_object in video.video_tag %}
-	 <span class='tag'><a href="/tags/{{tag_object.tag_name}}">{{ tag_object.tag_name }}!</a></span>
+	 <span class='tag'><a href="/tags/{{tag_object.tag_name}}">@{{ tag_object.tag_name }}!</a></span>
 	 {% endfor %} 
  <br>
 <!-- <video width="320" height="240" controls> -->
