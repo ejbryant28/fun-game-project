@@ -1,13 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-{# {% for challenge in challenges %}
-
-<span class="challenge_name">Challenge: <a href="/challenge/{{ challenge.challenge_name }}">{{ challenge.challenge_name }}</a></span> |
-<span class="challenge_description">Description: {{ challenge.description }}</span><br><br>
-
-{% endfor %} #}
+<br><br><br>
 
 <br><br><br>
 
@@ -30,9 +24,7 @@
 	 <span class='tag'><a href="/tags/{{tag_object.tag_name}}">@{{ tag_object.tag_name }}</a></span>
 	 {% endfor %} 
  <br>
-<!-- <video width="320" height="240" controls> -->
-<video width="70%" controls>
-<!-- <video class='video' controls> -->
+<video width="750" height="750" controls>
 
 
 	<source src="/static/uploads/{{ video.filename }}" type="video/{{ video.filename.split('.', 1)[1] }}">

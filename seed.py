@@ -20,7 +20,7 @@ fake = Faker()
 fake.uri_path(deep=None)
 
 
-def load_users(n):
+def load_users(n): #pragma no cover
     """load 10 random users into database"""
 
     for _ in range(n):
@@ -35,6 +35,27 @@ def load_users(n):
         user = User(name=name, username=username, password=hashed.decode('utf-8'), email=email)
         db.session.add(user)
 
+    password = 'password'
+    hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+    user_1 = User(name='Cynthia', username='cynthia', password=hashed.decode('utf-8'), email='cynthia@email.com')
+    user_2 = User(name='Lex', username='lexicon', password=hashed.decode('utf-8'), email='lex@email.com')
+    user_3 = User(name='Seth', username='goats', password=hashed.decode('utf-8'), email='seth@email.com')
+    user_4 = User(name='Brandon', username='botman', password=hashed.decode('utf-8'), email='brandon@email.com')
+    user_5 = User(name='Claire', username='llamallama', password=hashed.decode('utf-8'), email='claire@email.com')
+    user_6 = User(name='Ezra', username='ezra', password=hashed.decode('utf-8'), email='cutiepie@email.com')
+    user_7 = User(name='Janice', username='mamanature', password=hashed.decode('utf-8'), email='person@email.com')
+    # user_8 = User(name='Ezra', username='monsterTruck', password=hashed.decode('utf-8'), email='person@email.com')
+    user_9 = User(name='Jacob', username='sillyfart', password=hashed.decode('utf-8'), email='person@email.com')
+    user_10 = User(name='Jake', username='smartypants', password=hashed.decode('utf-8'), email='person@email.com')
+    user_11 = User(name='Randy', username='codeman', password=hashed.decode('utf-8'), email='person@email.com')
+    user_12 = User(name='Peter', username='danceman', password=hashed.decode('utf-8'), email='person@email.com')
+    user_13 = User(name='Sarah', username='sarahbobo', password=hashed.decode('utf-8'), email='person@email.com')
+    user_14 = User(name='Clare', username='irishmonster', password=hashed.decode('utf-8'), email='person@email.com')
+
+
+    db.session.add_all([user_1, user_2, user_3, user_4, user_5, user_6, user_7, user_9, user_10, user_11, user_12, user_13, user_14,])
+
     db.session.commit()
 
 
@@ -45,13 +66,13 @@ def load_videos(n, location): # pragma: no cover
     users = User.query.all() 
 
     #give each user 5 videos and create those files in uploads folder
-    for user in users: 
+    for user in users:
+        video_num = randint(1, n) 
 
-        for i in range(n):
+        for i in range(video_num):
             now = datetime.now()
             delta = timedelta(days=(-randint(0, 366)))
             time = now+delta
-            # print("TIME UPLOADED IS", time)
             filename = name_file() 
 
             video = Video(user_id = user.user_id, date_uploaded=time, filename=filename)
@@ -85,13 +106,12 @@ def load_videotags(): # pragma: no cover
 
     videos = Video.query.all() 
     tags = Tag.query.all() 
-    print('in the tags part')
 
     for video in videos: 
         chosen = set()
+        tag_len = randint(1, 8)
 
-        while len(chosen) < 6:
-            print('in the while loop, len is currently', len(chosen))
+        while len(chosen) < tag_len:
             choice_1 = choice(tags)
             if choice_1 in chosen:
                 continue
@@ -123,7 +143,8 @@ def load_point_given(n): # pragma: no cover
     # now = datetime.now()
 
     for video in videos:
-        for i in range(n):
+        point_num = randint(5, n)
+        for i in range(point_num):
             #categories come from point categories, excluding social and completion which are calculated seperately.
             categories = ['silliness', 'originality', 'enthusiasm', 'artistry']
             point = choice(categories)
@@ -140,17 +161,6 @@ def load_point_given(n): # pragma: no cover
             new_point = PointGiven(video_id=video.video_id, point_category=point, time_given=time_given, user_id=user.user_id)
         
             db.session.add(new_point)
-    db.session.commit()
-
-    #completion points are based on number of videos uploaded
-    # for user in users:
-
-    #     videos = videos_by_user_id(user.user_id).all()
-
-    #     for video in videos:
-    #         new_point = PointGiven(video_id=video.video_id, point_category='completion', time_given=video.date_uploaded, user_id=user.user_id)
-
-    #         db.session.add(new_point)
 
     db.session.commit()
 
@@ -175,22 +185,24 @@ def load_challenges(): # pragma: no cover
     ('broken shoe dance', 'Do an upbeat dance (like Kazachok or Irish Step Dance) with one high heel and one flat shoe (the shoes can be imaginary).'),
     ('air dancer', 'Immitate an air dancer (those tube things that are in front of car dealerships)'),
     ('fins', 'Put on fins/flippers (for swimming) then walk or run around in them.'),
-    ('penguin', 'Run as fast as you can like a penguin.')
+    ('penguin', 'Run as fast as you can like a penguin.'),
+    ('piggy', 'Act like a pig. Make noise, eat food, be silly!')
     ]
 
 
     for challenge in challenges_list:
         new_challenge = Challenge(challenge_name = challenge[0], description=challenge[1])
         db.session.add(new_challenge)
+    db.session.commit()
     
     #load 3 random challenges:
-    for i in range(3):
-        challenge_name = 'challenge_{}'.format(i)
-        description = 'This is challenge {}'.format(i)
+    # for i in range(3):
+    #     challenge_name = 'challenge_{}'.format(i)
+    #     description = 'This is challenge {}'.format(i)
 
-        new_challenge = Challenge(challenge_name=challenge_name, description=description)
-        db.session.add(new_challenge)
-    db.session.commit()
+    #     new_challenge = Challenge(challenge_name=challenge_name, description=description)
+    #     db.session.add(new_challenge)
+    # db.session.commit()
 
 
 def load_video_challenge(): # pragma: no cover
@@ -202,7 +214,7 @@ def load_video_challenge(): # pragma: no cover
 
         challenges = Challenge.query.all()
         challenge = choice(challenges)
-        challenges.remove(challenge)
+        # challenges.remove(challenge)
 
         new_video_challenge = VideoChallenge(video_id=video.video_id, challenge_name=challenge.challenge_name)
 
@@ -392,13 +404,13 @@ def seed_test(): # pragma: no cover
 if __name__ == '__main__': # pragma: no cover
     connect_to_db(app, 'postgres:///project')
     load_users(10)
-    load_videos(5, 'uploads')
+    load_videos(7, 'uploads')
     load_tags()
     load_videotags()
     load_pointcategories()
     load_challenges()
     load_video_challenge()
-    load_point_given(20)
+    load_point_given(10)
     load_video_point_totals()
     load_category_level_points()
     load_user_level()

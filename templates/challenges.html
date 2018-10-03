@@ -1,32 +1,21 @@
 {% extends 'base.html' %}
 {% block content %}
-<!-- <div> -->
+
 <div class="row challenge">
 {% for challenge in challenges %}
 <div class="card" style="width: 18rem;">
   <div class="card-body">
     <h5 class="card-title">{{ challenge.challenge_name.capitalize() }}</h5>
     <h6 class="card-subtitle mb-2 text-muted">{{ challenge.description }}</h6>
-    <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
-    <a href="/challenge/{{ challenge.challenge_name }}" class="card-link">See videos</a>
 
+    <a href="/challenge/{{ challenge.challenge_name }}" class="card-link">See videos</a>
     {% if challenge.challenge_name in completed %}
-    <a href="/video-upload/{{ completed[challenge.challenge_name] }}">See yours</a>
+    <span><a href="/video-upload/{{ completed[challenge.challenge_name] }}">See yours</a></span>
     {% else %}
-    <a href="video-upload/challenge/{{ challenge.challenge_name }}" class="card-link">Complete</a>
+    <span><a href="video-upload/challenge/{{ challenge.challenge_name }}" class="card-link">Complete</a></span>
     {% endif %}
   </div>
 </div>
-<!-- </div> -->
-{#
-<div class="card">
-
-Challenge Name: <a href="/challenge/{{ challenge.challenge_name }}">{{ challenge.challenge_name }}</a><br>
-
-Directions: {{ challenge.description }}<br><br>
-</div>
-#}
-
 {% endfor %}
 </div>
 

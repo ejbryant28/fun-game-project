@@ -45,7 +45,7 @@ class NoDbNoSession(unittest.TestCase):
 class YesDbNoSession(unittest.TestCase):
     """Tests that need db but no session"""
 
-    def setUp(self):
+    def setUp(self): #pragma no cover
         """set up test with db, and users"""
 
         #set up testing configurations
@@ -61,7 +61,7 @@ class YesDbNoSession(unittest.TestCase):
         load_users(1)
 
 
-    def tearDown(self):
+    def tearDown(self): #pragma no cover
         """close session at end"""
 
         db.session.remove()
@@ -298,7 +298,7 @@ class SeededDbandSession(unittest.TestCase):
 
         result = self.client.get('/profile', data={}, follow_redirects=True)
 
-        self.assertIn(b"You\'re level 1 in category with 1 points", result.data)
+        self.assertIn(b"level 1 | total: 1", result.data)
 
     def test_point_flashing(self):
         """Tests that if a user gets a point while logged out, they get a flash message when they log back in"""

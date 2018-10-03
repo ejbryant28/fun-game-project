@@ -11,7 +11,7 @@ from functools import wraps
 
 from model import *
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pytz
 
@@ -22,6 +22,8 @@ from helper_functions import *
 from sqlalchemy import func
 
 import bcrypt
+
+from random import randint
 
 
 app = Flask(__name__)
@@ -48,10 +50,17 @@ def before_request():
 @app.route('/')
 def homepage():
     """render homepage"""
+    # now = datetime.now(tz=pytz.timezone('US/Pacific'))
+    # # delta = timedelta(days=(randint(5, 21)))
+    # # time = now+delta
+    # # video = Video.query.filter(Video.video_id == 148).first()
+    # # video.date_uploaded = time
+
 
     user_id = session['user_id']
 
-    videos = videos_by_date().all()
+    # videos = videos_by_date().all()
+    videos = videos_by_date().limit(5)
     challenges = Challenge.query.all()
 
     points_given = social_points(user_id).all()
@@ -216,7 +225,7 @@ def user_profile():
 
 
 @app.route('/challenge')
-def show_challenges():
+def show_challenges(): #pragma no cover
     """Show all the available challenges"""
 
     user_id = session['user_id']
@@ -233,7 +242,7 @@ def show_challenges():
 
 
 @app.route('/challenge/<challenge_name>')
-def show_challenge_videos(challenge_name):
+def show_challenge_videos(challenge_name): #pragma no cover
     """Show a specific challenge and all the videos of that challenge"""
 
     challenge = challenges_by_name(challenge_name).first()
@@ -258,7 +267,7 @@ def show_all_tags():
     return render_template('tags.html', tags=tags)
 
 @app.route('/tags/<tag_name>')
-def show_tag(tag_name):
+def show_tag(tag_name): #pragma no cover
 
 
     videos = db.session.query(Video).join(VideoTag).filter(VideoTag.tag_name==tag_name).order_by(Video.date_uploaded.desc()).all()
@@ -323,6 +332,7 @@ def upload_file():
             return redirect('/video-upload')
 
         file = request.files['file']
+        print('file is', file)
 
         # if user does not select file, browser also
         # submit an empty part without filename
@@ -331,21 +341,32 @@ def upload_file():
             return redirect('/video-upload')
 
         if file and allowed_file(file.filename):
+            print('got into the if statement on line 336')
             #find file extension
             filename = secure_filename(file.filename)
             file_ext = filename.rsplit('.', 1)[1].lower()
+            print('file ext is', file_ext)
 
             #create new file name using user_id, file_ext, and date_uploaded
-            filename = name_file(file_ext)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            new_name = name_file()
+            print('named file', new_name)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], new_name))
+            print('i tried to save it in the uploads folder')
 
             #add video to database
             user_id = session.get('user_id')
-            date_uploaded = datetime.now(tz=pytz.timezone('US/Pacific'))
-            video = Video(user_id=user_id, date_uploaded=date_uploaded , filename=filename)
+            # date_uploaded = datetime.now(tz=pytz.timezone('US/Pacific'))
+            now = datetime.now(tz=pytz.timezone('US/Pacific'))
+            # delta = timedelta(days=(-randint(0, 21)))
+            # time = now+delta
+            # print('im recording it as ', time)
+            filename = name_file()
+            video = Video(user_id=user_id, date_uploaded=now, filename=new_name)
 
             db.session.add(video)
+            print('added the video')
             db.session.commit()
+            print(' i added the video with the name ', new_name)
 
             #get tags selected and add them to video_tags table
             tags = request.form.getlist('tag')
@@ -381,7 +402,7 @@ def upload_file():
 
             db.session.commit()
 
-            return redirect('/video-upload/{}'.format(filename))
+            return redirect('/video-upload/{}'.format(new_name))
             # return redirect('/')
 
 
@@ -446,7 +467,7 @@ def add_point():
 
 
 @app.route('/point-chart')
-def make_point_chart():
+def make_point_chart(): #pragma no cover
     """ generates the data for a chart on profile showing completed and in-progress levels"""
 
     user_id = session['user_id']
@@ -476,7 +497,7 @@ def make_point_chart():
     return jsonify(level_dict)
 
 @app.route('/progress-chart')
-def make_progress_chart(): 
+def make_progress_chart(): #pragma no cover
 
     user_id = session['user_id']
 
@@ -500,7 +521,7 @@ def make_progress_chart():
 
 
 ######################################################################################################################################
-if __name__ == "__main__":
+if __name__ == "__main__": #pragma no cover
     app.debug = True
     app.jinja_env.auto_reload = app.debug
 

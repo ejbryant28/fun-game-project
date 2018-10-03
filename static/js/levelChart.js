@@ -18,7 +18,7 @@ function makeChart(result){
 	            label: "Completed Levels",
 	            // fill: false
 	            backgroundColor: ['rgb(214, 136, 38)', 'rgb(55, 125, 168)', 'rgb(196, 43, 81)', 'rgb(149, 127, 189)', 'rgb(93, 205, 220)', 'rgb(44, 119, 108)'],
-	            borderColor: ['rgb(214, 136, 38)', 'rgb(26, 82, 118)', 'rgb(196, 43, 81)', 'rgb(149, 127, 189)', 'rgb(93, 205, 220)', 'rgb(44, 119, 108)'],
+	            borderColor: ['rgb(214, 136, 38)', 'rgb(55, 125, 168)', 'rgb(196, 43, 81)', 'rgb(149, 127, 189)', 'rgb(93, 205, 220)', 'rgb(44, 119, 108)'],
 	            data: finishedPointValues,
 	        },
 

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-<br>
+<br><br><br>
 
 {% if videos %}
 <!-- <div class="row chartgroup"> -->
@@ -53,7 +53,9 @@ You don't have any videos yet. Would you like to complete some <a href="/challen
  	<span class='tag'><a href="/tags/{{tag_object.tag_name}}">@{{ tag_object.tag_name }}!</a></span>
  	{% endfor %} 
  <br>
-<video width="70%" controls>
+<!-- <video width="70%" controls> -->
+<video width="750" height="750" controls>
+	
 
 	<source src="/static/uploads/{{ video.filename }}" type="video/{{ video.filename.split('.', 1)[1] }}">
 
