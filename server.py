@@ -50,11 +50,6 @@ def before_request():
 @app.route('/')
 def homepage():
     """render homepage"""
-    # now = datetime.now(tz=pytz.timezone('US/Pacific'))
-    # # delta = timedelta(days=(randint(5, 21)))
-    # # time = now+delta
-    # # video = Video.query.filter(Video.video_id == 148).first()
-    # # video.date_uploaded = time
 
 
     user_id = session['user_id']
@@ -361,7 +356,12 @@ def upload_file():
             # time = now+delta
             # print('im recording it as ', time)
             filename = name_file()
-            video = Video(user_id=user_id, date_uploaded=now, filename=new_name)
+            # video = Video(user_id=user_id, date_uploaded=now, filename=new_name)
+
+            delta = timedelta(days=(randint(0, 20)))
+            time = now+delta
+            video = Video(user_id=user_id, date_uploaded=time, filename=new_name)
+
 
             db.session.add(video)
             print('added the video')

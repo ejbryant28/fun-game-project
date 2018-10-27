@@ -52,9 +52,10 @@ def load_users(n): #pragma no cover
     user_12 = User(name='Peter', username='danceman', password=hashed.decode('utf-8'), email='person@email.com')
     user_13 = User(name='Sarah', username='sarahbobo', password=hashed.decode('utf-8'), email='person@email.com')
     user_14 = User(name='Clare', username='irishmonster', password=hashed.decode('utf-8'), email='person@email.com')
+    user_15 = User(name='Person', username='exampleuser', password=hashed.decode('utf-8'), email='exampleuser@email.com')
 
 
-    db.session.add_all([user_1, user_2, user_3, user_4, user_5, user_6, user_7, user_9, user_10, user_11, user_12, user_13, user_14,])
+    db.session.add_all([user_1, user_2, user_3, user_4, user_5, user_6, user_7, user_9, user_10, user_11, user_12, user_13, user_14, user_15])
 
     db.session.commit()
 
