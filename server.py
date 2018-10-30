@@ -50,8 +50,7 @@ def before_request():
 @app.route('/')
 def homepage():
     """render homepage"""
-
-
+    
     user_id = session['user_id']
 
     # videos = videos_by_date().all()

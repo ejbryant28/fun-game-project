@@ -144,7 +144,7 @@ def load_point_given(n): # pragma: no cover
     # now = datetime.now()
 
     for video in videos:
-        point_num = randint(5, n)
+        point_num = randint(6, n)
         for i in range(point_num):
             #categories come from point categories, excluding social and completion which are calculated seperately.
             categories = ['silliness', 'originality', 'enthusiasm', 'artistry']
@@ -162,6 +162,7 @@ def load_point_given(n): # pragma: no cover
             new_point = PointGiven(video_id=video.video_id, point_category=point, time_given=time_given, user_id=user.user_id)
         
             db.session.add(new_point)
+            db.session.commit()
 
     db.session.commit()
 
@@ -411,7 +412,7 @@ if __name__ == '__main__': # pragma: no cover
     load_pointcategories()
     load_challenges()
     load_video_challenge()
-    load_point_given(10)
+    load_point_given(20)
     load_video_point_totals()
     load_category_level_points()
     load_user_level()

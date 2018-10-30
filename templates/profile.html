@@ -4,6 +4,7 @@
 
 {% if videos %}
 <!-- <div class="row chartgroup"> -->
+
 <div class="row">
 	<div class="col-md-5 offset-2 col-xs-10 chart chart-container">
 	<canvas id="levelbarchart"></canvas>
@@ -39,6 +40,7 @@ You don't have any videos yet. Would you like to complete some <a href="/challen
 	<div class='container-fluid video'>
 		<br>
 
+
 	{# Added:
   {{ video.date_uploaded.strftime("%A") }} at {{ video.date_uploaded.strftime("%I") }}:{{ video.date_uploaded.strftime("%M") }}<br> #}
 
@@ -54,7 +56,7 @@ You don't have any videos yet. Would you like to complete some <a href="/challen
  	{% endfor %} 
  <br>
 <!-- <video width="70%" controls> -->
-<video width="750" height="750" controls>
+<video width="750" height="50" controls>
 	
 
 	<source src="/static/uploads/{{ video.filename }}" type="video/{{ video.filename.split('.', 1)[1] }}">
